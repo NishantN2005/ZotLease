@@ -1,6 +1,5 @@
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
-import pluginVitest from '@vitest/eslint-plugin'
 import oxlint from 'eslint-plugin-oxlint'
 import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
@@ -17,11 +16,6 @@ export default [
 
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
-  
-  {
-    ...pluginVitest.configs.recommended,
-    files: ['src/**/__tests__/*'],
-  },
   oxlint.configs['flat/recommended'],
   skipFormatting,
 ]
