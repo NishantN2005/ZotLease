@@ -29,12 +29,12 @@ const loginController = async (req, res) => {
 
   // creates json web token that allows access to api
   const accessToken = jwt.sign(user, process.env.MY_SECRET, {
-    expiresIn: "10s",
+    expiresIn: "10m",
   });
 
   // creates json web token that expires in 1 hr
   const refreshToken = jwt.sign({ email: user.email }, process.env.MY_SECRET, {
-    expiresIn: "30s",
+    expiresIn: "12h",
   });
 
   // stores jwt as a cookie for security
@@ -62,7 +62,7 @@ const refreshController = async (req, res) => {
         { id: decoded.userID },
         process.env.MY_SECRET,
         {
-          expiresIn: "10s",
+          expiresIn: "10m",
         }
       );
 
