@@ -1,6 +1,7 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { RouterLink, useRouter } from 'vue-router';
+import { ref } from 'vue';
+import {useUserStore} from '../stores/userStore.js';
 
 const formData = ref({
   email: '',
@@ -8,6 +9,7 @@ const formData = ref({
 })
 
 const router = useRouter()
+const userStore = useUserStore();
 
 function handleLogin() {
   try {
@@ -29,12 +31,9 @@ function handleLogin() {
       })
       .then((data) => {
         console.log('Login successful:', data)
+        userStore.isLoggedIn=true;
+        userStore.setUserID(data.id)
         router.push('/dashboard')
-
-        formData.value = {
-          email: '',
-          password: '',
-        }
       })
       .catch((err) => {
         console.log('Error:', err.message)
