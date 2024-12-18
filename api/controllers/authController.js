@@ -1,7 +1,7 @@
 const pool = require("../src/db.js");
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
-const {uuidv4} = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 require("dotenv").config("api/.env");
 
 async function hashPassword(plainTextPassword) {
@@ -10,6 +10,15 @@ async function hashPassword(plainTextPassword) {
   const saltRounds = 10; 
   const hashedPassword = await bcrypt.hash(plainTextPassword, saltRounds);
   return hashedPassword;
+}
+async function verifyPassword(plainTextPassword, hashedPassword) {
+  try {
+    const isMatch = await bcrypt.compare(plainTextPassword, hashedPassword);
+    return isMatch; // true if passwords match, false otherwise
+  } catch (error) {
+    console.error('Error verifying password:', error);
+    throw error;
+  }
 }
 
 const loginController = async (req, res) => {
@@ -31,9 +40,8 @@ const loginController = async (req, res) => {
   const user = queryRes.rows[0];
 
   // check password match
-  const hashedPassword = await hashPassword(password);
-  console.log(user.password, hashedPassword)
-  if (user.password !== hashedPassword){
+  if (!verifyPassword(password, user.password)){
+    console.log("Invalid password")
     return res.status(403).send({ message: "invalid login" });
   }
 
@@ -75,10 +83,15 @@ const signupController = async(req, res) =>{
           values: [fname, lname, email, hashedPassword, userID],
     };
 
-    const res = pool.query(insertQuery);
-    console.log(res)
+    const response = pool.query(insertQuery);
+    console.log(response)
 
     //Create token
+    const user={
+      fname: fname,
+      lname:lname,
+      email:email
+    }
     const token = jwt.sign(user, process.env.MY_SECRET, { expiresIn: "15m" });
 
     // stores jwt as a cookie for security
@@ -89,6 +102,7 @@ const signupController = async(req, res) =>{
     return res.status(200).send({message:"Successfully created user profile", id:userID})
   }catch(err){
     // TODO: need to check if they tried to signup after already having an account
+    console.log(err);
     return res.status(500).send({message:"Failed to insert new user"});
   }
 }

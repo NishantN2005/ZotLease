@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import {useUserStore} from '../stores/userStore.js';
-
+import { RouterLink, useRouter } from 'vue-router';
+const router = useRouter()
 
 const userStore = useUserStore();
 
@@ -29,8 +30,8 @@ function handleSignup() {
       },
       body: JSON.stringify(formData.value),
       credentials: 'include',
-    }).then((res)=>{
-      res=res.json()
+    }).then(async (res)=>{
+      console.log(res.status);
       if(res.status==200){
         //updating state of user to logged in and establishing id
         userStore.isLoggedIn = true;
