@@ -32,6 +32,10 @@ export default {
         } else {
           const errorData = await response.json()
           console.log('Error:', errorData.message)
+          // if 401 unauthorized call refresh token
+          // call /test
+
+          // if still unauthorized redirect
           navigateToLogin()
         }
       } catch (error) {
