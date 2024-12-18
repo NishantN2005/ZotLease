@@ -1,23 +1,48 @@
 <script setup>
 import { ref } from 'vue'
+import {useUserStore} from '../stores/userStore.js';
+import { RouterLink, useRouter } from 'vue-router';
+const router = useRouter()
+
+const userStore = useUserStore();
 
 const formData = ref({
-  firstname: '',
-  lastname: '',
+  fname: '',
+  lname: '',
   email: '',
   password: '',
 })
 
 function handleSignup() {
   console.log(formData.value)
-
+  if(formData.value.fname==''||formData.value.lname==''||formData.value.email==''||formData.value.password==''){
+    //TODO: display error message or something
+    console.log('One of the values is empty');
+    return;
+  }
   // post user details
-
-  formData.value = {
-    firstname: '',
-    lastname: '',
-    email: '',
-    password: '',
+  try{
+    console.log(formData.value)
+    fetch('http://localhost:5555/auth/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData.value),
+      credentials: 'include',
+    }).then(async (res)=>{
+      console.log(res.status);
+      if(res.status==200){
+        //updating state of user to logged in and establishing id
+        userStore.isLoggedIn = true;
+        userStore.setUserID(res.id);
+        router.push('/dashboard');
+      }else{
+        console.log('ERROR status was not 200: ', res.status)
+      }
+    })
+  }catch(err){
+    console.log('ERROR: ', err)
   }
 }
 </script>
@@ -37,13 +62,13 @@ function handleSignup() {
           <form class="space-y-4 md:space-y-6" @submit.prevent="handleSignup">
             <div>
               <label
-                for="firstname"
+                for="fname"
                 class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
               >
                 Firstname
               </label>
               <input
-                v-model="formData.firstname"
+                v-model="formData.fname"
                 type="text"
                 name="firstname"
                 id="firstname"
@@ -54,13 +79,13 @@ function handleSignup() {
             </div>
             <div>
               <label
-                for="lastname"
+                for="lname"
                 class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
               >
                 Lastname
               </label>
               <input
-                v-model="formData.lastname"
+                v-model="formData.lname"
                 type="text"
                 name="lastname"
                 id="lastname"
