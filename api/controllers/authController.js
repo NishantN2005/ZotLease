@@ -1,6 +1,16 @@
 const pool = require("../src/db.js");
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
+const {uuidv4} = require('uuid');
 require("dotenv").config("api/.env");
+
+async function hashPassword(plainTextPassword) {
+  // The saltRounds parameter controls how much time is needed to calculate a single hash. 
+  // Higher means more secure but slower. 10 is a reasonable default.
+  const saltRounds = 10; 
+  const hashedPassword = await bcrypt.hash(plainTextPassword, saltRounds);
+  return hashedPassword;
+}
 
 const loginController = async (req, res) => {
   const { email, password } = req.body;
@@ -21,7 +31,9 @@ const loginController = async (req, res) => {
   const user = queryRes.rows[0];
 
   // check password match
-  if (user.password !== password) {
+  const hashedPassword = await hashPassword(password);
+  console.log(user.password, hashedPassword)
+  if (user.password !== hashedPassword){
     return res.status(403).send({ message: "invalid login" });
   }
 
@@ -37,7 +49,47 @@ const loginController = async (req, res) => {
 
   return res.status(200).send({
     message: "Login Successful!",
+    id:user.userID
   });
 };
 
-module.exports = { loginController };
+const signupController = async(req, res) =>{
+  try{
+    const{fname, lname, email, password} = req.body;
+    console.log(fname, lname, email, password);
+    if(!fname||!lname||!email||!password){
+      console.log('Something was not defined');
+      return res.status(400).send({message:"Make sure all fields are filled out"})
+    }
+    //generate unique identification for user
+    const userID = uuidv4();
+    console.log(`New user generated userID is: ${userID}`)
+
+    //Hash password and delete og
+    const hashedPassword = await hashPassword(password);
+    delete password
+
+    //generate text query to insert new user into Postgresql database
+    const insertQuery = {
+          text: "INSERT INTO users(fname,lname,email,password,userID) VALUES ($1,$2,$3,$4,$5)",
+          values: [fname, lname, email, hashedPassword, userID],
+    };
+
+    const res = pool.query(insertQuery);
+    console.log(res)
+
+    //Create token
+    const token = jwt.sign(user, process.env.MY_SECRET, { expiresIn: "15m" });
+
+    // stores jwt as a cookie for security
+    res.cookie("token", token, {
+      httpOnly: true,
+    });
+
+    return res.status(200).send({message:"Successfully created user profile", id:userID})
+  }catch(err){
+    // TODO: need to check if they tried to signup after already having an account
+    return res.status(500).send({message:"Failed to insert new user"});
+  }
+}
+module.exports = { loginController, signupController };
