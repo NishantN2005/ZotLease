@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 import { ref } from 'vue'
 
 const formData = ref({
@@ -7,14 +7,40 @@ const formData = ref({
   password: '',
 })
 
+const router = useRouter()
+
 function handleLogin() {
-  console.log(formData.value)
+  try {
+    console.log(formData.value)
 
-  // get user details
+    fetch('http://localhost:5555/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData.value),
+      credentials: 'include',
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Login failed: ${res.statusText}`)
+        }
+        return res.json()
+      })
+      .then((data) => {
+        console.log('Login successful:', data)
+        router.push('/dashboard')
 
-  formData.value = {
-    email: '',
-    password: '',
+        formData.value = {
+          email: '',
+          password: '',
+        }
+      })
+      .catch((err) => {
+        console.log('Error:', err.message)
+      })
+  } catch (err) {
+    console.log(err.message)
   }
 }
 </script>

@@ -4,29 +4,28 @@ const cors = require("cors");
 const compression = require("compression");
 const { Pool } = require("pg");
 const fs = require("fs");
+const cookieParser = require("cookie-parser");
+const userRoutes = require("../routes/userRoutes.js");
+const authRoutes = require("../routes/authRoutes.js");
 require("dotenv").config("api/.env");
 
 const IP = "0.0.0.0";
 const PORT = 5555;
 const app = express();
 app.use(compression());
-app.use(cors({ origin: "*" }));
-const server = http.createServer(app);
 
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: "",
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-  ssl: {
-    rejectUnauthorized: false,
-    ca: fs.readFileSync("src/rds-combined-ca-bundle.pem").toString(), // if you're using SSL
-  },
-});
+const coorsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
+app.use(cors(coorsOptions));
+const server = http.createServer(app);
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/", userRoutes);
+app.use("/auth", authRoutes);
+
 // (async () => {
 //   //await client.connect()
 //   console.log("successfully connected to client");
