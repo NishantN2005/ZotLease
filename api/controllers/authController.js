@@ -27,17 +27,49 @@ const loginController = async (req, res) => {
 
   delete user.password;
 
+  // creates json web token that allows access to api
+  const accessToken = jwt.sign(user, process.env.MY_SECRET, {
+    expiresIn: "10m",
+  });
+
   // creates json web token that expires in 1 hr
-  const token = jwt.sign(user, process.env.MY_SECRET, { expiresIn: "1s" });
+  const refreshToken = jwt.sign({ email: user.email }, process.env.MY_SECRET, {
+    expiresIn: "1d",
+  });
 
   // stores jwt as a cookie for security
-  res.cookie("token", token, {
+  res.cookie("token", refreshToken, {
     httpOnly: true,
+    secure: true,
+    sameSite: "Lax",
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return res.status(200).send({
-    message: "Login Successful!",
-  });
+  return res.json({ accessToken });
 };
 
-module.exports = { loginController };
+const refreshController = async (req, res) => {
+  if (req.cookies?.token) {
+    const refreshToken = req.cookies.token;
+
+    jwt.verify(refreshToken, process.env.MY_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(406).json({ message: "Unauthorized" });
+      }
+
+      const accessToken = jwt.sign(
+        { id: decoded.userID },
+        process.env.MY_SECRET,
+        {
+          expiresIn: "10m",
+        }
+      );
+
+      return res.json({ accessToken });
+    });
+  } else {
+    return res.status(401).json({ message: "No refresh token provided" });
+  }
+};
+
+module.exports = { loginController, refreshController };

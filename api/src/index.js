@@ -2,8 +2,6 @@ const express = require("express");
 const http = require("http");
 const cors = require("cors");
 const compression = require("compression");
-const { Pool } = require("pg");
-const fs = require("fs");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("../routes/userRoutes.js");
 const authRoutes = require("../routes/authRoutes.js");
@@ -21,6 +19,7 @@ const coorsOptions = {
 app.use(cors(coorsOptions));
 const server = http.createServer(app);
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/", userRoutes);

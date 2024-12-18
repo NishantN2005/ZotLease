@@ -20,10 +20,13 @@ export default {
     const router = useRouter()
 
     const callTestRoute = async () => {
+      // i need the access token
       try {
         const response = await fetch('http://localhost:5555/test', {
           method: 'POST',
-          credentials: 'include',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         })
 
         if (response.ok) {
