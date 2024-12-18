@@ -1,6 +1,9 @@
 <script setup>
 import { RouterLink, useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+
+const userStore = useUserStore()
 
 const formData = ref({
   email: '',
@@ -29,6 +32,7 @@ function handleLogin() {
       })
       .then((data) => {
         console.log('Login successful:', data)
+        userStore.setUserToken(data.accessToken)
         router.push('/dashboard')
 
         formData.value = {
