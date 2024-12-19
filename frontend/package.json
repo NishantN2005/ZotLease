@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",

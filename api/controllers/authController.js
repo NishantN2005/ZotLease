@@ -162,4 +162,27 @@ const signupController = async (req, res) => {
     return res.status(500).send({ message: "Failed to insert new user" });
   }
 };
-module.exports = { loginController, signupController, refreshController };
+
+const logoutController = async (req,res) =>{
+  console.log(req.cookies.token)
+  if (req.cookies?.token) {
+    const refreshToken =  req.cookies.token;
+    console.log('refresh here', refreshToken);
+    const decoded = jwt.decode(refreshToken);
+    
+
+    console.log('expiration is here', decoded)
+    //add token to blacklist
+    const addToBlacklist = {
+      text: "INSERT INTO blacklist(token, expires_at) VALUES ($1, $2)",
+      values: [refreshToken, decoded.exp]
+    }
+   
+    const response = await pool.query(addToBlacklist);
+    console.log(response);
+    
+    res.clearCookie('token');
+    res.status(200).send({message: "Successfully added token to blacklist"});
+}
+}
+module.exports = { loginController, signupController, refreshController, logoutController };

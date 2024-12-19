@@ -1,7 +1,7 @@
 # ZotLease
 
-users table schema:
 
+TABLE SCHEMAS:
 CREATE TABLE IF NOT EXISTS users (
      id SERIAL PRIMARY KEY,
      fname VARCHAR(100) NOT NULL,
@@ -10,3 +10,9 @@ CREATE TABLE IF NOT EXISTS users (
      password TEXT NOT NULL,
      userID TEXT UNIQUE NOT NULL
    );
+
+CREATE TABLE IF NOT EXISTS blacklist(
+    id SERIAL PRIMARY KEY,
+    token TEXT,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
+);

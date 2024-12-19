@@ -12,5 +12,6 @@ const { dummy } = require("../controllers/userController.js");
  */
 router.post("/");
 router.post("/test", cookieJwtAuth, dummy);
+router.post("/refreshToken",cookieJwtAuth,  )
 
 module.exports = router;
