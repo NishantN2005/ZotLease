@@ -16,6 +16,9 @@ export const useUserStore = defineStore('user', {
     setUserID(val) {
       this.userID = val
     },
+    setIsLoggedIn(val) {
+      this.isLoggedIn = val
+    },
   },
   getters: {},
 })

@@ -33,7 +33,7 @@ function handleLogin() {
         console.log('Login successful:', data)
         userStore.setUserToken(data.accessToken)
         userStore.setUserID(data.id)
-        userStore.isLoggedIn(true)
+        userStore.setIsLoggedIn(true)
         router.push('/dashboard')
       })
       .catch((err) => {

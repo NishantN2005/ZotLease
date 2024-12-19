@@ -39,7 +39,10 @@ function handleSignup() {
       console.log(res.status)
       if (res.status == 200) {
         //updating state of user to logged in and establishing id
-        userStore.isLoggedIn = true
+        res = await res.json()
+        console.log('sign', res)
+        userStore.setUserToken(res.accessToken)
+        userStore.setIsLoggedIn(true)
         userStore.setUserID(res.id)
         router.push('/dashboard')
       } else {

@@ -13,7 +13,7 @@ const app = express();
 app.use(compression());
 
 const coorsOptions = {
-  origin: "http://localhost:5176",
+  origin: "http://localhost:5173",
   credentials: true,
 };
 app.use(cors(coorsOptions));

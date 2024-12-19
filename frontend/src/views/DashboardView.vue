@@ -24,7 +24,7 @@ export default {
 
     const callTestRoute = async () => {
       try {
-        let response = await fetch('http://localhost:5555/test', {
+        let response = await fetch('http://localhost:5555/user/test', {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${userStore.userToken}`,
@@ -43,7 +43,7 @@ export default {
             const newAccessToken = await refreshAccessToken(router)
             if (newAccessToken) {
               // call api again using new access token
-              response = await fetch('http://localhost:5555/test', {
+              response = await fetch('http://localhost:5555/user/test', {
                 method: 'POST',
                 headers: {
                   Authorization: `Bearer ${newAccessToken}`,

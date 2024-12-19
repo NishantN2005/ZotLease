@@ -10,7 +10,7 @@ const { dummy } = require("../controllers/userController.js");
  * Update user information
  * Delete user
  */
-router.post('/')
+router.post("/");
 router.post("/test", cookieJwtAuth, dummy);
 
 module.exports = router;
