@@ -13,7 +13,7 @@ const app = express();
 app.use(compression());
 
 const coorsOptions = {
-  origin: "http://localhost:5173",
+  origin: "http://localhost:5176",
   credentials: true,
 };
 app.use(cors(coorsOptions));
@@ -22,30 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/", userRoutes);
+app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
-
-// (async () => {
-//   //await client.connect()
-//   console.log("successfully connected to client");
-//   const createTableQuery = `
-//   CREATE TABLE IF NOT EXISTS users (
-//     id SERIAL PRIMARY KEY,
-//     fname VARCHAR(100) NOT NULL,
-//     lname VARCHAR(100) NOT NULL,
-//     email VARCHAR(100) UNIQUE NOT NULL,
-//     password TEXT NOT NULL,
-//     userID TEXT UNIQUE NOT NULL
-//   );
-// `;
-//   const insert = {
-//     text: "INSERT INTO users(fname,lname,email,password,userID) VALUES ($1,$2,$3,$4,$5)",
-//     values: ["Nishant", "Nuthalapati", "example@gmail.com", "hello", "01"],
-//   };
-//   const check = `SELECT * FROM users`;
-//   const res = await pool.query(check);
-//   console.log("Table created successfully", res);
-// })();
 
 server.listen(PORT, IP, () => {
   console.log(

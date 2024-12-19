@@ -3,14 +3,13 @@ import { RouterLink, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 
-const userStore = useUserStore()
-
 const formData = ref({
   email: '',
   password: '',
 })
 
 const router = useRouter()
+const userStore = useUserStore()
 
 function handleLogin() {
   try {
@@ -33,12 +32,9 @@ function handleLogin() {
       .then((data) => {
         console.log('Login successful:', data)
         userStore.setUserToken(data.accessToken)
+        userStore.setUserID(data.id)
+        userStore.isLoggedIn(true)
         router.push('/dashboard')
-
-        formData.value = {
-          email: '',
-          password: '',
-        }
       })
       .catch((err) => {
         console.log('Error:', err.message)
