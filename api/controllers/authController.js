@@ -53,7 +53,7 @@ const loginController = async (req, res) => {
   });
 
   // creates json web token that expires in 1 hr
-  const refreshToken = jwt.sign({ email: user.email }, process.env.MY_SECRET, {
+  const refreshToken = jwt.sign({ email: user.email, jti: uuidv4()}, process.env.MY_SECRET, {
     expiresIn: "12h",
   });
 
@@ -171,11 +171,12 @@ const logoutController = async (req, res) => {
     console.log("refresh here", refreshToken);
     const decoded = jwt.decode(refreshToken);
 
-    console.log("expiration is here", decoded);
+    console.log("expiration is here", decoded.exp);
+    console.log(decoded.jti)
     //add token to blacklist
     const addToBlacklist = {
-      text: "INSERT INTO blacklist(token, expires_at) VALUES ($1, $2)",
-      values: [refreshToken, decoded.exp],
+      text: "INSERT INTO refresh_token_blacklist(token_id, expiry) VALUES ($1, TO_TIMESTAMP($2))",
+      values: [decoded.jti, decoded.exp],
     };
 
     const response = await pool.query(addToBlacklist);

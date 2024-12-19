@@ -11,8 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
      userID TEXT UNIQUE NOT NULL
    );
 
-CREATE TABLE IF NOT EXISTS blacklist(
-    id SERIAL PRIMARY KEY,
-    token TEXT,
-    expires_at TIMESTAMP WITH TIME ZONE NOT NULL
-);
+CREATE TABLE refresh_token_blacklist (
+    token_id UUID PRIMARY KEY,
+    expiry TIMESTAMP NOT NULL
+)
