@@ -4,7 +4,7 @@
     <LeafletMap />
     <h1>Hello user</h1>
     <button @click="callTestRoute">Call /test Route</button>
-    <button class='border ml-10' @click ="Logout"> Logout </button>
+    <button class="border ml-10" @click="Logout">Logout</button>
   </div>
 </template>
 
@@ -13,7 +13,6 @@ import { useRouter } from 'vue-router'
 import LeafletMap from '@/components/icons/LeafletMap.vue'
 import { useUserStore } from '@/stores/userStore'
 import { refreshAccessToken } from '@/services/authService'
-import Cookies from 'js-cookie';
 
 export default {
   name: 'DashboardView',
@@ -24,26 +23,24 @@ export default {
     const router = useRouter()
     const userStore = useUserStore()
 
-    const Logout = async() =>{
-      try{
+    const Logout = async () => {
+      try {
         let response = await fetch('http://localhost:5555/auth/logout', {
           method: 'POST',
           credentials: 'include',
-          headers:{
+          headers: {
             Authorization: `Bearer ${userStore.userToken}`,
-          }
+          },
         })
         console.log(response)
-        if(response.status==200){
-          userStore.setIsLoggedIn(false);
-          userStore.setUserToken(null);
-          userStore.setUserID(null);
-          router.push('/login');
+        if (response.status == 200) {
+          userStore.setIsLoggedIn(false)
+          userStore.setUserToken(null)
+          userStore.setUserID(null)
+          router.push('/login')
         }
-
-
-      }catch(err){
-        console.log(err);
+      } catch (err) {
+        console.log(err)
       }
     }
     const callTestRoute = async () => {
@@ -52,7 +49,7 @@ export default {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${userStore.userToken}`,
-          }
+          },
         })
 
         if (response.ok) {
@@ -97,7 +94,7 @@ export default {
     return {
       callTestRoute,
       navigateToLogin,
-      Logout
+      Logout,
     }
   },
 }
