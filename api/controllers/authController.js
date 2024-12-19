@@ -134,7 +134,10 @@ const signupController = async (req, res) => {
 
     // creates json web token that expires in 1 hr
     const refreshToken = jwt.sign(
-      { email: user.email },
+      {
+        email: user.email,
+        jti: uuidv4(),
+      },
       process.env.MY_SECRET,
       {
         expiresIn: "12h",
@@ -149,13 +152,11 @@ const signupController = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    return res
-      .status(200)
-      .send({
-        message: "Successfully created user profile",
-        id: userID,
-        accessToken,
-      });
+    return res.status(200).send({
+      message: "Successfully created user profile",
+      id: userID,
+      accessToken,
+    });
   } catch (err) {
     // TODO: need to check if they tried to signup after already having an account
     console.log(err);
@@ -163,26 +164,30 @@ const signupController = async (req, res) => {
   }
 };
 
-const logoutController = async (req,res) =>{
-  console.log(req.cookies.token)
+const logoutController = async (req, res) => {
+  console.log(req.cookies.token);
   if (req.cookies?.token) {
-    const refreshToken =  req.cookies.token;
-    console.log('refresh here', refreshToken);
+    const refreshToken = req.cookies.token;
+    console.log("refresh here", refreshToken);
     const decoded = jwt.decode(refreshToken);
-    
 
-    console.log('expiration is here', decoded)
+    console.log("expiration is here", decoded);
     //add token to blacklist
     const addToBlacklist = {
       text: "INSERT INTO blacklist(token, expires_at) VALUES ($1, $2)",
-      values: [refreshToken, decoded.exp]
-    }
-   
+      values: [refreshToken, decoded.exp],
+    };
+
     const response = await pool.query(addToBlacklist);
     console.log(response);
-    
-    res.clearCookie('token');
-    res.status(200).send({message: "Successfully added token to blacklist"});
-}
-}
-module.exports = { loginController, signupController, refreshController, logoutController };
+
+    res.clearCookie("token");
+    res.status(200).send({ message: "Successfully added token to blacklist" });
+  }
+};
+module.exports = {
+  loginController,
+  signupController,
+  refreshController,
+  logoutController,
+};
