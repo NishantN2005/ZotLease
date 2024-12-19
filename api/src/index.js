@@ -5,6 +5,8 @@ const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("../routes/userRoutes.js");
 const authRoutes = require("../routes/authRoutes.js");
+const pool = require('./db.js');
+const cron = require('node-cron');
 require("dotenv").config("api/.env");
 
 const IP = "0.0.0.0";
@@ -24,6 +26,19 @@ app.use(cookieParser());
 
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
+
+
+// Schedule the cleanup task to run once a day at midnight
+cron.schedule('0 0,12 * * *', async() => {
+    console.log('Running daily database cleanup task...');
+    const cleanBlacklist = `DELETE FROM refresh_token_blacklist
+WHERE expiry < NOW();`
+    const resp = await pool.query(cleanBlacklist);
+    console.log(`Cleaned blacklist db ${resp.rowCount} row affected`);
+  }, {
+    scheduled: true,
+    timezone: "PST"
+  });
 
 server.listen(PORT, IP, () => {
   console.log(
