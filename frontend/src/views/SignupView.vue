@@ -56,9 +56,9 @@ function handleSignup() {
 </script>
 
 <template>
-  <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen">
+  <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen overflow-hidden">
     <div
-      class="flex flex-col md:flex-row items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
+      class="flex flex-col md:flex-row items-center justify-center min-h-full px-6 py-8 mx-auto md:h-screen lg:py-0 w-full max-w-full"
     >
       <a
         href="#"
@@ -68,7 +68,7 @@ function handleSignup() {
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
-        <div class="w-full h-full">
+        <div class="w-full min-h-full flex items-center justify-center">
           <video autoplay muted playsinline class="rounded-xl">
             <source src="/ZotLease.mp4" type="video/mp4" />
             Your browser does not support the video tag.
