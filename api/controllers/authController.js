@@ -49,13 +49,17 @@ const loginController = async (req, res) => {
 
   // creates json web token that allows access to api
   const accessToken = jwt.sign(user, process.env.MY_SECRET, {
-    expiresIn: "5s",
+    expiresIn: "5m",
   });
 
   // creates json web token that expires in 1 hr
-  const refreshToken = jwt.sign({ email: user.email, jti: uuidv4()}, process.env.MY_SECRET, {
-    expiresIn: "12s",
-  });
+  const refreshToken = jwt.sign(
+    { email: user.email, jti: uuidv4() },
+    process.env.MY_SECRET,
+    {
+      expiresIn: "8h",
+    }
+  );
 
   // stores jwt as a cookie for security
   res.cookie("token", refreshToken, {
@@ -73,17 +77,17 @@ const refreshController = async (req, res) => {
     const refreshToken = req.cookies.token;
     const decoded = jwt.decode(refreshToken);
 
-    console.log(refreshToken.jti)
-    console.log('jti here', decoded.jti);
-    const query={
-      text:`SELECT 1 FROM refresh_token_blacklist WHERE token_id = $1`,
-      values:[decoded.jti]
-    }
+    console.log(refreshToken.jti);
+    console.log("jti here", decoded.jti);
+    const query = {
+      text: `SELECT 1 FROM refresh_token_blacklist WHERE token_id = $1`,
+      values: [decoded.jti],
+    };
     const resp = await pool.query(query);
 
     console.log(resp);
-    if(resp.rowCount==1){
-      return res.status(401).json({message:"Token is blacklisted"});
+    if (resp.rowCount == 1) {
+      return res.status(401).json({ message: "Token is blacklisted" });
     }
     jwt.verify(refreshToken, process.env.MY_SECRET, (err, decoded) => {
       if (err) {
@@ -142,7 +146,7 @@ const signupController = async (req, res) => {
 
     // creates json web token that allows access to api
     const accessToken = jwt.sign(user, process.env.MY_SECRET, {
-      expiresIn: "10m",
+      expiresIn: "5m",
     });
 
     // creates json web token that expires in 1 hr
@@ -153,7 +157,7 @@ const signupController = async (req, res) => {
       },
       process.env.MY_SECRET,
       {
-        expiresIn: "12h",
+        expiresIn: "8h",
       }
     );
 
@@ -185,7 +189,7 @@ const logoutController = async (req, res) => {
     const decoded = jwt.decode(refreshToken);
 
     console.log("expiration is here", decoded.exp);
-    console.log(decoded.jti)
+    console.log(decoded.jti);
     //add token to blacklist
     const addToBlacklist = {
       text: "INSERT INTO refresh_token_blacklist(token_id, expiry) VALUES ($1, TO_TIMESTAMP($2))",
