@@ -2,6 +2,10 @@
 import { RouterLink, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
+library.add(faUser, faLock)
 
 const formData = ref({
   email: '',
@@ -48,7 +52,7 @@ function handleLogin() {
 <template>
   <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen">
     <div
-      class="flex flex-col items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
+      class="flex flex-col md:flex-row items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
     >
       <a
         href="#"
@@ -56,7 +60,7 @@ function handleLogin() {
       >
       </a>
       <div
-        class="flex justify-center rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
+        class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
         <div class="w-full h-full">
           <video autoplay muted playsinline class="rounded-xl">
@@ -64,9 +68,9 @@ function handleLogin() {
             Your browser does not support the video tag.
           </video>
         </div>
-        <div class="border-l border-uciblue mr-4"></div>
+        <div class="border-b border-uciblue md:border-l md:border-uciblue mr-4"></div>
         <div class="w-full h-full py-8 px-5 rounded-xl">
-          <h1 class="text-3xl font-bold leading-tight tracking-tight text-black md:text-3xl">
+          <h1 class="text-3xl font-bold mb-2 leading-tight tracking-tight text-black md:text-3xl">
             Sign In
           </h1>
           <form class="" @submit.prevent="handleLogin">
@@ -77,38 +81,44 @@ function handleLogin() {
               >
                 Email
               </label>
-              <input
-                v-model="formData.email"
-                type="email"
-                name="email"
-                id="email"
-                class="bg-white/80 text-gray-900 block w-full p-2.5 border-b border-gray-400 focus:border-blue-500 outline-none transition duration-300"
-                placeholder="example@gmail.com"
-                required
-              />
+              <div class="flex items-center border-b border-gray-400">
+                <font-awesome-icon icon="user" class="mr-2" />
+                <input
+                  v-model="formData.email"
+                  type="email"
+                  name="email"
+                  id="email"
+                  class="bg-transparent text-gray-900 block w-full p-2.5 outline-none focus:border-blue-500 focus:ring-0"
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
             </div>
-            <div class="mb-4 md:mb-12 lg:mb-14">
+            <div class="mb-4 md:mb-10 lg:mb-12">
               <label
                 for="password"
                 class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
               >
                 Password
               </label>
-              <input
-                v-model="formData.password"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="••••••••"
-                class="bg-white/80 text-gray-900 block w-full p-2.5 border-b border-gray-400 focus:border-blue-500 outline-none transition duration-300"
-                required
-              />
+              <div class="flex items-center border-b border-gray-400">
+                <font-awesome-icon icon="lock" class="mr-2" />
+                <input
+                  v-model="formData.password"
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Password"
+                  class="bg-transparent text-gray-900 block w-full p-2.5 outline-none focus:border-blue-500 focus:ring-0"
+                  required
+                />
+              </div>
             </div>
             <button
               type="submit"
-              class="w-full text-white bg-[#25569a] hover:bg-[#1f4e7c] focus:ring-2 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-white"
+              class="w-full mb-2 text-white bg-[#25569a] hover:bg-[#1f4e7c] focus:ring-2 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-white"
             >
-              Log In
+              Sign In
             </button>
             <p class="text-sm font-light text-gray-500 dark:text-gray-400">
               Don't have an account yet?

@@ -56,51 +56,67 @@ function handleSignup() {
 </script>
 
 <template>
-  <section class="bg-cover bg-center bg-uciblue">
+  <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen">
     <div
-      class="flex flex-col items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
+      class="flex flex-col md:flex-row items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
     >
-      <div
-        class="w-full bg-uciyellow rounded-lg shadow-lg md:mt-0 sm:max-w-md xl:p-0 dark:border dark:border-white"
+      <a
+        href="#"
+        class="flex items-center mb-6 text-2xl font-semibold text-red-600 dark:text-white"
       >
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 class="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl">
-            Sign in to your account
+      </a>
+      <div
+        class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
+      >
+        <div class="w-full h-full">
+          <video autoplay muted playsinline class="rounded-xl">
+            <source src="/ZotLease.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="border-b border-uciblue md:border-l md:border-uciblue mr-4"></div>
+        <div class="w-full h-full py-8 px-5 rounded-xl">
+          <h1 class="text-3xl font-bold mb-2 leading-tight tracking-tight text-black md:text-3xl">
+            Sign Up
           </h1>
-          <form class="space-y-4 md:space-y-6" @submit.prevent="handleSignup">
+          <form class="" @submit.prevent="handleSignup">
             <div>
               <label
-                for="fname"
+                for="firstname"
                 class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
               >
                 Firstname
               </label>
-              <input
-                v-model="formData.fname"
-                type="text"
-                name="firstname"
-                id="firstname"
-                placeholder="Enter Firstname"
-                class="bg-white/80 text-gray-900 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5"
-                required
-              />
+              <div class="flex items-center border-b border-gray-400">
+                <input
+                  v-model="formData.fname"
+                  type="text"
+                  name="firstname"
+                  id="firstname"
+                  placeholder="Enter Firstname"
+                  class="bg-transparent text-gray-900 block w-full py-2.5 outline-none focus:border-blue-500 focus:ring-0"
+                  required
+                />
+              </div>
             </div>
             <div>
               <label
-                for="lname"
+                for="lastname"
                 class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
               >
                 Lastname
               </label>
-              <input
-                v-model="formData.lname"
-                type="text"
-                name="lastname"
-                id="lastname"
-                placeholder="Enter Lastname"
-                class="bg-white/80 text-gray-900 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5"
-                required
-              />
+              <div class="flex items-center border-b border-gray-400">
+                <input
+                  v-model="formData.lname"
+                  type="text"
+                  name="lastname"
+                  id="lastname"
+                  placeholder="Enter Lastname"
+                  class="bg-transparent text-gray-900 block w-full py-2.5 outline-none focus:border-blue-500 focus:ring-0"
+                  required
+                />
+              </div>
             </div>
             <div>
               <label
@@ -109,39 +125,50 @@ function handleSignup() {
               >
                 Email
               </label>
-              <input
-                v-model="formData.email"
-                type="email"
-                name="email"
-                id="email"
-                placeholder="example@gmail.com"
-                class="bg-white/80 text-gray-900 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5"
-                required
-              />
+              <div class="flex items-center border-b border-gray-400">
+                <input
+                  v-model="formData.email"
+                  type="email"
+                  name="email"
+                  id="email"
+                  class="bg-transparent text-gray-900 block w-full py-2.5 outline-none focus:border-blue-500 focus:ring-0"
+                  placeholder="Email Address"
+                  required
+                />
+              </div>
             </div>
-            <div>
+            <div class="mb-4 md:mb-10 lg:mb-12">
               <label
                 for="password"
                 class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
               >
                 Password
               </label>
-              <input
-                v-model="formData.password"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="••••••••"
-                class="bg-white/80 text-gray-900 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5"
-                required
-              />
+              <div class="flex items-center border-b border-gray-400">
+                <input
+                  v-model="formData.password"
+                  type="password"
+                  name="password"
+                  id="password"
+                  placeholder="Password"
+                  class="bg-transparent text-gray-900 block w-full py-2.5 outline-none focus:border-blue-500 focus:ring-0"
+                  required
+                />
+              </div>
             </div>
             <button
               type="submit"
-              class="w-full text-white bg-[#25569a] hover:bg-[#1f4e7c] focus:ring-2 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+              class="w-full mb-2 text-white bg-[#25569a] hover:bg-[#1f4e7c] focus:ring-2 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-white"
             >
               Sign Up
             </button>
+            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+              Already have an account?
+
+              <RouterLink class="font-medium text-uciblue hover:underline" to="/login">
+                Sign In
+              </RouterLink>
+            </p>
           </form>
         </div>
       </div>
