@@ -46,7 +46,7 @@ function handleLogin() {
 </script>
 
 <template>
-  <section class="bg-cover bg-center bg-uciblue min-h-screen">
+  <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen">
     <div
       class="flex flex-col items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
     >
@@ -56,13 +56,20 @@ function handleLogin() {
       >
       </a>
       <div
-        class="w-full bg-white/20 rounded-lg shadow-md md:mt-0 sm:max-w-md xl:p-0 dark:border dark:border-white"
+        class="flex justify-center rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
-        <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-          <h1 class="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl">
-            Log in to your account
+        <div class="w-full h-full">
+          <video autoplay muted playsinline class="rounded-xl">
+            <source src="/ZotLease.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div class="border-l border-uciblue mr-4"></div>
+        <div class="w-full h-full py-8 px-5 rounded-xl">
+          <h1 class="text-3xl font-bold leading-tight tracking-tight text-black md:text-3xl">
+            Sign In
           </h1>
-          <form class="space-y-4 md:space-y-6" @submit.prevent="handleLogin">
+          <form class="" @submit.prevent="handleLogin">
             <div>
               <label
                 for="email"
@@ -75,12 +82,12 @@ function handleLogin() {
                 type="email"
                 name="email"
                 id="email"
-                class="bg-white/80 text-gray-900 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5 dark:bg-white/80 dark:border-gray-600 dark:text-gray-900 dark:placeholder-gray-800 dark:focus:ring-red-500 dark:focus:border-red-500"
+                class="bg-white/80 text-gray-900 block w-full p-2.5 border-b border-gray-400 focus:border-blue-500 outline-none transition duration-300"
                 placeholder="example@gmail.com"
                 required
               />
             </div>
-            <div>
+            <div class="mb-4 md:mb-12 lg:mb-14">
               <label
                 for="password"
                 class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
@@ -93,7 +100,7 @@ function handleLogin() {
                 name="password"
                 id="password"
                 placeholder="••••••••"
-                class="bg-white/80 text-gray-900 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600 block w-full p-2.5 dark:bg-white/80 dark:border-gray-600 dark:text-gray-900 dark:placeholder-gray-800 dark:focus:ring-red-500 dark:focus:border-red-500"
+                class="bg-white/80 text-gray-900 block w-full p-2.5 border-b border-gray-400 focus:border-blue-500 outline-none transition duration-300"
                 required
               />
             </div>
@@ -106,10 +113,7 @@ function handleLogin() {
             <p class="text-sm font-light text-gray-500 dark:text-gray-400">
               Don't have an account yet?
 
-              <RouterLink
-                class="font-medium text-white hover:underline dark:text-white"
-                to="/signup"
-              >
+              <RouterLink class="font-medium text-uciblue hover:underline" to="/signup">
                 Sign Up
               </RouterLink>
             </p>
