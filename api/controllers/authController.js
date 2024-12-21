@@ -69,7 +69,7 @@ const loginController = async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return res.json({ accessToken, id: user.userID });
+  return res.json({ accessToken, id: user.userid });
 };
 
 const refreshController = async (req, res) => {
