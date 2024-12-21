@@ -5,4 +5,4 @@ const dummy = async (req, res) => {
   res.status(200).send({ message: "it worked" });
 };
 
-module.exports = { dummy};
+module.exports = { dummy };

@@ -69,7 +69,7 @@ const loginController = async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return res.json({ accessToken, id: user.userID });
+  return res.json({ accessToken, id: user.userid });
 };
 
 const refreshController = async (req, res) => {
@@ -103,7 +103,7 @@ const refreshController = async (req, res) => {
         }
       );
 
-      return res.json({ accessToken });
+      return res.json({ accessToken, id: decoded.userID });
     });
   } else {
     return res.status(401).json({ message: "No refresh token provided" });

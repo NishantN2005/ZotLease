@@ -5,7 +5,27 @@
     <h1>Hello user</h1>
     <button @click="callTestRoute">Call /test Route</button>
     <button class="border ml-10" @click="Logout">Logout</button>
+    <div class="message-board flex flex-col w-1/2 border p-4 bg-gray-100 rounded-md">
+      <h3 class="text-lg font-bold mb-4">John Doe</h3>
+      <!-- Left Messages -->
+      <ul class="space-y-4">
+        <li
+          class="message-left flex flex-col items-start bg-blue-200 p-3 rounded-md max-w-xs text-left"
+        >
+          <p class="text-sm text-gray-800">lorem epsom</p>
+          <span class="text-xs text-gray-500 mt-1">December 10</span>
+        </li>
+      </ul>
+      <!-- Right Messages -->
+      <ul class="space-y-4">
+        <li class="message-right flex flex-col bg-green-200 p-3 rounded-md max-w-xs ml-auto">
+          <p class="text-sm text-gray-800">lorem right</p>
+          <span class="text-xs text-gray-500 mt-1">December 10</span>
+        </li>
+      </ul>
+    </div>
   </div>
+  <SocketConnection />
 </template>
 
 <script>
@@ -13,11 +33,13 @@ import { useRouter } from 'vue-router'
 import LeafletMap from '@/components/icons/LeafletMap.vue'
 import { useUserStore } from '@/stores/userStore'
 import { refreshAccessToken } from '@/services/authService'
+import SocketConnection from '@/components/SocketConnection.vue'
 
 export default {
   name: 'DashboardView',
   components: {
     LeafletMap,
+    SocketConnection,
   },
   setup() {
     const router = useRouter()
