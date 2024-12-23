@@ -147,7 +147,7 @@
 import { useRouter } from 'vue-router'
 import LeafletMap from '@/components/icons/LeafletMap.vue'
 import { useUserStore } from '@/stores/userStore'
-import { refreshAccessToken } from '@/services/authService'
+import { refreshAccessToken,makeAuthenticatedRequest} from '@/services/authService'
 import { ref } from 'vue';
 import {API_URL} from '../../constants.js';
 
@@ -192,69 +192,73 @@ export default {
     async function createListing(){
       try{
         formError.display=false;
-        let response = await fetch(`${API_URL}/sublease/create`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${userStore.userToken}`,
-          },
-          body:JSON.stringify(formData.value),
-        })
+        let response = await fetch(`/sublease/create`, formData.value, router,userStore.userToken);
         console.log(response)
-        if(response.status==401){//unauthorized request
-          const newAccessToken = await refreshAccessToken(router);
-          userStore.setUserToken(newAccessToken);
-              if (newAccessToken) {
-                // call api again using new access token
-                let response = await fetch(`${API_URL}/sublease/create`, {
-                  method: 'POST',
-                  credentials: 'include',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${userStore.userToken}`,
-                  },
-                  body:JSON.stringify(formData.value),
-                });
-
-                if (response.ok) {
-                  const data = await response.json()
-                  console.log('Retry Response from /sublease/create:', data)
-                } else {
-                  console.log('Failed to retry /sublease/create:', await response.json())
-                  navigateToLogin()
-                }
-        }
-      }else if(response.status==400){//something wrong with form input
-        console.log('Form was incorrectly submitted')
-        formError.value.display=true;
-        let resp = await response.json();
-        console.log(resp.message);
-        if(resp.message=="Params are incomeplete"){
-          //message being set correctly
-          formError.value.message='Make sure you entered all required information'
-        }else if(resp.message=='Address does not exist'){
-          //set message correctly
-          formError.value.message='Address provided is invalid, make sure it is in California'
-        }
-      }}catch(err){
+        
+        if(response.status==200){
+          //reset state of dashboard
+          createSubleaseModal.value=false;
+          formData.value = {
+            street_name:'',
+            room:'',
+            city:'',
+            postal_code:'',
+            listerID: userStore.userID,
+            price:'',
+            gender:'',
+            roomCount:'',
+            bathroomCount:'',
+            startTerm:'',
+            endTerm:'',
+            description:''
+          }
+        }else if(response.status==400){//something wrong with form input
+          console.log('Form was incorrectly submitted')
+          formError.value.display=true;
+          let resp = await response.json();
+          console.log(resp.message);
+          if(resp.message=="Params are incomeplete"){
+            //message being set correctly
+            formError.value.message='Make sure you entered all required information'
+          }else if(resp.message=='Address does not exist'){
+            //set message correctly
+            formError.value.message='Address provided is invalid, make sure it is in California'
+          }
+      }else if(response.status==500){
+        alert('Something went bad on our end :(. Our apologies, try again later or report a bug)');
+        //reset state of dashboard
+        createSubleaseModal.value=false;
+          formData.value = {
+            street_name:'',
+            room:'',
+            city:'',
+            postal_code:'',
+            listerID: userStore.userID,
+            price:'',
+            gender:'',
+            roomCount:'',
+            bathroomCount:'',
+            startTerm:'',
+            endTerm:'',
+            description:''
+          }
+      }
+    }catch(err){
         console.log("Error creating listing: ", err);
       }}
     const Logout = async () => {
       try {
-        let response = await fetch(`${API_URL}/auth/logout`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            Authorization: `Bearer ${userStore.userToken}`,
-          },
-        })
-        console.log(response)
-        if (response.status == 200) {
+        let response = await makeAuthenticatedRequest('auth/logout',{}, router, userStore.userToken);
+        console.log(response);
+  
+        if (response.status==200) {
           userStore.setIsLoggedIn(false)
           userStore.setUserToken(null)
           userStore.setUserID(null)
           router.push('/login')
+        }else{
+          const resp = await response.json();
+          console.log(resp.message);
         }
       } catch (err) {
         console.log(err)
@@ -262,43 +266,10 @@ export default {
     }
     const callTestRoute = async () => {
       try {
-        let response = await fetch(`${API_URL}/user/test`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${userStore.userToken}`,
-          },
-        })
 
-        if (response.ok) {
-          const data = await response.json()
-          console.log('Response from /test:', data)
-        } else {
-          const errorData = await response.json()
-          console.log('Error:', errorData.message)
+        let response = await makeAuthenticatedRequest('user/test',{}, router, userStore.userToken);
+        console.log(response);
 
-          // if 401 unauthorized call refresh token
-          if (response.status === 401) {
-            const newAccessToken = await refreshAccessToken(router)
-            userStore.setUserToken(newAccessToken);
-            if (newAccessToken) {
-              // call api again using new access token
-              response = await fetch(`${API_URL}/user/test`, {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${newAccessToken}`,
-                },
-              })
-
-              if (response.ok) {
-                const data = await response.json()
-                console.log('Retry Response from /test:', data)
-              } else {
-                console.log('Failed to retry /test:', await response.json())
-                navigateToLogin()
-              }
-            }
-          }
-        }
       } catch (error) {
         console.log('Failed to call /test route:', error)
         navigateToLogin()
