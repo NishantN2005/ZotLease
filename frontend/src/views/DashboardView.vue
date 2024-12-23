@@ -3,6 +3,7 @@
     <div v-if="createSubleaseModal" class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
       <div class="bg-white p-4 shadow-lg rounded-lg ">
         <h1 class="font-bold flex justify-center items-center text-xl mb-5">Enter Sublease Information</h1>
+        <h1 v-if="formError.display" class='flex justify-center text-rose-500 italic mb-4'>*{{formError.message}}</h1>
         <form class="space-y-5">
 
           <div>
@@ -35,29 +36,6 @@
               class="mr-5"
             />
 
-            <label> 
-              State: 
-            </label>
-            <input
-              v-model="formData.state"
-              type="text"
-              name="state"
-              id="state"
-              placeholder="CA"
-              maxlength="2"
-              class="mr-5 object-fit pd-1"
-            />
-
-            <label>
-              Country
-            </label>
-            <input
-              v-model="formData.country"
-              type="text"
-              name="country"
-              id="country"
-              placeholder="United States"
-            />
 
             <label>Postal Code: </label>
             <input
@@ -157,7 +135,7 @@
       </div>
     </div>
     <h1>This is a Dashboard Page</h1>
-    <LeafletMap class="z-10"/>
+    <LeafletMap class='z-10'/>
     <h1>Hello user</h1>
     <button @click="callTestRoute">Call /test Route</button>
     <button class="border ml-10" @click="Logout">Logout</button>
@@ -181,12 +159,14 @@ export default {
     const router = useRouter()
     const userStore = useUserStore()
 
+    const formError=ref({
+      message:'',
+      display:false
+    })
     const formData = ref({
       street_name:'',
       room:'',
       city:'',
-      state:'',
-      country:'',
       postal_code:'',
       listerID: userStore.userID,
       price:'',
@@ -210,7 +190,7 @@ export default {
     }
     async function createListing(){
       try{
-        console.log(formData.value)
+        formError.display=false;
         let response = await fetch('http://localhost:5555/sublease/create', {
           method: 'POST',
           credentials: 'include',
@@ -221,10 +201,44 @@ export default {
           body:JSON.stringify(formData.value),
         })
         console.log(response)
-      }catch(err){
+        if(response.status==401){//unauthorized request
+          const newAccessToken = await refreshAccessToken(router);
+          userStore.setUserToken(newAccessToken);
+              if (newAccessToken) {
+                // call api again using new access token
+                let response = await fetch('http://localhost:5555/sublease/create', {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${userStore.userToken}`,
+                  },
+                  body:JSON.stringify(formData.value),
+                });
+
+                if (response.ok) {
+                  const data = await response.json()
+                  console.log('Retry Response from /sublease/create:', data)
+                } else {
+                  console.log('Failed to retry /sublease/create:', await response.json())
+                  navigateToLogin()
+                }
+        }
+      }else if(response.status==400){//something wrong with form input
+        console.log('Form was incorrectly submitted')
+        formError.value.display=true;
+        let resp = await response.json();
+        console.log(resp.message);
+        if(resp.message=="Params are incomeplete"){
+          //message being set correctly
+          formError.value.message='Make sure you entered all required information'
+        }else if(resp.message=='Address does not exist'){
+          //set message correctly
+          formError.value.message='Address provided is invalid, make sure it is in California'
+        }
+      }}catch(err){
         console.log("Error creating listing: ", err);
-      }
-    }
+      }}
     const Logout = async () => {
       try {
         let response = await fetch('http://localhost:5555/auth/logout', {
@@ -264,6 +278,7 @@ export default {
           // if 401 unauthorized call refresh token
           if (response.status === 401) {
             const newAccessToken = await refreshAccessToken(router)
+            userStore.setUserToken(newAccessToken);
             if (newAccessToken) {
               // call api again using new access token
               response = await fetch('http://localhost:5555/user/test', {
@@ -301,6 +316,7 @@ export default {
       turnOffModal,
       createSubleaseModal,
       formData,
+      formError,
       createListing
     }
   },
