@@ -59,4 +59,13 @@ const createSubleaseController = async (req, res) =>{
     console.log(response);
     return res.status(200).json({message:"Successfully created listing"});
 }
-module.exports = { createSubleaseController};
+
+const getSubleasesController= async (req,res)=>{
+    console.log('Hello')
+    const query="SELECT subleaseID, latitude, longitude FROM sublease";
+    const response = await pool.query(query);
+    console.log(response);
+
+    return res.status(200).json(response.rows);
+}
+module.exports = { createSubleaseController, getSubleasesController};
