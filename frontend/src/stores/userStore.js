@@ -9,6 +9,7 @@ export const useUserStore = defineStore('user', {
       isLoggedIn: false,
     }
   },
+  persist: true,
   actions: {
     setUserToken(val) {
       this.userToken = val

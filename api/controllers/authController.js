@@ -200,8 +200,9 @@ const logoutController = async (req, res) => {
     console.log(response);
 
     res.clearCookie("token");
-    res.status(200).send({ message: "Successfully added token to blacklist" });
+    return res.status(200).send({ message: "Successfully added token to blacklist", success:true});
   }
+  return res.status(400).send({message:"Refresh token was already cleared", success:false});
 };
 module.exports = {
   loginController,

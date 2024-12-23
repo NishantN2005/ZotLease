@@ -1,7 +1,13 @@
 <script setup>
-import { ref } from 'vue'
-import { useUserStore } from '../stores/userStore.js'
-import { RouterLink, useRouter } from 'vue-router'
+import { ref } from 'vue';
+import { useUserStore } from '../stores/userStore.js';
+import { RouterLink, useRouter } from 'vue-router';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import {faArrowCircleLeft} from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {API_URL} from '../../constants.js';
+library.add(faArrowCircleLeft);
+
 const router = useRouter()
 
 const userStore = useUserStore()
@@ -12,6 +18,10 @@ const formData = ref({
   email: '',
   password: '',
 })
+
+function backToLogin(){
+  router.push('/');
+}
 
 function handleSignup() {
   console.log(formData.value)
@@ -28,7 +38,7 @@ function handleSignup() {
   // post user details
   try {
     console.log(formData.value)
-    fetch('http://localhost:5555/auth/signup', {
+    fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -68,6 +78,7 @@ function handleSignup() {
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
+      <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
         <div class="w-full min-h-full flex items-center justify-center">
           <video autoplay muted playsinline class="rounded-xl">
             <source src="/ZotLease2.mp4" type="video/mp4" />

@@ -5,20 +5,20 @@ const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("../routes/userRoutes.js");
 const authRoutes = require("../routes/authRoutes.js");
-const pool = require("./db.js");
-const cron = require("node-cron");
 const { disconnect } = require("process");
 const { Server } = require("socket.io");
+const subleaseRoutes = require("../routes/subleaseRoutes.js");
+const pool = require("./db.js");
+const cron = require("node-cron");
+const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
 require("dotenv").config("api/.env");
 const jwt = require("jsonwebtoken");
 
-const IP = "0.0.0.0";
-const PORT = 5555;
 const app = express();
 app.use(compression());
 
 const coorsOptions = {
-  origin: "http://localhost:5173",
+  origin: ORIGIN,
   credentials: true,
 };
 app.use(cors(coorsOptions));
@@ -35,6 +35,7 @@ app.use(cookieParser());
 
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
+app.use("/sublease", subleaseRoutes);
 
 // Schedule the cleanup task to run once a day at midnight
 cron.schedule(
@@ -91,6 +92,6 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, IP, () => {
   console.log(
-    `Cellborg API listening at http://localhost:${PORT} in the dev environment`
+    `Cellborg API listening at http://localhost:${PORT} in the ${ENVIRONMENT} environment`
   );
 });

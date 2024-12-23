@@ -14,3 +14,21 @@ CREATE TABLE refresh_token_blacklist (
 token_id UUID PRIMARY KEY,
 expiry TIMESTAMP NOT NULL
 )
+
+CREATE TABLE sublease (
+id SERIAL PRIMARY KEY,
+listerID TEXT NOT NULL,
+price DOUBLE PRECISION NOT NULL,
+gender TEXT NOT NULL,
+roomCount INT NOT NULL,
+bathroomCount INT NOT NULL,
+street_name TEXT NOT NULL,
+room TEXT,
+postal_code TEXT NOT NULL,
+startTerm TEXT NOT NULL,
+endTerm TEXT NOT NULL,
+description TEXT,
+subleaseID TEXT NOT NULL,
+latitude DOUBLE PRECISION CHECK (latitude BETWEEN -90 AND 90),
+longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180)
+);
