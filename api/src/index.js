@@ -5,6 +5,7 @@ const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("../routes/userRoutes.js");
 const authRoutes = require("../routes/authRoutes.js");
+const subleaseRoutes = require("../routes/subleaseRoutes.js");
 const pool = require('./db.js');
 const cron = require('node-cron');
 require("dotenv").config("api/.env");
@@ -26,7 +27,7 @@ app.use(cookieParser());
 
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
-
+app.use("/sublease", subleaseRoutes);
 
 // Schedule the cleanup task to run once a day at midnight
 cron.schedule('0 0,12 * * *', async() => {

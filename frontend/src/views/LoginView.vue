@@ -3,9 +3,9 @@ import { RouterLink, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUser, faLock } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faLock, faArrowCircleLeft} from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
-library.add(faUser, faLock)
+library.add(faUser, faLock,faArrowCircleLeft)
 
 const formData = ref({
   email: '',
@@ -15,6 +15,9 @@ const formData = ref({
 const router = useRouter()
 const userStore = useUserStore()
 
+function backToLogin(){
+  router.push('/');
+}
 function handleLogin() {
   try {
     console.log(formData.value)
@@ -59,9 +62,11 @@ function handleLogin() {
         class="flex items-center mb-6 text-2xl font-semibold text-red-600 dark:text-white"
       >
       </a>
+      
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
+      <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
         <div class="w-full h-full">
           <video autoplay muted playsinline class="rounded-xl">
             <source src="/ZotLease2.mp4" type="video/mp4" />
