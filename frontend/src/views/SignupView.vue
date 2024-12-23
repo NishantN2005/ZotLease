@@ -5,6 +5,7 @@ import { RouterLink, useRouter } from 'vue-router';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {faArrowCircleLeft} from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import {API_URL} from '../../constants.js';
 library.add(faArrowCircleLeft);
 
 const router = useRouter()
@@ -37,7 +38,7 @@ function handleSignup() {
   // post user details
   try {
     console.log(formData.value)
-    fetch('http://localhost:5555/auth/signup', {
+    fetch(`${API_URL}/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

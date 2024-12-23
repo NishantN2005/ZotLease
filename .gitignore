@@ -1,2 +1,3 @@
 api/src/rds-combined-ca-bundle.pem
 api/.env
+frontend/.env

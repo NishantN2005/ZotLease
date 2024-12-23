@@ -8,15 +8,14 @@ const authRoutes = require("../routes/authRoutes.js");
 const subleaseRoutes = require("../routes/subleaseRoutes.js");
 const pool = require('./db.js');
 const cron = require('node-cron');
+const {ORIGIN,IP,PORT,ENVIRONMENT } = require('../constants.js');
 require("dotenv").config("api/.env");
 
-const IP = "0.0.0.0";
-const PORT = 5555;
 const app = express();
 app.use(compression());
 
 const coorsOptions = {
-  origin: "http://localhost:5173",
+  origin: ORIGIN,
   credentials: true,
 };
 app.use(cors(coorsOptions));
@@ -43,6 +42,6 @@ WHERE expiry < NOW();`
 
 server.listen(PORT, IP, () => {
   console.log(
-    `Cellborg API listening at http://localhost:${PORT} in the dev environment`
+    `Cellborg API listening at http://localhost:${PORT} in the ${ENVIRONMENT} environment`
   );
 });

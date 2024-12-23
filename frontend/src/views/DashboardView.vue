@@ -149,6 +149,7 @@ import LeafletMap from '@/components/icons/LeafletMap.vue'
 import { useUserStore } from '@/stores/userStore'
 import { refreshAccessToken } from '@/services/authService'
 import { ref } from 'vue';
+import {API_URL} from '../../constants.js';
 
 export default {
   name: 'DashboardView',
@@ -191,7 +192,7 @@ export default {
     async function createListing(){
       try{
         formError.display=false;
-        let response = await fetch('http://localhost:5555/sublease/create', {
+        let response = await fetch(`${API_URL}/sublease/create`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -206,7 +207,7 @@ export default {
           userStore.setUserToken(newAccessToken);
               if (newAccessToken) {
                 // call api again using new access token
-                let response = await fetch('http://localhost:5555/sublease/create', {
+                let response = await fetch(`${API_URL}/sublease/create`, {
                   method: 'POST',
                   credentials: 'include',
                   headers: {
@@ -241,7 +242,7 @@ export default {
       }}
     const Logout = async () => {
       try {
-        let response = await fetch('http://localhost:5555/auth/logout', {
+        let response = await fetch(`${API_URL}/auth/logout`, {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -261,7 +262,7 @@ export default {
     }
     const callTestRoute = async () => {
       try {
-        let response = await fetch('http://localhost:5555/user/test', {
+        let response = await fetch(`${API_URL}/user/test`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${userStore.userToken}`,
@@ -281,7 +282,7 @@ export default {
             userStore.setUserToken(newAccessToken);
             if (newAccessToken) {
               // call api again using new access token
-              response = await fetch('http://localhost:5555/user/test', {
+              response = await fetch(`${API_URL}/user/test`, {
                 method: 'POST',
                 headers: {
                   Authorization: `Bearer ${newAccessToken}`,

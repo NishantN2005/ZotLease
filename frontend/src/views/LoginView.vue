@@ -1,10 +1,11 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router'
-import { ref } from 'vue'
-import { useUserStore } from '@/stores/userStore'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUser, faLock, faArrowCircleLeft} from '@fortawesome/free-solid-svg-icons'
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { RouterLink, useRouter } from 'vue-router';
+import { ref } from 'vue';
+import { useUserStore } from '@/stores/userStore';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faUser, faLock, faArrowCircleLeft} from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {API_URL} from '../../constants.js';
 library.add(faUser, faLock,faArrowCircleLeft)
 
 const formData = ref({
@@ -21,8 +22,7 @@ function backToLogin(){
 function handleLogin() {
   try {
     console.log(formData.value)
-
-    fetch('http://localhost:5555/auth/login', {
+    fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
