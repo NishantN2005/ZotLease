@@ -135,7 +135,7 @@
       </div>
     </div>
     <h1>This is a Dashboard Page</h1>
-    <LeafletMap class='z-10'/>
+    <LeafletMap class='z-10':userToken="userStore.userToken" :routerPass="router"  />
     <h1>Hello user</h1>
     <button @click="callTestRoute">Call /test Route</button>
     <button class="border ml-10" @click="Logout">Logout</button>
@@ -192,7 +192,7 @@ export default {
     async function createListing(){
       try{
         formError.display=false;
-        let response = await fetch(`/sublease/create`, formData.value, router,userStore.userToken);
+        let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router,userStore.userToken);
         console.log(response)
         
         if(response.status==200){
@@ -289,7 +289,9 @@ export default {
       createSubleaseModal,
       formData,
       formError,
-      createListing
+      createListing,
+      userStore,
+      router
     }
   },
 }

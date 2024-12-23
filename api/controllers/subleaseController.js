@@ -24,18 +24,19 @@ const createSubleaseController = async (req, res) =>{
         const subleaseID = uuidv4();
 
         //get log/lat
-        const address = street_name+" "+city+" California "+postal_code;
-        const resp = await fetch(`https://nominatim.openstreetmap.org/search?` +
-            `q=${encodeURIComponent(address)}&format=json&addressdetails=1&limit=1`);
-        const val = await resp.json();
+        const resp = await fetch(`
+            https://api.mapbox.com/search/geocode/v6/forward?address_line1=${street_name}&place=${city}&region=California&postcode=${postal_code}&limit=1&permanent=true&access_token=${process.env.MAPBOX_KEY}`
 
+        )
+        const val = await resp.json();
+        const coordinates = val.features[0].geometry.coordinates
         //check if address exists
         if(val.length==0){
             return res.status(400).json({message:'Address does not exist'});
         }
 
-        const lat = val[0].lat;
-        const lon = val[0].lon;
+        const lat = coordinates[1];
+        const lon = coordinates[0];
         console.log(listerID);
     const insertQuery={
         text:`INSERT INTO sublease(

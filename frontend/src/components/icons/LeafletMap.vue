@@ -1,96 +1,85 @@
 <template>
-  <div id="map"></div>
+  <div id="map" style="height: 400px; width: 100%"></div>
 </template>
 
 <script>
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import 'leaflet/dist/leaflet.css';
-import leaf from 'leaflet';
-import { useUserStore } from '@/stores/userStore';
+import L from 'leaflet';
+import {makeAuthenticatedRequest} from '../../services/authService.js';
 
 export default {
   name: 'LeafletMap',
   props: {
-    latitude: {
-      type: Number,
-      required: false,
+    userToken: {
+      type: String,
+      required: true,
     },
-    longitude: {
-      type: Number,
-      required: false,
-    },
-    zoom: {
-      type: Number,
-      default: 15,
+    routerPass: {
+      type: Object,
+      required: true,
     },
   },
   setup(props) {
-    const map = ref(null); // Reference to the Leaflet map
-    const markers = ref([]); // Reference to the Leaflet marker
+    let map = null;
 
-    const userStore = useUserStore()
+    const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+    const MAPBOX_TILE_URL = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`;
 
-    //Fetch locations from api
-    const fetchLocations = async()=>{
-      try{
-        console.log('hello')
-        let response = await fetch('http://localhost:5555/sublease/retrieve',{
-          method:'POST',
-          credentials: 'include',
-          headers: {
-            Authorization: `Bearer ${userStore.userToken}`,
-          },
-        });
-        console.log(response)
-        return await response.json();
-      }catch(err){
-        console.log(err);
+    // Function to fetch location data from your backend
+    const fetchLocations = async () => {
+      try {
+        const response = await makeAuthenticatedRequest('sublease/retrieve', {}, props.routerPass, props.userToken)
+        return await response.json(); // Ensure the response is in JSON format
+      } catch (error) {
+        console.error('Error fetching location data:', error);
         return [];
-      }}
-    // Add markers to the map
-    const addMarkers = (locations) => {
-      locations.forEach((location) => {
-        const marker = leaf
-          .marker([location.latitude, location.longitude])
-          .addTo(map.value)
-          .bindPopup(`<b>maybe more info here</b>`); // Optional: Display name or other info in a popup
-        markers.value.push(marker);
-      });
-    };
-
-    const updateMapView = (lat, lng, zoom) => {
-      if (map.value) {
-        map.value.setView([lat, lng], zoom);
-        addMarker(lat, lng);
       }
     };
 
+    // Function to add markers to the map
+    const addMarkers = (locations) => {
+      locations.forEach((location) => {
+        if (location.latitude && location.longitude) {
+          L.marker([location.latitude, location.longitude])
+            .addTo(map)
+            .bindPopup(`<b>${location.name || 'Unnamed Location'}</b>`);
+        }
+      });
+    };
+
     onMounted(async () => {
+      const mapContainer = document.getElementById('map');
+      if (!mapContainer) {
+        console.error('Map container not found!');
+        return;
+      }
+
       // Initialize the map
-      map.value = leaf.map('map').setView([33.644, -117.826], 15);
+      map = L.map(mapContainer).setView([33.644, -117.826], 15);
 
-      // Add a tile layer (e.g., OpenStreetMap)
-      leaf
-        .tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19,
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        })
-        .addTo(map.value);
+      // Add the Mapbox tile layer
+      L.tileLayer(MAPBOX_TILE_URL, {
+        maxZoom: 19,
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1,
+        attribution:
+          'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+          '<a href="https://www.mapbox.com/">Mapbox</a>',
+      }).addTo(map);
 
-      // Fetch locations and add markers
+      // Fetch location data and add markers
       const locations = await fetchLocations();
       addMarkers(locations);
     });
 
-    // Watch for prop changes and update the map dynamically
-    watch(
-      () => [props.latitude, props.longitude],
-      ([newLat, newLng]) => {
-        updateMapView(newLat, newLng, props.zoom);
+    onUnmounted(() => {
+      if (map) {
+        map.remove();
+        map = null;
       }
-    );
-
-    return {};
+    });
   },
 };
 </script>
