@@ -19,6 +19,10 @@ export default {
       type: Object,
       required: true,
     },
+    userID:{
+      type: String,
+      required: true,
+    }
   },
   setup(props) {
     let map = null;
@@ -37,11 +41,31 @@ export default {
       }
     };
 
-    // Function to add markers to the map
+    const createHexMarker = (hexColor) => {
+      const customIcon = L.divIcon({
+        className: 'custom-icon',
+        html: `
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41" fill="none">
+            <path fill="${hexColor}" stroke="#000" stroke-width="1" d="M12.5 0C5.596 0 0 5.596 0 12.5 0 22.368 12.5 41 12.5 41S25 22.368 25 12.5C25 5.596 19.404 0 12.5 0Z"/>
+          </svg>
+        `,
+        iconSize: [25, 41],
+        iconAnchor: [12.5, 41],
+      });
+      return customIcon;
+    };
+
+
     const addMarkers = (locations) => {
       locations.forEach((location) => {
         if (location.latitude && location.longitude) {
-          L.marker([location.latitude, location.longitude])
+          const isUserLeaser = String(location.listerid).trim() === String(props.userID).trim();
+          console.log(isUserLeaser, location.listerid, props.userID)
+          // Use hex color for the current user, default for others
+          const markerColor = isUserLeaser ? '#FFD700' : '#007BFF'; // Yellow (#FFD700) or default blue (#007BFF)
+          const markerIcon = createHexMarker(markerColor);
+
+          L.marker([location.latitude, location.longitude], { icon: markerIcon })
             .addTo(map)
             .bindPopup(`<b>${location.name || 'Unnamed Location'}</b>`);
         }

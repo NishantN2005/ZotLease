@@ -12,7 +12,7 @@
       </div>
     </div>
     <h1>This is a Dashboard Page</h1>
-    <LeafletMap class='z-10':userToken="userStore.userToken" :routerPass="router"  />
+    <LeafletMap class='z-10':userToken="userStore.userToken" :routerPass="router" :userID="userStore.userID" />
     <h1>Hello user</h1>
     <button @click="callTestRoute">Call /test Route</button>
     <button class="border ml-10" @click="Logout">Logout</button>
