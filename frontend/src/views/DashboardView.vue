@@ -1,31 +1,9 @@
 <template>
-  <div class="dashboard">
-    <h1>This is a Dashboard Page</h1>
-    <LeafletMap />
-    <h1>Hello user</h1>
-    <button @click="callTestRoute">Call /test Route</button>
-    <button class="border ml-10" @click="Logout">Logout</button>
-    <div class="message-board flex flex-col w-1/2 border p-4 bg-gray-100 rounded-md">
-      <h3 class="text-lg font-bold mb-4">John Doe</h3>
-      <!-- Left Messages -->
-      <ul class="space-y-4">
-        <li
-          class="message-left flex flex-col items-start bg-blue-200 p-3 rounded-md max-w-xs text-left"
-        >
-          <p class="text-sm text-gray-800">lorem epsom</p>
-          <span class="text-xs text-gray-500 mt-1">December 10</span>
-        </li>
-      </ul>
-      <!-- Right Messages -->
-      <ul class="space-y-4">
-        <li class="message-right flex flex-col bg-green-200 p-3 rounded-md max-w-xs ml-auto">
-          <p class="text-sm text-gray-800">lorem right</p>
-          <span class="text-xs text-gray-500 mt-1">December 10</span>
-        </li>
-      </ul>
-    </div>
-  </div>
   <SocketConnection />
+  <LeafletMap />
+  <h1>Hello user</h1>
+  <button @click="callTestRoute">Call /test Route</button>
+  <button class="border ml-10" @click="Logout">Logout</button>
 </template>
 
 <script>
@@ -65,6 +43,7 @@ export default {
         console.log(err)
       }
     }
+
     const callTestRoute = async () => {
       try {
         let response = await fetch('http://localhost:5555/user/test', {
@@ -121,5 +100,3 @@ export default {
   },
 }
 </script>
-
-<style></style>
