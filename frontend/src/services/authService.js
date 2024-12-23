@@ -4,7 +4,7 @@ export const refreshAccessToken = async (router) => {
   const userStore = useUserStore()
 
   try {
-    const refreshResponse = await fetch('http://localhost:5555/auth/refresh', {
+    const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
       method: 'POST',
       credentials: 'include',
     })

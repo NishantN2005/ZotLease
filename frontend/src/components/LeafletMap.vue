@@ -6,7 +6,7 @@
 import { onMounted, onUnmounted } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import {makeAuthenticatedRequest} from '../../services/authService.js';
+import {makeAuthenticatedRequest} from '../services/authService.js';
 
 export default {
   name: 'LeafletMap',
