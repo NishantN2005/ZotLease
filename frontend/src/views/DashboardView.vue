@@ -4,6 +4,7 @@
   <button @click="callTestRoute">Call /test Route</button>
   <button class="border ml-10" @click="Logout">Logout</button>
   <div class="dashboard">
+    <!-- Sublease Modal -->
     <div
       v-if="createSubleaseModal"
       class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
@@ -15,125 +16,7 @@
         <h1 v-if="formError.display" class="flex justify-center text-rose-500 italic mb-4">
           *{{ formError.message }}
         </h1>
-        <form class="space-y-5">
-          <div>
-            <label>Street Name: </label>
-            <input
-              v-model="formData.street_name"
-              type="text"
-              name="address"
-              id="address"
-              placeholder="1234 Arroyo Dr, CA 92617"
-              class="mr-5"
-            />
-            <label>Room/Unit: </label>
-            <input
-              v-model="formData.room"
-              type="text"
-              name="room"
-              id="room"
-              placeholder="3B"
-              class="mr-5"
-            />
-
-            <label>City: </label>
-            <input
-              v-model="formData.city"
-              type="text"
-              name="city"
-              id="city"
-              placeholder="Irvine"
-              class="mr-5"
-            />
-
-            <label>Postal Code: </label>
-            <input
-              v-model="formData.postal_code"
-              type="text"
-              name="postal"
-              id="postal"
-              placeholder="92617"
-              class="mr-5"
-            />
-          </div>
-
-          <div>
-            <label>Gender: </label>
-            <input
-              v-model="formData.gender"
-              type="text"
-              name="gender"
-              id="gender"
-              placeholder="Male"
-              class="mr-5"
-            />
-
-            <label>Price: </label>
-            <input
-              v-model="formData.price"
-              type="number"
-              name="price"
-              id="price"
-              placeholder="1200"
-            />
-          </div>
-
-          <div>
-            <label>Number of total rooms in unit: </label>
-            <input
-              v-model="formData.roomCount"
-              type="number"
-              name="roomCount"
-              id="roomCount"
-              placeholder="4"
-              class="mr-5"
-            />
-
-            <label>Number of total bathrooms in unit: </label>
-            <input
-              v-model="formData.bathroomCount"
-              type="number"
-              name="bathroomCount"
-              id="bathroomCount"
-              placeholder="5"
-            />
-          </div>
-
-          <div></div>
-
-          <div>
-            <label>startTerm: </label>
-            <input
-              v-model="formData.startTerm"
-              type="date"
-              name="startTerm"
-              id="startTerm"
-              placeholder="06/16/25"
-              class="mr-5"
-            />
-
-            <label>endTerm: </label>
-            <input
-              v-model="formData.endTerm"
-              type="date"
-              name="endTerm"
-              id="endTerm"
-              placeholder="08/24/25"
-            />
-          </div>
-
-          <div class="flex items-top justify-start">
-            <label class="mr-5">Description: </label>
-            <textarea
-              rows="4"
-              cols="42"
-              v-model="formData.description"
-              name="description"
-              id="description"
-              placeholder="There is going to be another 2 subleasers. No pets allowed. No furniture provided."
-            ></textarea>
-          </div>
-        </form>
+        <CreateSubleaseModal :formData="formData" />
         <div class="flex items-center justify-center mt-5">
           <button
             @click="turnOffModal"
@@ -150,11 +33,16 @@
         </div>
       </div>
     </div>
+
+    <!-- Other content -->
     <h1>This is a Dashboard Page</h1>
-    <LeafletMap class="z-10" />
-    <h1>Hello user</h1>
-    <button @click="callTestRoute">Call /test Route</button>
-    <button class="border ml-10" @click="Logout">Logout</button>
+    <LeafletMap
+      class="z-10"
+      :userToken="userStore.userToken"
+      :routerPass="router"
+      :userID="userStore.userID"
+    />
+
     <button @click="turnOnModal" class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10">
       Create Listing
     </button>
@@ -168,16 +56,17 @@
       @click="getChatRoomID"
       class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10"
     >
-      getChatRoomID
+      Get ChatRoom ID
     </button>
   </div>
 </template>
 
 <script>
 import { useRouter } from 'vue-router'
-import LeafletMap from '@/components/icons/LeafletMap.vue'
+import LeafletMap from '../components/LeafletMap.vue'
 import { useUserStore } from '@/stores/userStore'
 import SocketConnection from '@/components/SocketConnection.vue'
+import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
 import { ref } from 'vue'
 import { API_URL } from '../../constants.js'
@@ -187,6 +76,7 @@ export default {
   components: {
     LeafletMap,
     SocketConnection,
+    CreateSubleaseModal,
   },
   setup() {
     const router = useRouter()
@@ -367,6 +257,7 @@ export default {
       createChatRoom,
       getChatRoomID,
       router,
+      userStore,
     }
   },
 }
