@@ -1,6 +1,5 @@
 <template>
-  <SocketConnection />
-  <LeafletMap />
+  <SocketConnection :router="router" />
   <h1>Hello user</h1>
   <button @click="callTestRoute">Call /test Route</button>
   <button class="border ml-10" @click="Logout">Logout</button>
@@ -159,6 +158,18 @@
     <button @click="turnOnModal" class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10">
       Create Listing
     </button>
+    <button
+      @click="createChatRoom"
+      class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10"
+    >
+      Chat
+    </button>
+    <button
+      @click="getChatRoomID"
+      class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10"
+    >
+      getChatRoomID
+    </button>
   </div>
 </template>
 
@@ -200,6 +211,12 @@ export default {
       description: '',
     })
 
+    // hard coded userIDS for now
+    const chatRoomFormData = ref({
+      userID1: '01',
+      userID2: '02',
+    })
+
     const createSubleaseModal = ref(false)
 
     const turnOffModal = () => {
@@ -210,10 +227,40 @@ export default {
       console.log('modal on')
       createSubleaseModal.value = true
     }
+
+    // creates chat room whenever user starts chat with new leaser
+    async function createChatRoom() {
+      let response = await makeAuthenticatedRequest(
+        `chat/createRoom`,
+        chatRoomFormData.value,
+        router,
+        userStore.userToken,
+      )
+      console.log(response)
+    }
+
+    // gets chatroom id so u can send it through message posts to categorize
+    async function getChatRoomID() {
+      let response = await makeAuthenticatedRequest(
+        `chat/chatRoomID`,
+        chatRoomFormData.value,
+        router,
+        userStore.userToken,
+      )
+      const textRes = await response.json()
+
+      userStore.setChatRoomID(textRes.chatRoomID)
+    }
+
     async function createListing() {
       try {
         formError.display = false
-        let response = await fetch(`/sublease/create`, formData.value, router, userStore.userToken)
+        let response = await makeAuthenticatedRequest(
+          `sublease/create`,
+          formData.value,
+          router,
+          userStore.userToken,
+        )
         console.log(response)
 
         if (response.status == 200) {
@@ -317,6 +364,9 @@ export default {
       formData,
       formError,
       createListing,
+      createChatRoom,
+      getChatRoomID,
+      router,
     }
   },
 }

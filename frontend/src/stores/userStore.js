@@ -7,6 +7,7 @@ export const useUserStore = defineStore('user', {
       userToken: null,
       userID: null,
       isLoggedIn: false,
+      chatRoomID: null,
     }
   },
   persist: true,
@@ -19,6 +20,9 @@ export const useUserStore = defineStore('user', {
     },
     setIsLoggedIn(val) {
       this.isLoggedIn = val
+    },
+    setChatRoomID(val) {
+      this.chatRoomID = val
     },
   },
   getters: {},

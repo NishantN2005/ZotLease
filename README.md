@@ -32,3 +32,19 @@ subleaseID TEXT NOT NULL,
 latitude DOUBLE PRECISION CHECK (latitude BETWEEN -90 AND 90),
 longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180)
 );
+
+CREATE TABLE chatRooms (
+chatRoomID TEXT PRIMARY KEY,
+userID1 TEXT NOT NULL,
+userID2 TEXT NOT NULL,
+)
+
+CREATE TABLE messages (
+id TEXT PRIMARY KEY,
+chatRoomID TEXT NOT NULL,
+sender TEXT NOT NULL, -- userID of the user who sent the message
+content TEXT NOT NULL, -- Content of the message
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+status TEXT DEFAULT 'sent', -- Message status (e.g., 'sent', 'read')
+FOREIGN KEY (chatRoomID) REFERENCES chatRooms(chatRoomID) -- Ensures referential integrity
+);

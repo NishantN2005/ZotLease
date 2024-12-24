@@ -2,6 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { io } from 'socket.io-client'
 import { useUserStore } from '@/stores/userStore'
+import { makeAuthenticatedRequest } from '@/services/authService'
+
+const props = defineProps({
+  router: {
+    type: Object,
+    required: true,
+  },
+})
 
 const userStore = useUserStore()
 
@@ -14,11 +22,26 @@ const recipientId = ref('01')
 const userID = userStore.userID
 
 const sendMessage = () => {
-  socket.value.emit('directMessage', {
-    recipientID: recipientId.value,
+  const formData = {
+    chatRoomID: userStore.chatRoomID,
+    sender: userStore.userID,
     content: message.value,
-  })
-  message.value = ''
+  }
+
+  makeAuthenticatedRequest('chat/sendMessage', formData, props.router, userStore.userToken)
+    .then((response) => {
+      console.log('Message stored:', response)
+
+      socket.value.emit('directMessage', {
+        recipientID: recipientId.value,
+        content: message.value,
+      })
+
+      message.value = ''
+    })
+    .catch((error) => {
+      console.error('Error storing message:', error)
+    })
 }
 
 onMounted(() => {
@@ -36,8 +59,6 @@ onMounted(() => {
 
     const { senderID, content, timestamp } = data
     console.log(`Message from ${senderID}: ${content} at ${timestamp}`)
-
-    // i can store in db here
   })
 
   socket.value.on('disconnect', () => {

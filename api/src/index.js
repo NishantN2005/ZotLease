@@ -8,6 +8,7 @@ const authRoutes = require("../routes/authRoutes.js");
 const { disconnect } = require("process");
 const { Server } = require("socket.io");
 const subleaseRoutes = require("../routes/subleaseRoutes.js");
+const chatRoutes = require("../routes/chatRoutes.js");
 const pool = require("./db.js");
 const cron = require("node-cron");
 const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
@@ -36,6 +37,7 @@ app.use(cookieParser());
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/sublease", subleaseRoutes);
+app.use("/chat", chatRoutes);
 
 // Schedule the cleanup task to run once a day at midnight
 cron.schedule(

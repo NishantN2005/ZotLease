@@ -12,9 +12,5 @@ const { dummy } = require("../controllers/userController.js");
  */
 router.post("/");
 router.post("/test", cookieJwtAuth, dummy);
-router.post("/chat", cookieJwtAuth);
-router.get("/chatlog", cookieJwtAuth);
-router.get("/find/:firstID/:secondID", cookieJwtAuth);
-// router.post("/refreshToken",cookieJwtAuth,  )
 
 module.exports = router;

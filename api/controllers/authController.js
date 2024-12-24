@@ -52,7 +52,6 @@ const loginController = async (req, res) => {
     expiresIn: "5m",
   });
 
-  // creates json web token that expires in 1 hr
   const refreshToken = jwt.sign(
     { email: user.email, jti: uuidv4() },
     process.env.MY_SECRET,
@@ -190,6 +189,7 @@ const logoutController = async (req, res) => {
 
     console.log("expiration is here", decoded.exp);
     console.log(decoded.jti);
+
     //add token to blacklist
     const addToBlacklist = {
       text: "INSERT INTO refresh_token_blacklist(token_id, expiry) VALUES ($1, TO_TIMESTAMP($2))",
@@ -200,9 +200,14 @@ const logoutController = async (req, res) => {
     console.log(response);
 
     res.clearCookie("token");
-    return res.status(200).send({ message: "Successfully added token to blacklist", success:true});
+    return res.status(200).send({
+      message: "Successfully added token to blacklist",
+      success: true,
+    });
   }
-  return res.status(400).send({message:"Refresh token was already cleared", success:false});
+  return res
+    .status(400)
+    .send({ message: "Refresh token was already cleared", success: false });
 };
 module.exports = {
   loginController,
