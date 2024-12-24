@@ -66,7 +66,7 @@ export const makeAuthenticatedRequest = async (
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${newAccessToken}`,
           },
           body: JSON.stringify(data),
         })
