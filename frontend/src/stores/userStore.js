@@ -41,6 +41,9 @@ export const useUserStore = defineStore('user', {
     addOnlineChats(val) {
       this.onlineChats.push(val)
     },
+    setOnlineChats(val) {
+      this.onlineChats = val
+    },
   },
   getters: {},
 

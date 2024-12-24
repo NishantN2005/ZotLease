@@ -88,6 +88,7 @@ export default {
   setup() {
     onMounted(() => {
       if (userStore.isLoggedIn) {
+        userStore.onlineChats = []
         sequencialFetch()
       }
     })
@@ -270,6 +271,10 @@ export default {
           userStore.setIsLoggedIn(false)
           userStore.setUserToken(null)
           userStore.setUserID(null)
+          userStore.setChatRoomID(null)
+          userStore.setChatRooms([])
+          userStore.setOfflineChats([])
+          userStore.setOnlineChats([])
           router.push('/login')
         } else {
           const resp = await response.json()
