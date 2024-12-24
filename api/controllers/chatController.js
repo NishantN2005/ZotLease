@@ -44,7 +44,16 @@ const createNewChat = async (req, res) => {
     const response = await pool.query(insertQuery);
     console.log(response);
 
-    return res.status(200).json({ message: "Message Sent", success: true });
+    const messageData = {
+      id,
+      chatRoomID,
+      sender,
+      content,
+      timestamp,
+      status,
+    };
+
+    return res.status(200).json({ messageData, success: true });
   } catch (err) {
     return res.status(500).json({ message: err });
   }
@@ -70,8 +79,43 @@ const getChatRoomID = async (req, res) => {
   }
 };
 
+// gets chat rooms user is involved in
+const getChatRooms = async (req, res) => {
+  try {
+    const { userID } = req.body;
+    console.log("user", userID);
+    const selectQuery = {
+      text: `SELECT * FROM chatRooms WHERE userID1 = $1 OR userID2 = $1;`,
+      values: [userID],
+    };
+    const response = await pool.query(selectQuery);
+    return res.status(200).json({ chatRooms: response.rows, success: true });
+  } catch (err) {
+    return res.status(500).json({ message: err });
+  }
+};
+
+// this gets all chats from database of user
+const getOfflineChats = async (req, res) => {
+  try {
+    const { chatRooms } = req.body;
+    console.log("room", chatRooms);
+    const chatRoomIDS = chatRooms.map((chat) => chat.chatroomid);
+    const selectQuery = {
+      text: `SELECT * FROM messages WHERE chatRoomID = ANY($1)`,
+      values: [chatRoomIDS],
+    };
+    const response = await pool.query(selectQuery);
+    return res.status(200).json({ messages: response.rows, success: true });
+  } catch (err) {
+    return res.status(500).json({ message: err });
+  }
+};
+
 module.exports = {
   createChatRoom,
   createNewChat,
   getChatRoomID,
+  getChatRooms,
+  getOfflineChats,
 };

@@ -30,13 +30,10 @@ const sendMessage = () => {
 
   makeAuthenticatedRequest('chat/sendMessage', formData, props.router, userStore.userToken)
     .then((response) => {
-      console.log('Message stored:', response)
-
-      socket.value.emit('directMessage', {
-        recipientID: recipientId.value,
-        content: message.value,
-      })
-
+      return response.json()
+    })
+    .then((data) => {
+      socket.value.emit('directMessage', { ...data.messageData, recipientID: recipientId.value })
       message.value = ''
     })
     .catch((error) => {
@@ -55,6 +52,8 @@ onMounted(() => {
   })
 
   socket.value.on('message', (data) => {
+    if (!userStore.chatRooms.includes(data.chatRoomID)) userStore.addChatRoom(data.chatRoomID)
+    userStore.addOnlineChats(data)
     console.log('Received message:', data)
 
     const { senderID, content, timestamp } = data

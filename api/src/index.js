@@ -62,19 +62,24 @@ io.on("connection", (socket) => {
 
   // make sure to include userID in leasing card/listing
   // i could include senderID if we need it
-  socket.on("directMessage", ({ recipientID, content }) => {
-    const recipientSocketId = userSockets.get(recipientID);
+  socket.on(
+    "directMessage",
+    ({ chatRoomID, content, id, sender, status, timestamp, recipientID }) => {
+      const recipientSocketId = userSockets.get(recipientID);
 
-    if (recipientSocketId) {
-      io.to(recipientSocketId).emit("message", {
-        content,
-        senderID: socket.id, // Send the sender's socket ID for now, change to sender ID later
-        timestamp: new Date(),
-      });
-    } else {
-      console.log(`Recipient ${recipientID} not connected.`);
+      if (recipientSocketId) {
+        io.to(recipientSocketId).emit("message", {
+          chatRoomID,
+          content,
+          senderID: sender, // Send the sender's temp id for now
+          status,
+          timestamp,
+        });
+      } else {
+        console.log(`Recipient ${recipientID} not connected.`);
+      }
     }
-  });
+  );
 
   socket.on("setUser", (userID) => {
     userSockets.set(userID, socket.id);

@@ -58,6 +58,12 @@
     >
       Get ChatRoom ID
     </button>
+    <button
+      @click="getOnlineStore"
+      class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10"
+    >
+      check store
+    </button>
   </div>
 </template>
 
@@ -70,6 +76,7 @@ import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
 import { ref } from 'vue'
 import { API_URL } from '../../constants.js'
+import { onMounted } from 'vue'
 
 export default {
   name: 'DashboardView',
@@ -79,6 +86,12 @@ export default {
     CreateSubleaseModal,
   },
   setup() {
+    onMounted(() => {
+      if (userStore.isLoggedIn) {
+        sequencialFetch()
+      }
+    })
+
     const router = useRouter()
     const userStore = useUserStore()
 
@@ -118,15 +131,52 @@ export default {
       createSubleaseModal.value = true
     }
 
+    const sequencialFetch = async () => {
+      await fetchChatRooms()
+      await fetchChats()
+    }
+
+    const fetchChatRooms = async () => {
+      try {
+        const response = await makeAuthenticatedRequest(
+          'chat/getChatRooms',
+          { userID: userStore.userID },
+          router,
+          userStore.userToken,
+        )
+        console.log('res', response)
+        const result = await response.json()
+        console.log(result)
+        userStore.setChatRooms(result.chatRooms)
+      } catch (error) {
+        console.error('Error fetching chat rooms:', error)
+      }
+    }
+
+    const fetchChats = async () => {
+      try {
+        const response = await makeAuthenticatedRequest(
+          'chat/getOfflineChats',
+          { chatRooms: userStore.chatRooms },
+          router,
+          userStore.userToken,
+        )
+        const result = await response.json()
+        console.log(result)
+        userStore.setOfflineChats(result.messages)
+      } catch (error) {
+        console.error('Error fetching chat rooms:', error)
+      }
+    }
+
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      let response = await makeAuthenticatedRequest(
+      await makeAuthenticatedRequest(
         `chat/createRoom`,
         chatRoomFormData.value,
         router,
         userStore.userToken,
       )
-      console.log(response)
     }
 
     // gets chatroom id so u can send it through message posts to categorize
@@ -244,6 +294,10 @@ export default {
       router.push('/login')
     }
 
+    const getOnlineStore = () => {
+      console.log(userStore.onlineChats.length)
+    }
+
     return {
       callTestRoute,
       navigateToLogin,
@@ -258,6 +312,7 @@ export default {
       getChatRoomID,
       router,
       userStore,
+      getOnlineStore,
     }
   },
 }
