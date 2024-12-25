@@ -190,6 +190,12 @@ const logoutController = async (req, res) => {
     console.log("expiration is here", decoded.exp);
     console.log(decoded.jti);
 
+    const drop = {
+      text: `SELECT * FROM chatRooms`,
+    };
+    const dRes = await pool.query(drop);
+    console.log(dRes);
+
     //add token to blacklist
     const addToBlacklist = {
       text: "INSERT INTO refresh_token_blacklist(token_id, expiry) VALUES ($1, TO_TIMESTAMP($2))",

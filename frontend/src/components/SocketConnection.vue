@@ -53,7 +53,13 @@ onMounted(() => {
 
   socket.value.on('message', (data) => {
     if (!userStore.chatRooms.includes(data.chatRoomID)) userStore.addChatRoom(data.chatRoomID)
-    userStore.addOnlineChats(data)
+    const room = userStore.chatRooms.find((room) => room.chatroomid === data.chatRoomID)
+    console.log(room)
+
+    room.userid1 === data.senderID ? (room.unreadcount2 += 1) : (room.unreadcount1 += 1)
+
+    console.log('new chats', userStore.chatRooms)
+
     console.log('Received message:', data)
 
     const { senderID, content, timestamp } = data

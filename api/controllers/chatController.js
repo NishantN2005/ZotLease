@@ -14,12 +14,12 @@ const createChatRoom = async (req, res) => {
 
     // maybe create check for existing chat room
 
-    const insertQuery = {
+    const insertQuery1 = {
       text: `INSERT INTO chatRooms (chatRoomID, userID1, userID2) VALUES ($1, $2, $3)`,
       values: [chatRoomID, userID1, userID2],
     };
-    const response = await pool.query(insertQuery);
-    console.log(response);
+    const res1 = await pool.query(insertQuery1);
+    console.log("Inserted userIDS:", res1);
 
     return res
       .status(200)
@@ -31,17 +31,52 @@ const createChatRoom = async (req, res) => {
 
 const createNewChat = async (req, res) => {
   try {
+    console.log("cahtin");
     const id = nanoid();
     const { chatRoomID, sender, content } = req.body;
     const timestamp = new Date();
     const status = "sent";
 
+    // Insert the message
     const insertQuery = {
       text: `INSERT INTO messages (id, chatRoomID, sender, content, timestamp, status)
-      VALUES ($1, $2, $3, $4, $5, $6)`,
-      values: [id, chatRoomID, sender, content, timestamp, status],
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+      values: [id, chatRoomID, sender, content, timestamp, status], // change tempSender back to sender
     };
-    const response = await pool.query(insertQuery);
+
+    let response = await pool.query(insertQuery);
+    console.log("Message inserted:", response.rowCount);
+
+    const validateQuery = {
+      text: `SELECT * FROM chatRooms
+         WHERE chatRoomID = $1 AND (userID1 = $2 OR userID2 = $2)`,
+      values: [chatRoomID, sender],
+    };
+
+    const validationResponse = await pool.query(validateQuery);
+    if (validationResponse.rowCount === 0) {
+      throw new Error("Sender is not a participant in the chat room");
+    }
+    console.log("Validation successful: Sender is a participant");
+
+    const incrementQuery1 = {
+      text: `UPDATE chatRooms
+         SET unreadCount1 = unreadCount1 + 1
+         WHERE chatRoomID = $1 AND userID1 != $2`,
+      values: [chatRoomID, sender],
+    };
+
+    const incrementQuery2 = {
+      text: `UPDATE chatRooms
+         SET unreadCount2 = unreadCount2 + 1
+         WHERE chatRoomID = $1 AND userID2 != $2`,
+      values: [chatRoomID, sender],
+    };
+
+    response = await pool.query(incrementQuery1);
+    console.log(response);
+
+    response = await pool.query(incrementQuery2);
     console.log(response);
 
     const messageData = {
@@ -83,7 +118,6 @@ const getChatRoomID = async (req, res) => {
 const getChatRooms = async (req, res) => {
   try {
     const { userID } = req.body;
-    console.log("user", userID);
     const selectQuery = {
       text: `SELECT * FROM chatRooms WHERE userID1 = $1 OR userID2 = $1;`,
       values: [userID],

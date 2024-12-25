@@ -118,7 +118,7 @@ export default {
     // hard coded userIDS for now
     const chatRoomFormData = ref({
       userID1: '01',
-      userID2: '02',
+      userID2: userStore.userID,
     })
 
     const createSubleaseModal = ref(false)
@@ -134,7 +134,6 @@ export default {
 
     const sequencialFetch = async () => {
       await fetchChatRooms()
-      await fetchChats()
     }
 
     const fetchChatRooms = async () => {
