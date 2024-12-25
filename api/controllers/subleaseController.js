@@ -4,6 +4,7 @@ require("dotenv").config("api/.env");
 
 const createSubleaseController = async (req, res) => {
   try {
+    console.log('inside api func tp create')
     const {
       street_name,
       room,
@@ -56,6 +57,7 @@ const createSubleaseController = async (req, res) => {
         roomCount,
         bathroomCount,
         street_name,
+        city,
         room,
         postal_code,
         startTerm,
@@ -64,7 +66,7 @@ const createSubleaseController = async (req, res) => {
         subleaseID,
         latitude,
         longitude
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14, $15)`,
       values: [
         listerID,
         price,
@@ -72,6 +74,7 @@ const createSubleaseController = async (req, res) => {
         roomCount,
         bathroomCount,
         street_name,
+        city,
         room,
         postal_code,
         startTerm,
@@ -83,6 +86,7 @@ const createSubleaseController = async (req, res) => {
       ],
     };
     const response = await pool.query(insertQuery);
+    console.log(response);
     return res
       .status(200)
       .json({ message: "Successfully created listing", success: true });
@@ -99,4 +103,29 @@ const getSubleasesController = async (req, res) => {
 
   return res.status(200).json(response.rows);
 };
-module.exports = { createSubleaseController, getSubleasesController };
+
+const getSubleaseInfoController = async(req, res)=>{
+  const {subleaseID} = req.body;
+
+  const query={
+    text:`SELECT 
+    s.*,           
+    u.fname,  
+    u.lname    
+    FROM sublease s
+    JOIN users u 
+        ON s.listerID = u.userID
+    WHERE s.subleaseid = $1;`,
+    values: [subleaseID]
+  }
+  try{
+    const response = await pool.query(query);
+    console.log(response)
+    return res.status(200).json(response.rows[0]);
+
+  }catch(err){
+    console.log(`Error trying to fetch sublease data: ${err}`);
+  }
+
+};
+module.exports = { createSubleaseController, getSubleasesController, getSubleaseInfoController };

@@ -1,13 +1,13 @@
 <template>
-  <div id="map" style="height: 400px; width: 100%"></div>
+  <div id="map"></div>
 </template>
 
 <script>
-import { onMounted, onUnmounted } from 'vue'
-import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
-import { makeAuthenticatedRequest } from '../services/authService.js'
-
+import { onMounted, onUnmounted } from 'vue';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { makeAuthenticatedRequest } from '../services/authService.js';
+import { useSubleaseStore } from '@/stores/subleaseStore'
 export default {
   name: 'LeafletMap',
   props: {
@@ -23,12 +23,18 @@ export default {
       type: String,
       required: true,
     },
+    turnOnSubleaseModal:{
+      type: Function,
+      required: true
+    }
   },
   setup(props) {
     let map = null
 
     const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN
     const MAPBOX_TILE_URL = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`
+
+    const subleaseStore = useSubleaseStore()
 
     // Function to fetch location data from your backend
     const fetchLocations = async () => {
@@ -69,9 +75,35 @@ export default {
           const markerColor = isUserLeaser ? '#FFD700' : '#007BFF' // Yellow (#FFD700) or default blue (#007BFF)
           const markerIcon = createHexMarker(markerColor)
 
-          L.marker([location.latitude, location.longitude], { icon: markerIcon })
-            .addTo(map)
-            .bindPopup(`<b>${location.name || 'Unnamed Location'}</b>`)
+          const marker = L.marker([location.latitude, location.longitude], { icon: markerIcon }).addTo(map);
+
+          marker.subleaseID = location.subleaseid;
+
+          marker.on('click', async ()=>{
+            const subid = marker.subleaseID;
+            console.log('id is, ', subid);
+            //make call to api to retrieve listing information
+            let info = await makeAuthenticatedRequest('sublease/selectedInfo',{subleaseID:subid}, props.routerPass, props.userToken);
+            const {subleaseid, fname, lname, listerid, price, gender, roomcount, bathroomcount, street_name, city,room, postal_code, startterm, endterm, description} = await info.json()
+            subleaseStore.setSelectedSublease(
+              subleaseid,
+              fname,
+              lname,
+              listerid,
+              price,
+              gender,
+              roomcount, 
+              bathroomcount,
+              street_name,
+              city,
+              room,
+              postal_code,
+              startterm,
+              endterm,
+              description
+            )
+            props.turnOnSubleaseModal()
+          })
         }
       })
     }
@@ -111,10 +143,3 @@ export default {
   },
 }
 </script>
-
-<style>
-#map {
-  height: 400px;
-  width: 100%;
-}
-</style>
