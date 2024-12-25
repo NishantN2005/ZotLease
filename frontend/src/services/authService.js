@@ -74,7 +74,7 @@ export const makeAuthenticatedRequest = async (
           console.log(`Retry Response from ${endpoint}:`, resp)
           return resp
         } else {
-          console.log(`Failed to retry ${endpoint}`, respData)
+          console.log(`Failed to retry ${endpoint}`, resp)
           navigateToLogin(router)
         }
       }
