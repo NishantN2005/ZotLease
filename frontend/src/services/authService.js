@@ -70,9 +70,8 @@ export const makeAuthenticatedRequest = async (
           },
           body: JSON.stringify(data),
         })
-        const respData = await resp.json()
         if (resp.ok) {
-          console.log(`Retry Response from ${endpoint}:`, respData)
+          console.log(`Retry Response from ${endpoint}:`, resp)
           return resp
         } else {
           console.log(`Failed to retry ${endpoint}`, respData)
