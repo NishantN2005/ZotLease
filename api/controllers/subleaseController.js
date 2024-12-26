@@ -129,19 +129,48 @@ const getSubleaseInfoController = async(req, res)=>{
 };
 
 const getSubleaseFilterController = async(req, res)=>{
-  const{gender, minPrice, maxPrice, roomCount} = req.body;
-  
-  const filterQuery = {
-    text: `SELECT subleaseid FROM sublease WHERE gender=$1 AND price BETWEEN $2 AND $3 AND roomcount = $4`,
-    values: [gender, minPrice, maxPrice, roomCount]
+  let {gender, minPrice, maxPrice, roomCount} = req.body;
+  if(minPrice==null){
+    minPrice = 0;
   }
-
+  if(maxPrice == null){
+    maxPrice = 1000000;
+  }
+  if(roomCount==''){
+    roomCount=null;
+  }
+  //if both gender and roomcount were selected 
+  let filterQuery;
+  if(gender!=='' && roomCount!==null){
+    filterQuery = {
+      text: `SELECT subleaseid FROM sublease WHERE gender=$1 AND price BETWEEN $2 AND $3 AND roomcount = $4`,
+      values: [gender, minPrice, maxPrice, roomCount]
+    }
+  }else if(roomCount!== null){//if gender is any
+    filterQuery={
+      text:`SELECT subleaseid FROM sublease WHERE price BETWEEN $1 AND $2 AND roomcount = $3`,
+      values: [minPrice, maxPrice, roomCount]
+    }
+  }else if(gender!== ''){//roomCount is any
+    filterQuery={
+      text: `SELECT subleaseid From sublease WHERE gender=$1 AND price BETWEEN $2 AND $3`,
+      values: [gender, minPrice, maxPrice]
+    }
+  }else if(gender==='' && roomCount===null){
+    filterQuery = {
+      text: `SELECT subleaseid FROM sublease WHERE price BETWEEN $1 AND $2`,
+      values: [minPrice, maxPrice]
+    }
+  }
+  console.log('filter query here', filterQuery);
   const response = await pool.query(filterQuery)
   
+  console.log(response);
   let acceptedSubleases = []
   for(sublease of response.rows){
     acceptedSubleases.push(sublease.subleaseid)
   }
+  console.log(acceptedSubleases)
   res.status(200).json({parsedSubleases: acceptedSubleases})
 
 }

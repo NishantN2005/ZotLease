@@ -39,7 +39,6 @@
           :userID="userStore.userID"
           :turnOnSubleaseModal = "turnOnSubleaseModal"
           :filterForm = "filterForm"
-          :filterStore = "filterStore"
         />
 
       <!-- Your buttons, absolutely positioned on top of the map -->
@@ -79,7 +78,7 @@
         </button>
       </div>
       <!-- Selected Sublease modal-->
-      <div v-if="showSelectedSubleaseModal" class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4">
+      <div v-if="showSelectedSubleaseModal" class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4" id="filterModal">
         <button @click="turnOffSubleaseModal" class="text-gray-600 hover:text-gray-900">
           <i class="fa-solid fa-xmark"></i>
         </button>
@@ -105,6 +104,7 @@
       :routerPass="router" 
       :token="userStore.userToken"
       :toggleFilterModal="toggleFilterModal"
+      :resetFilters="resetFilters"
       />
 
     </div>
@@ -119,9 +119,8 @@ import {useSubleaseStore} from '@/stores/subleaseStore';
 import SocketConnection from '@/components/SocketConnection.vue';
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue';
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService';
-import { ref } from 'vue';
+import { ref,onMounted } from 'vue';
 import { API_URL } from '../../constants.js';
-import { onMounted } from 'vue';
 import FilterModal from '@/components/FilterModal.vue';
 import { useFilterStore } from '@/stores/filterStore';
 
@@ -369,6 +368,16 @@ export default {
     }
     const toggleFilterModal = () =>{
       showFilterModal.value=!showFilterModal.value;
+      filterForm.value={
+      gender: '',
+      minPrice: null,
+      maxPrice: null,
+      roomCount:null
+      }
+    }
+    const resetFilters=()=>{
+      filterStore.resetFilter();
+      toggleFilterModal();
     }
 
     return {
@@ -394,7 +403,8 @@ export default {
       showFilterModal,
       filterForm,
       FilterModal,
-      filterStore
+      filterStore,
+      resetFilters
     }
   },
 }

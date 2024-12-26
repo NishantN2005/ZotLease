@@ -84,6 +84,9 @@
         >
           Apply Filters
         </button>
+        <div @click="resetFilters" class="w-full py-2 rounded bg-rose-400 text-white font-semibold hover:bg-rose-600">
+            <h1 class="flex justify-center">Remove Filters</h1>
+        </div>
       </form>
     </div>
   </template>
@@ -115,6 +118,10 @@
         type: Function,
         required: true,
       },
+      resetFilters:{
+        type: Function,
+        required: true
+      }
     },
   
     // Composition API setup

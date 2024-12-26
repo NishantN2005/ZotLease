@@ -13,6 +13,11 @@ export const useFilterStore = defineStore('filter', {
         console.log('Inside state being called')
         this.acceptedSubleases = subleases;
         this.isFiltered = true;
+    },
+    resetFilter(){
+        console.log('reseting filter')
+        this.acceptedSubleases=[];
+        this.isFiltered=false;
     }
   },
   getters: {},

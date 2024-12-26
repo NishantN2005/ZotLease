@@ -8,6 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { makeAuthenticatedRequest } from '../services/authService.js';
 import { useSubleaseStore } from '@/stores/subleaseStore';
+import {useFilterStore} from '@/stores/filterStore';
 
 export default {
   name: 'LeafletMap',
@@ -33,11 +34,6 @@ export default {
       type: Object,
       required: true
     },
-    // The store (Pinia) that holds acceptedSubleases or other filter states
-    filterStore: {
-      type: Object,
-      required: true
-    }
   },
 
   setup(props) {
@@ -49,6 +45,7 @@ export default {
     const MAPBOX_TILE_URL = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`;
 
     const subleaseStore = useSubleaseStore();
+    const filterStore = useFilterStore();
 
     // We'll store ALL fetched locations in a ref so we can re-filter them.
     const allLocations = ref([]);
@@ -88,8 +85,8 @@ export default {
     const addMarkers = (locations) => {
       locations.forEach((location) => {
         // Check valid lat/lng and if sublease passes the filter
-        const passesFilter = !props.filterStore.isFiltered ||
-          props.filterStore.acceptedSubleases.includes(location.subleaseid);
+        const passesFilter = !filterStore.isFiltered ||
+          filterStore.acceptedSubleases.includes(location.subleaseid);
 
         if (location.latitude && location.longitude && passesFilter) {
           const isUserLeaser = String(location.listerid).trim() === String(props.userID).trim();
@@ -179,15 +176,14 @@ export default {
       // 5. Watch filter store changes.
       //    Whenever `acceptedSubleases` changes, re-draw markers.
       watch(
-        () => props.filterStore.acceptedSubleases,
-        () => {
-          console.log('filterStore.acceptedSubleases changed! Redrawing markers...');
-          // Clear old markers
+        () => [filterStore.acceptedSubleases, filterStore.isFiltered],
+        ([newAcceptedSubleases, newIsFiltered]) => {
+
           markersLayer.clearLayers();
-          // Add new markers based on filter
           addMarkers(allLocations.value);
         }
       );
+
 
       // If you also have an `isFiltered` property or other filter props, you can watch them similarly:
       // watch(
