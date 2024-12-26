@@ -126,6 +126,23 @@ const getSubleaseInfoController = async(req, res)=>{
   }catch(err){
     console.log(`Error trying to fetch sublease data: ${err}`);
   }
-
 };
-module.exports = { createSubleaseController, getSubleasesController, getSubleaseInfoController };
+
+const getSubleaseFilterController = async(req, res)=>{
+  const{gender, minPrice, maxPrice, roomCount} = req.body;
+  
+  const filterQuery = {
+    text: `SELECT subleaseid FROM sublease WHERE gender=$1 AND price BETWEEN $2 AND $3 AND roomcount = $4`,
+    values: [gender, minPrice, maxPrice, roomCount]
+  }
+
+  const response = await pool.query(filterQuery)
+  
+  let acceptedSubleases = []
+  for(sublease of response.rows){
+    acceptedSubleases.push(sublease.subleaseid)
+  }
+  res.status(200).json({parsedSubleases: acceptedSubleases})
+
+}
+module.exports = { createSubleaseController, getSubleasesController, getSubleaseInfoController,getSubleaseFilterController };
