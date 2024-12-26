@@ -7,8 +7,9 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { makeAuthenticatedRequest } from '../services/authService.js';
-import { useSubleaseStore } from '@/stores/subleaseStore';
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js';
 import {useFilterStore} from '@/stores/filterStore';
+import {useAllLocationsStore} from '@/stores/AllLocationsStore';
 
 export default {
   name: 'LeafletMap',
@@ -33,7 +34,7 @@ export default {
     filterForm: {
       type: Object,
       required: true
-    },
+    }
   },
 
   setup(props) {
@@ -44,11 +45,10 @@ export default {
     const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
     const MAPBOX_TILE_URL = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`;
 
-    const subleaseStore = useSubleaseStore();
+    const selectedSubleaseStore = useSelectedSubleaseStore();
     const filterStore = useFilterStore();
+    const allLocationsStore = useAllLocationsStore();
 
-    // We'll store ALL fetched locations in a ref so we can re-filter them.
-    const allLocations = ref([]);
 
     // 1. Fetch location data from your backend
     const fetchLocations = async () => {
@@ -117,7 +117,7 @@ export default {
             const subleaseData = await info.json();
 
             // set Pinia store state
-            subleaseStore.setSelectedSublease(
+            selectedSubleaseStore.setSelectedSublease(
               subleaseData.subleaseid,
               subleaseData.fname,
               subleaseData.lname,
@@ -168,10 +168,10 @@ export default {
       markersLayer = L.layerGroup().addTo(map);
 
       // Fetch all locations once
-      allLocations.value = await fetchLocations();
+      allLocationsStore.setAllLocations(await fetchLocations());
 
       // Add markers for the initial (unfiltered) load
-      addMarkers(allLocations.value);
+      addMarkers(allLocationsStore.allLocations);
 
       // 5. Watch filter store changes.
       //    Whenever `acceptedSubleases` changes, re-draw markers.
@@ -179,20 +179,21 @@ export default {
         () => [filterStore.acceptedSubleases, filterStore.isFiltered],
         ([newAcceptedSubleases, newIsFiltered]) => {
 
+          console.log("inside filter watch right now")
           markersLayer.clearLayers();
-          addMarkers(allLocations.value);
+          addMarkers(allLocationsStore.allLocations);
         }
       );
 
-
-      // If you also have an `isFiltered` property or other filter props, you can watch them similarly:
-      // watch(
-      //   () => props.filterStore.isFiltered,
-      //   () => {
-      //     markersLayer.clearLayers();
-      //     addMarkers(allLocations.value);
-      //   }
-      // );
+      watch(
+        ()=>allLocationsStore.allLocations,
+        (newLocations)=>{
+      
+        markersLayer.clearLayers();
+        addMarkers(newLocations);
+        },
+        { deep: true }
+      )
     });
 
     // 6. Clean up on unmount

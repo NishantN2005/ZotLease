@@ -15,50 +15,50 @@
         <div class="space-y-4 text-gray-700">
           <!-- Title -->
           <h1 class="font-bold text-2xl text-gray-900">
-            {{ subleaseStore.fName }} {{ subleaseStore.lName }}
+            {{ selectedSubleaseStore.fName }} {{ selectedSubleaseStore.lName }}
           </h1>
 
           <!-- Price -->
           <div>
-            <span class="font-semibold">Price:</span> ${{ subleaseStore.price }}
+            <span class="font-semibold">Price:</span> ${{ selectedSubleaseStore.price }}
           </div>
 
           <!-- Gender -->
           <div>
-            <span class="font-semibold">Gender:</span> {{ subleaseStore.gender }}
+            <span class="font-semibold">Gender:</span> {{ selectedSubleaseStore.gender }}
           </div>
 
           <!-- Rooms/Bathrooms -->
           <div>
             <span class="font-semibold">Rooms/Bathrooms:</span> 
-            {{ subleaseStore.roomCount }}/{{ subleaseStore.bathroomCount }}
+            {{ selectedSubleaseStore.roomCount }}/{{ selectedSubleaseStore.bathroomCount }}
           </div>
 
           <!-- Address -->
           <div>
             <span class="font-semibold">Address:</span> 
-            {{ subleaseStore.street_name }}, {{ subleaseStore.city }}, California,
-            {{ subleaseStore.postal_code }}
+            {{ selectedSubleaseStore.street_name }}, {{ selectedSubleaseStore.city }}, California,
+            {{ selectedSubleaseStore.postal_code }}
           </div>
 
           <!-- Room -->
           <div>
             <span class="font-semibold">Room:</span> 
-            {{ subleaseStore.room }}
+            {{ selectedSubleaseStore.room }}
           </div>
 
           <!-- Start/End Term -->
           <div>
-            <span class="font-semibold">Start Term:</span> {{ subleaseStore.startTerm }}
+            <span class="font-semibold">Start Term:</span> {{ selectedSubleaseStore.startTerm }}
             <br />
-            <span class="font-semibold">End Term:</span> {{ subleaseStore.endTerm }}
+            <span class="font-semibold">End Term:</span> {{ selectedSubleaseStore.endTerm }}
           </div>
 
           <!-- Description -->
           <div>
             <span class="font-semibold">Description:</span> 
             <p class="whitespace-pre-line mt-1">
-              {{ subleaseStore.description }}
+              {{ selectedSubleaseStore.description }}
             </p>
           </div>
 
@@ -81,7 +81,7 @@
         type: Boolean,
         required: true,
       },
-      subleaseStore: {
+      selectedSubleaseStore: {
         type: Object,
         required: true,
       },

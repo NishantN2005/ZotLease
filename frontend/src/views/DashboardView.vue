@@ -85,7 +85,7 @@
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
       :showSelectedSubleaseModal="showSelectedSubleaseModal"
-      :subleaseStore="subleaseStore"
+      :selectedSubleaseStore="selectedSubleaseStore"
       :turnOffSubleaseModal="turnOffSubleaseModal"
       :createChatRoom="createChatRoom"
       />
@@ -108,7 +108,7 @@
 import { useRouter } from 'vue-router';
 import LeafletMap from '../components/LeafletMap.vue';
 import { useUserStore } from '@/stores/userStore';
-import {useSubleaseStore} from '@/stores/subleaseStore';
+import {useSelectedSubleaseStore} from '@/stores/SelectedSubleaseStore';
 import SocketConnection from '@/components/SocketConnection.vue';
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue';
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService';
@@ -117,6 +117,7 @@ import { API_URL } from '../../constants.js';
 import FilterModal from '@/components/FilterModal.vue';
 import { useFilterStore } from '@/stores/filterStore';
 import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue';
+import {useAllLocationsStore} from '@/stores/AllLocationsStore';
 
 export default {
   name: 'DashboardView',
@@ -137,8 +138,9 @@ export default {
 
     const router = useRouter()
     const userStore = useUserStore()
-    const subleaseStore = useSubleaseStore();
+    const selectedSubleaseStore = useSelectedSubleaseStore();
     const filterStore = useFilterStore();
+    const allLocationsStore = useAllLocationsStore();
 
     const showSelectedSubleaseModal=ref(false);
     const showFilterModal = ref(false);
@@ -219,7 +221,7 @@ export default {
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
       const userID1 = userStore.userID
-      const userID2 = subleaseStore.listerID
+      const userID2 = selectedSubleaseStore.listerID
       const res = await makeAuthenticatedRequest(
         `chat/createRoom`,
         { userID1, userID2 },
@@ -254,7 +256,13 @@ export default {
         console.log(response)
 
         if (response.status == 200) {
+
           //reset state of dashboard
+          const markerInfo = await response.json()
+
+          //update local map render to include new location
+          allLocationsStore.addNewLocation(markerInfo);
+
           createSubleaseModal.value = false
           formData.value = {
             street_name: '',
@@ -386,7 +394,7 @@ export default {
       router,
       userStore,
       getOnlineStore,
-      subleaseStore,
+      selectedSubleaseStore,
       showSelectedSubleaseModal,
       turnOffSubleaseModal,
       turnOnSubleaseModal,
@@ -395,7 +403,8 @@ export default {
       filterForm,
       FilterModal,
       filterStore,
-      resetFilters
+      resetFilters,
+      allLocationsStore
     }
   },
 }

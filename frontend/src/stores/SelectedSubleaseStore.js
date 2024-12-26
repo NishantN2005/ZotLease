@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useSubleaseStore = defineStore('sublease', {
+export const useSelectedSubleaseStore = defineStore('selectedsublease', {
   state: () => {
     return {
       subleaseID: null,

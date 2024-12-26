@@ -89,7 +89,7 @@ const createSubleaseController = async (req, res) => {
     console.log(response);
     return res
       .status(200)
-      .json({ message: "Successfully created listing", success: true });
+      .json({subleaseid:subleaseID, longitude:lon, latitude:lat,listerid:listerID});
   } catch (err) {
     return res.status(500).json({ message: err });
   }
