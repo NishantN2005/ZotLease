@@ -4,7 +4,7 @@
     <div
       v-if="createSubleaseModal"
       class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
-    >
+      >
       <div class="bg-white p-4 shadow-lg rounded-lg">
         <h1 class="font-bold flex justify-center items-center text-xl mb-5">
           Enter Sublease Information
@@ -44,15 +44,20 @@
       <!-- Your buttons, absolutely positioned on top of the map -->
       <div class="absolute flex justify-center items-center space-x-5 top-5 z-10 w-full">
         <SocketConnection :router="router" />
-        <button class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10" @click="Logout">Logout</button>
+        <button class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10" @click="Logout">
+          Logout
+        </button>
         <button
           @click="turnOnModal"
           class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
         >
           Create Listing
         </button>
-        <br/>
-        <button @click="toggleFilterModal"class="bg-uciblue text-uciyellow font-bold rounded-full p-2">
+        <br />
+        <button
+          @click="toggleFilterModal"
+          class="bg-uciblue text-uciyellow font-bold rounded-full p-2"
+        >
           Filter
           <i class="fas fa-filter"></i>
         </button>
@@ -84,17 +89,26 @@
         </button>
         <div class="space-y-5">
           <h1 class="font-bold text-4xl">{{ subleaseStore.fName }} {{ subleaseStore.lName }}</h1>
-          <p>Price: ${{ subleaseStore.price }} </p>
+          <p>Price: ${{ subleaseStore.price }}</p>
           <p>Gender: {{ subleaseStore.gender }}</p>
           <p>Rooms/Bathrooms: {{ subleaseStore.roomCount }}/{{ subleaseStore.bathroomCount }}</p>
           <div class="flex items-center">
-            <h1>Address: </h1>
-            <p>{{ subleaseStore.street_name }}, {{ subleaseStore.city }}, California, {{ subleaseStore.postal_code }}</p>
+            <h1>Address:</h1>
+            <p>
+              {{ subleaseStore.street_name }}, {{ subleaseStore.city }}, California,
+              {{ subleaseStore.postal_code }}
+            </p>
           </div>
           <p>Room: {{ subleaseStore.room }}</p>
           <p>Start Term: {{ subleaseStore.startTerm }}</p>
           <p>End Term: {{ subleaseStore.endTerm }}</p>
           <p>Description: {{ subleaseStore.description }}</p>
+          <button
+            @click="createChatRoom"
+            class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
+          >
+            Chat
+          </button>
         </div>
       </div>
       <!-- Filter Modal-->
@@ -173,12 +187,6 @@ export default {
       description: '',
     })
 
-    // hard coded userIDS for now
-    const chatRoomFormData = ref({
-      userID1: '01',
-      userID2: '02',
-    })
-
     const createSubleaseModal = ref(false)
 
     const turnOffModal = () => {
@@ -192,7 +200,6 @@ export default {
 
     const sequencialFetch = async () => {
       await fetchChatRooms()
-      await fetchChats()
     }
 
     const fetchChatRooms = async () => {
@@ -230,12 +237,15 @@ export default {
 
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      await makeAuthenticatedRequest(
+      const userID1 = userStore.userID
+      const userID2 = subleaseStore.listerID
+      const res = await makeAuthenticatedRequest(
         `chat/createRoom`,
-        chatRoomFormData.value,
+        { userID1, userID2 },
         router,
         userStore.userToken,
       )
+      console.log(res)
     }
 
     // gets chatroom id so u can send it through message posts to categorize
@@ -366,8 +376,8 @@ export default {
     const turnOnSubleaseModal=()=>{
       showSelectedSubleaseModal.value=true;
     }
-    const toggleFilterModal = () =>{
-      showFilterModal.value=!showFilterModal.value;
+    const toggleFilterModal = () => {
+      showFilterModal.value = !showFilterModal.value;
       filterForm.value={
       gender: '',
       minPrice: null,

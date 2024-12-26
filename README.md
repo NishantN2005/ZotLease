@@ -34,17 +34,21 @@ longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180)
 );
 
 CREATE TABLE chatRooms (
-chatRoomID TEXT PRIMARY KEY,
+id SERIAL PRIMARY KEY,
+chatRoomID TEXT NOT NULL,
 userID1 TEXT NOT NULL,
 userID2 TEXT NOT NULL,
+unreadCount1 INT DEFAULT 0,
+unreadCount2 INT DEFAULT 0,
+UNIQUE(userID1, userID2),
+CHECK (userID1 <> userID2)
 )
 
 CREATE TABLE messages (
 id TEXT PRIMARY KEY,
 chatRoomID TEXT NOT NULL,
-sender TEXT NOT NULL, -- userID of the user who sent the message
-content TEXT NOT NULL, -- Content of the message
+sender TEXT NOT NULL,
+content TEXT NOT NULL,
 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-status TEXT DEFAULT 'sent', -- Message status (e.g., 'sent', 'read')
-FOREIGN KEY (chatRoomID) REFERENCES chatRooms(chatRoomID) -- Ensures referential integrity
-);
+status TEXT DEFAULT 'sent',
+)

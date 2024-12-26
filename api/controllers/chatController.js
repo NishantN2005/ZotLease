@@ -4,44 +4,109 @@ const { nanoid } = require("nanoid");
 
 const createChatRoom = async (req, res) => {
   try {
+    console.log("WHATTT GOIN ONNNN");
     const { userID1, userID2 } = req.body;
+    console.log(userID1, userID2);
 
-    if (!userID1 || !userID2 || userID1 === userID2) {
-      return res.status(400).json({ error: "Invalid user IDs" });
+    if (!userID1 || !userID2) {
+      return res
+        .status(400)
+        .json({ error: "Both userID1 and userID2 are required." });
+    }
+    if (userID1 === userID2) {
+      return res
+        .status(400)
+        .json({ error: "userID1 and userID2 cannot be the same." });
     }
 
     const chatRoomID = nanoid();
 
-    // maybe create check for existing chat room
+    const checkQuery = {
+      text: `SELECT * FROM chatRooms WHERE 
+             (userID1 = $1 AND userID2 = $2) OR 
+             (userID1 = $2 AND userID2 = $1)`,
+      values: [userID1, userID2],
+    };
+
+    const existingRoom = await pool.query(checkQuery);
+
+    if (existingRoom.rowCount > 0) {
+      return res
+        .status(400)
+        .json({ error: "Chat room already exists between these users." });
+    }
 
     const insertQuery = {
       text: `INSERT INTO chatRooms (chatRoomID, userID1, userID2) VALUES ($1, $2, $3)`,
       values: [chatRoomID, userID1, userID2],
     };
-    const response = await pool.query(insertQuery);
-    console.log(response);
 
-    return res
-      .status(200)
-      .json({ message: "Successfully Created Chatroom", success: true });
+    const insertResult = await pool.query(insertQuery);
+
+    if (insertResult.rowCount === 0) {
+      throw new Error("Failed to create the chat room.");
+    }
+
+    console.log("Chat room created:", chatRoomID);
+
+    return res.status(200).json({
+      message: "Successfully created chat room.",
+      success: true,
+      chatRoomID,
+    });
   } catch (err) {
-    return res.status(500).json({ message: err });
+    console.error("Error creating chat room:", err);
   }
 };
 
 const createNewChat = async (req, res) => {
   try {
+    console.log("cahtin");
     const id = nanoid();
     const { chatRoomID, sender, content } = req.body;
     const timestamp = new Date();
     const status = "sent";
 
+    // Insert the message
     const insertQuery = {
       text: `INSERT INTO messages (id, chatRoomID, sender, content, timestamp, status)
-      VALUES ($1, $2, $3, $4, $5, $6)`,
-      values: [id, chatRoomID, sender, content, timestamp, status],
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+      values: [id, chatRoomID, sender, content, timestamp, status], // change tempSender back to sender
     };
-    const response = await pool.query(insertQuery);
+
+    let response = await pool.query(insertQuery);
+    console.log("Message inserted:", response.rowCount);
+
+    const validateQuery = {
+      text: `SELECT * FROM chatRooms
+         WHERE chatRoomID = $1 AND (userID1 = $2 OR userID2 = $2)`,
+      values: [chatRoomID, sender],
+    };
+
+    const validationResponse = await pool.query(validateQuery);
+    if (validationResponse.rowCount === 0) {
+      throw new Error("Sender is not a participant in the chat room");
+    }
+    console.log("Validation successful: Sender is a participant");
+
+    const incrementQuery1 = {
+      text: `UPDATE chatRooms
+         SET unreadCount1 = unreadCount1 + 1
+         WHERE chatRoomID = $1 AND userID1 != $2`,
+      values: [chatRoomID, sender],
+    };
+
+    const incrementQuery2 = {
+      text: `UPDATE chatRooms
+         SET unreadCount2 = unreadCount2 + 1
+         WHERE chatRoomID = $1 AND userID2 != $2`,
+      values: [chatRoomID, sender],
+    };
+
+    response = await pool.query(incrementQuery1);
+    console.log(response);
+
+    response = await pool.query(incrementQuery2);
     console.log(response);
 
     const messageData = {
@@ -83,7 +148,6 @@ const getChatRoomID = async (req, res) => {
 const getChatRooms = async (req, res) => {
   try {
     const { userID } = req.body;
-    console.log("user", userID);
     const selectQuery = {
       text: `SELECT * FROM chatRooms WHERE userID1 = $1 OR userID2 = $1;`,
       values: [userID],

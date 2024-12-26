@@ -51,9 +51,38 @@ onMounted(() => {
     socket.value.emit('setUser', userID)
   })
 
-  socket.value.on('message', (data) => {
-    if (!userStore.chatRooms.includes(data.chatRoomID)) userStore.addChatRoom(data.chatRoomID)
-    userStore.addOnlineChats(data)
+  socket.value.on('message', async (data) => {
+    // checks if recieved message room is in user store, if not add it
+    if (!userStore.chatRooms.some((room) => room.chatroomid === data.chatRoomID)) {
+      try {
+        const response = await makeAuthenticatedRequest(
+          'chat/getChatRooms',
+          { userID: userStore.userID },
+          router,
+          userStore.userToken,
+        )
+        console.log('Response:', response)
+        const result = await response.json()
+        console.log('Chat rooms:', result)
+        userStore.setChatRooms(result.chatRooms)
+
+        return
+      } catch (error) {
+        console.error('Error fetching chat rooms:', error)
+        return
+      }
+    }
+
+    const room = userStore.chatRooms.find((room) => room.chatroomid === data.chatRoomID)
+    if (!room) {
+      console.error('Chat room not found:', data.chatRoomID)
+      return
+    }
+
+    // updates unread count when chatroom exists in userStore
+    room.userid1 === data.senderID ? (room.unreadcount2 += 1) : (room.unreadcount1 += 1)
+
+    console.log('Updated chat rooms:', userStore.chatRooms)
     console.log('Received message:', data)
 
     const { senderID, content, timestamp } = data
