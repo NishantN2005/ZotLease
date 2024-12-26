@@ -83,34 +83,13 @@
         </button>
       </div>
       <!-- Selected Sublease modal-->
-      <div v-if="showSelectedSubleaseModal" class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4" id="filterModal">
-        <button @click="turnOffSubleaseModal" class="text-gray-600 hover:text-gray-900">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        <div class="space-y-5">
-          <h1 class="font-bold text-4xl">{{ subleaseStore.fName }} {{ subleaseStore.lName }}</h1>
-          <p>Price: ${{ subleaseStore.price }}</p>
-          <p>Gender: {{ subleaseStore.gender }}</p>
-          <p>Rooms/Bathrooms: {{ subleaseStore.roomCount }}/{{ subleaseStore.bathroomCount }}</p>
-          <div class="flex items-center">
-            <h1>Address:</h1>
-            <p>
-              {{ subleaseStore.street_name }}, {{ subleaseStore.city }}, California,
-              {{ subleaseStore.postal_code }}
-            </p>
-          </div>
-          <p>Room: {{ subleaseStore.room }}</p>
-          <p>Start Term: {{ subleaseStore.startTerm }}</p>
-          <p>End Term: {{ subleaseStore.endTerm }}</p>
-          <p>Description: {{ subleaseStore.description }}</p>
-          <button
-            @click="createChatRoom"
-            class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
-          >
-            Chat
-          </button>
-        </div>
-      </div>
+      <SelectedSubleaseModal
+      :showSelectedSubleaseModal="showSelectedSubleaseModal"
+      :subleaseStore="subleaseStore"
+      :turnOffSubleaseModal="turnOffSubleaseModal"
+      :createChatRoom="createChatRoom"
+      />
+
       <!-- Filter Modal-->
       <FilterModal 
       :filterform="filterForm" 
@@ -137,6 +116,7 @@ import { ref,onMounted } from 'vue';
 import { API_URL } from '../../constants.js';
 import FilterModal from '@/components/FilterModal.vue';
 import { useFilterStore } from '@/stores/filterStore';
+import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue';
 
 export default {
   name: 'DashboardView',
@@ -144,7 +124,8 @@ export default {
     LeafletMap,
     SocketConnection,
     CreateSubleaseModal,
-    FilterModal
+    FilterModal,
+    SelectedSubleaseModal
   },
   setup() {
     onMounted(() => {
