@@ -4,28 +4,58 @@ const { nanoid } = require("nanoid");
 
 const createChatRoom = async (req, res) => {
   try {
+    console.log("WHATTT GOIN ONNNN");
     const { userID1, userID2 } = req.body;
+    console.log(userID1, userID2);
 
-    if (!userID1 || !userID2 || userID1 === userID2) {
-      return res.status(400).json({ error: "Invalid user IDs" });
+    if (!userID1 || !userID2) {
+      return res
+        .status(400)
+        .json({ error: "Both userID1 and userID2 are required." });
+    }
+    if (userID1 === userID2) {
+      return res
+        .status(400)
+        .json({ error: "userID1 and userID2 cannot be the same." });
     }
 
     const chatRoomID = nanoid();
 
-    // maybe create check for existing chat room
+    const checkQuery = {
+      text: `SELECT * FROM chatRooms WHERE 
+             (userID1 = $1 AND userID2 = $2) OR 
+             (userID1 = $2 AND userID2 = $1)`,
+      values: [userID1, userID2],
+    };
 
-    const insertQuery1 = {
+    const existingRoom = await pool.query(checkQuery);
+
+    if (existingRoom.rowCount > 0) {
+      return res
+        .status(400)
+        .json({ error: "Chat room already exists between these users." });
+    }
+
+    const insertQuery = {
       text: `INSERT INTO chatRooms (chatRoomID, userID1, userID2) VALUES ($1, $2, $3)`,
       values: [chatRoomID, userID1, userID2],
     };
-    const res1 = await pool.query(insertQuery1);
-    console.log("Inserted userIDS:", res1);
 
-    return res
-      .status(200)
-      .json({ message: "Successfully Created Chatroom", success: true });
+    const insertResult = await pool.query(insertQuery);
+
+    if (insertResult.rowCount === 0) {
+      throw new Error("Failed to create the chat room.");
+    }
+
+    console.log("Chat room created:", chatRoomID);
+
+    return res.status(200).json({
+      message: "Successfully created chat room.",
+      success: true,
+      chatRoomID,
+    });
   } catch (err) {
-    return res.status(500).json({ message: err });
+    console.error("Error creating chat room:", err);
   }
 };
 

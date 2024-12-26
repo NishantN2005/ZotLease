@@ -30,41 +30,37 @@
       </div>
     </div>
 
-    <div class="relative w-full h-screen"> 
-        <!-- The Leaflet map -->
-        <LeafletMap
-          class="z-0 w-full h-full"
-          :userToken="userStore.userToken"
-          :routerPass="router"
-          :userID="userStore.userID"
-          :turnOnSubleaseModal = "turnOnSubleaseModal"
-        />
+    <div class="relative w-full h-screen">
+      <!-- The Leaflet map -->
+      <LeafletMap
+        class="z-0 w-full h-full"
+        :userToken="userStore.userToken"
+        :routerPass="router"
+        :userID="userStore.userID"
+        :turnOnSubleaseModal="turnOnSubleaseModal"
+      />
 
       <!-- Your buttons, absolutely positioned on top of the map -->
       <div class="absolute flex justify-center items-center space-x-5 top-5 z-10 w-full">
         <SocketConnection :router="router" />
-        <button class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10" @click="Logout">Logout</button>
+        <button class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10" @click="Logout">
+          Logout
+        </button>
         <button
           @click="turnOnModal"
           class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
         >
           Create Listing
         </button>
-        <br/>
-        <button
-          @click="createChatRoom"
-          class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
-        >
-          Chat
-        </button>
-        <br/>
+        <br />
+        <br />
         <button
           @click="getChatRoomID"
           class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
         >
           Get ChatRoom ID
         </button>
-        <br/>
+        <br />
         <button
           @click="getOnlineStore"
           class="bg-uciblue text-uciyellow font-bold rounded-full p-2"
@@ -73,42 +69,52 @@
         </button>
       </div>
       <!-- Selected Sublease modal-->
-      <div v-if="showSelectedSubleaseModal" class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4">
+      <div
+        v-if="showSelectedSubleaseModal"
+        class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4"
+      >
         <button @click="turnOffSubleaseModal" class="text-gray-600 hover:text-gray-900">
           <i class="fa-solid fa-xmark"></i>
         </button>
         <div class="space-y-5">
           <h1 class="font-bold text-4xl">{{ subleaseStore.fName }} {{ subleaseStore.lName }}</h1>
-          <p>Price: ${{ subleaseStore.price }} </p>
+          <p>Price: ${{ subleaseStore.price }}</p>
           <p>Gender: {{ subleaseStore.gender }}</p>
           <p>Rooms/Bathrooms: {{ subleaseStore.roomCount }}/{{ subleaseStore.bathroomCount }}</p>
           <div class="flex items-center">
-            <h1>Address: </h1>
-            <p>{{ subleaseStore.street_name }}, {{ subleaseStore.city }}, California, {{ subleaseStore.postal_code }}</p>
+            <h1>Address:</h1>
+            <p>
+              {{ subleaseStore.street_name }}, {{ subleaseStore.city }}, California,
+              {{ subleaseStore.postal_code }}
+            </p>
           </div>
           <p>Room: {{ subleaseStore.room }}</p>
           <p>Start Term: {{ subleaseStore.startTerm }}</p>
           <p>End Term: {{ subleaseStore.endTerm }}</p>
           <p>Description: {{ subleaseStore.description }}</p>
+          <button
+            @click="createChatRoom"
+            class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
+          >
+            Chat
+          </button>
         </div>
       </div>
-
-
     </div>
   </div>
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
-import LeafletMap from '../components/LeafletMap.vue';
-import { useUserStore } from '@/stores/userStore';
-import {useSubleaseStore} from '@/stores/subleaseStore';
-import SocketConnection from '@/components/SocketConnection.vue';
-import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue';
-import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService';
-import { ref } from 'vue';
-import { API_URL } from '../../constants.js';
-import { onMounted } from 'vue';
+import { useRouter } from 'vue-router'
+import LeafletMap from '../components/LeafletMap.vue'
+import { useUserStore } from '@/stores/userStore'
+import { useSubleaseStore } from '@/stores/subleaseStore'
+import SocketConnection from '@/components/SocketConnection.vue'
+import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
+import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
+import { ref } from 'vue'
+import { API_URL } from '../../constants.js'
+import { onMounted } from 'vue'
 
 export default {
   name: 'DashboardView',
@@ -127,9 +133,9 @@ export default {
 
     const router = useRouter()
     const userStore = useUserStore()
-    const subleaseStore = useSubleaseStore();
+    const subleaseStore = useSubleaseStore()
 
-    const showSelectedSubleaseModal=ref(false);
+    const showSelectedSubleaseModal = ref(false)
     const formError = ref({
       message: '',
       display: false,
@@ -147,12 +153,6 @@ export default {
       startTerm: '',
       endTerm: '',
       description: '',
-    })
-
-    // hard coded userIDS for now
-    const chatRoomFormData = ref({
-      userID1: '01',
-      userID2: userStore.userID,
     })
 
     const createSubleaseModal = ref(false)
@@ -205,12 +205,15 @@ export default {
 
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      await makeAuthenticatedRequest(
+      const userID1 = userStore.userID
+      const userID2 = subleaseStore.listerID
+      const res = await makeAuthenticatedRequest(
         `chat/createRoom`,
-        chatRoomFormData.value,
+        { userID1, userID2 },
         router,
         userStore.userToken,
       )
+      console.log(res)
     }
 
     // gets chatroom id so u can send it through message posts to categorize
@@ -335,11 +338,11 @@ export default {
     const getOnlineStore = () => {
       console.log(userStore.onlineChats.length)
     }
-    const turnOffSubleaseModal=()=>{
-      showSelectedSubleaseModal.value=false;
+    const turnOffSubleaseModal = () => {
+      showSelectedSubleaseModal.value = false
     }
-    const turnOnSubleaseModal=()=>{
-      showSelectedSubleaseModal.value=true;
+    const turnOnSubleaseModal = () => {
+      showSelectedSubleaseModal.value = true
     }
 
     return {
@@ -360,7 +363,7 @@ export default {
       subleaseStore,
       showSelectedSubleaseModal,
       turnOffSubleaseModal,
-      turnOnSubleaseModal
+      turnOnSubleaseModal,
     }
   },
 }
