@@ -44,15 +44,41 @@
 
 
         <div>
-        <label>Gender: </label>
-        <input
-        v-model="formData.gender"
-        type="text"
-        name="gender"
-        id="gender"
-        placeholder="Male"
-        class="mr-5"
-        />
+            <label>Gender:</label>
+            <div class="flex space-x-4">
+            <!-- Male -->
+            <label class="inline-flex items-center">
+                <input
+                type="radio"
+                value="Male"
+                v-model="formData.gender"
+                class="mr-1"
+                />
+                Male
+            </label>
+
+            <!-- Female -->
+            <label class="inline-flex items-center">
+                <input
+                type="radio"
+                value="Female"
+                v-model="formData.gender"
+                class="mr-1"
+                />
+                Female
+            </label>
+
+            <!-- Other -->
+            <label class="inline-flex items-center">
+                <input
+                type="radio"
+                value="Other"
+                v-model="formData.gender"
+                class="mr-1"
+                />
+                Other
+            </label>
+            </div>
 
         <label>Price: </label>
         <input

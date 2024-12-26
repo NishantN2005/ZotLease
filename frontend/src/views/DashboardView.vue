@@ -38,6 +38,8 @@
           :routerPass="router"
           :userID="userStore.userID"
           :turnOnSubleaseModal = "turnOnSubleaseModal"
+          :filterForm = "filterForm"
+          :filterStore = "filterStore"
         />
 
       <!-- Your buttons, absolutely positioned on top of the map -->
@@ -51,6 +53,10 @@
           Create Listing
         </button>
         <br/>
+        <button @click="toggleFilterModal"class="bg-uciblue text-uciyellow font-bold rounded-full p-2">
+          Filter
+          <i class="fas fa-filter"></i>
+        </button>
         <button
           @click="createChatRoom"
           class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
@@ -92,7 +98,14 @@
           <p>Description: {{ subleaseStore.description }}</p>
         </div>
       </div>
-
+      <!-- Filter Modal-->
+      <FilterModal 
+      :filterform="filterForm" 
+      :showFilterModal="showFilterModal" 
+      :routerPass="router" 
+      :token="userStore.userToken"
+      :toggleFilterModal="toggleFilterModal"
+      />
 
     </div>
   </div>
@@ -109,6 +122,8 @@ import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authSer
 import { ref } from 'vue';
 import { API_URL } from '../../constants.js';
 import { onMounted } from 'vue';
+import FilterModal from '@/components/FilterModal.vue';
+import { useFilterStore } from '@/stores/filterStore';
 
 export default {
   name: 'DashboardView',
@@ -116,6 +131,7 @@ export default {
     LeafletMap,
     SocketConnection,
     CreateSubleaseModal,
+    FilterModal
   },
   setup() {
     onMounted(() => {
@@ -128,8 +144,17 @@ export default {
     const router = useRouter()
     const userStore = useUserStore()
     const subleaseStore = useSubleaseStore();
+    const filterStore = useFilterStore();
 
     const showSelectedSubleaseModal=ref(false);
+    const showFilterModal = ref(false);
+    const filterForm = ref({
+      gender: '',
+      minPrice: null,
+      maxPrice: null,
+      roomCount:null
+
+    })
     const formError = ref({
       message: '',
       display: false,
@@ -342,6 +367,9 @@ export default {
     const turnOnSubleaseModal=()=>{
       showSelectedSubleaseModal.value=true;
     }
+    const toggleFilterModal = () =>{
+      showFilterModal.value=!showFilterModal.value;
+    }
 
     return {
       callTestRoute,
@@ -361,7 +389,12 @@ export default {
       subleaseStore,
       showSelectedSubleaseModal,
       turnOffSubleaseModal,
-      turnOnSubleaseModal
+      turnOnSubleaseModal,
+      toggleFilterModal,
+      showFilterModal,
+      filterForm,
+      FilterModal,
+      filterStore
     }
   },
 }
