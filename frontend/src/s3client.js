@@ -1,0 +1,72 @@
+import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import {PHOTO_BUCKET} from '../constants';
+
+// Configure S3 client
+const s3Client = new S3Client({
+    region: import.meta.env.VITE_AWS_REGION,
+    credentials: {
+      accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY_ID,
+      secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
+    },
+  });
+
+export async function uploadPhotos(path, filesRef) {
+    try {
+      // Upload each file to S3
+      const uploadPromises = filesRef.map(async (file) => {
+        console.log(PHOTO_BUCKET, `${path}/${file.name}`, file.name)
+        const params = {
+          Bucket: PHOTO_BUCKET,
+          Key: `${path}/${file.name}`, // Unique key for the file
+          Body: file, // Use the File object directly
+          ContentType: file.type, // File type from the File object
+        };
+  
+        const command = new PutObjectCommand(params);
+        await s3Client.send(command);
+        return `https://${PHOTO_BUCKET}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com/${params.Key}`;
+      });
+  
+      // Wait for all uploads to complete
+      const fileUrls = await Promise.all(uploadPromises);
+      return fileUrls;
+    } catch (error) {
+      console.error('Error uploading files to S3:', error);
+      return false;
+    }
+}
+
+/**
+ * Retrieve pre-signed URLs for all photos in a directory in S3.
+ * @param {string} bucketName - The name of the S3 bucket.
+ * @param {string} prefix - The directory key (path) in the S3 bucket.
+ * @returns {Promise<string[]>} - An array of pre-signed URLs for the photos.
+ */
+export async function getPhotos(prefix) {
+    try {
+      // List all objects in the directory
+      const params = { Bucket: PHOTO_BUCKET, Prefix: prefix };
+      const command = new ListObjectsV2Command(params);
+      const data = await s3Client.send(command);
+  
+      if (!data.Contents || data.Contents.length === 0) {
+        console.log('No photos found in the directory.');
+        return [];
+      }
+  
+      // Generate pre-signed URLs for each object
+      const signedUrls = await Promise.all(
+        data.Contents.map(async (item) => {
+          const getObjectParams = { Bucket: PHOTO_BUCKET, Key: item.Key };
+          const getObjectCommand = new GetObjectCommand(getObjectParams);
+          return getSignedUrl(s3Client, getObjectCommand, { expiresIn: 3600 }); // URL expires in 1 hour
+        })
+      );
+  
+      return signedUrls;
+    } catch (error) {
+      console.error('Error retrieving photos from S3:', error);
+      return [];
+    }
+  }

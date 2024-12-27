@@ -122,7 +122,46 @@
         placeholder="There is going to be another 2 subleasers. No pets allowed. No furniture provided."
       />
     </div>
+
+    <div class="mb-4">
+        <label for="leasePdf" class="block mb-1 font-semibold">Upload Photos:</label>
+        <input
+        id="leasePdf"
+        type="file"
+        accept="image/png"
+        @change="handleFileChange"
+        class="block w-full text-sm text-gray-900  rounded cursor-pointer
+                focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full
+                file:border-0 file:text-sm file:font-semibold
+                file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        />
+        <p class="mt-1 text-sm text-gray-600">
+        Only PNG files are accepted.
+        </p>
+        <!-- List of Uploaded Files -->
+    </div>
   </form>
+
+  <ul class="mt-4 space-y-2 border border-2">
+        <li
+        v-for="(file, index) in filesRef"
+        :key="index"
+        class="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200"
+        >
+        <!-- File Name -->
+        <span class="text-sm text-gray-700">
+            {{ file.name }}
+        </span>
+
+        <!-- Remove Button -->
+        <!-- <button
+            @click="removeFile(index)"
+            class="text-red-500 hover:text-red-700 text-sm font-semibold"
+        >
+            Remove
+        </button> -->
+        </li>
+    </ul>
 </template>
 
 <script>
@@ -133,6 +172,14 @@ export default {
       type: Object,
       required: true,
     },
+    handleFileChange:{
+        type: Function,
+        required: true
+    },
+    filesRef:{
+        type: Object,
+        required: true
+    }
   },
 }
 </script>

@@ -12,7 +12,11 @@
         <h1 v-if="formError.display" class="flex justify-center text-rose-500 italic mb-4">
           *{{ formError.message }}
         </h1>
-        <CreateSubleaseModal :formData="formData" />
+        <CreateSubleaseModal 
+        :formData="formData" 
+        :handleFileChange="handleFileChange"
+        :filesRef="filesRef"
+        />
         <div class="flex items-center justify-center mt-5">
           <button
             @click="turnOffModal"
@@ -118,6 +122,7 @@ import FilterModal from '@/components/FilterModal.vue';
 import { useFilterStore } from '@/stores/filterStore';
 import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue';
 import {useAllLocationsStore} from '@/stores/AllLocationsStore';
+import {uploadPhotos} from '../s3client.js';
 
 export default {
   name: 'DashboardView',
@@ -169,6 +174,8 @@ export default {
       endTerm: '',
       description: '',
     })
+
+    const filesRef = ref([])
 
     const createSubleaseModal = ref(false)
 
@@ -247,6 +254,7 @@ export default {
     async function createListing() {
       try {
         formError.display = false
+
         let response = await makeAuthenticatedRequest(
           `sublease/create`,
           formData.value,
@@ -256,12 +264,14 @@ export default {
         console.log(response)
 
         if (response.status == 200) {
-
           //reset state of dashboard
           const markerInfo = await response.json()
 
+          //upload photos to s3
+          const success = uploadPhotos(`${userStore.userID}/${markerInfo.subleaseid}`, filesRef.value);
           //update local map render to include new location
           allLocationsStore.addNewLocation(markerInfo);
+
 
           createSubleaseModal.value = false
           formData.value = {
@@ -294,6 +304,7 @@ export default {
         } else if (response.status == 500) {
           alert('Something went bad on our end :(. Our apologies, try again later or report a bug)')
           //reset state of dashboard
+          filesRef.value=[]
           createSubleaseModal.value = false
           formData.value = {
             street_name: '',
@@ -379,6 +390,23 @@ export default {
       toggleFilterModal();
     }
 
+    const handleFileChange = (event) => {
+      const selectedFiles = Array.from(event.target.files || []);
+      
+      // (Optional) Filter out only PDFs
+      const pdfFiles = selectedFiles.filter(file => file.type === 'image/png');
+
+      // Append new files, avoiding duplicates (by name)
+      const existingFileNames = filesRef.value.map(file => file.name);
+      pdfFiles.forEach(file => {
+        if (!existingFileNames.includes(file.name)) {
+          filesRef.value.push(file);
+        }
+      });
+
+      console.log('Updated files:', filesRef.value);
+    };
+
     return {
       callTestRoute,
       navigateToLogin,
@@ -404,7 +432,9 @@ export default {
       FilterModal,
       filterStore,
       resetFilters,
-      allLocationsStore
+      allLocationsStore,
+      handleFileChange,
+      filesRef
     }
   },
 }

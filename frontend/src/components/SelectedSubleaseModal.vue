@@ -70,10 +70,21 @@
             Chat
           </button>
         </div>
+        <div v-if="true" class="mt-4 grid grid-cols-1 gap-4">
+          <img
+            v-for="(photo, index) in photos"
+            :key="index"
+            :src="photo"
+            :alt="'Photo ' + (index + 1)"
+            class="w-full h-auto rounded shadow"
+          />
+        </div>
       </div>
   </template>
   
-  <script>
+<script>
+  import { ref, watch } from 'vue';
+  import {getPhotos} from '../s3client.js';
   export default {
     name: 'SelectedSubleaseModal',
     props: {
@@ -94,7 +105,34 @@
         required: true,
       },
     },
+    setup(props) {
+      const photos = ref([]);
+
+      async function fetchPhotos() {
+        try {
+          console.log("fetching photos")
+          const prefix = `${props.selectedSubleaseStore.subleaseID}/`; // Dynamic prefix
+          const response = await getPhotos(`${props.selectedSubleaseStore.listerID}/${props.selectedSubleaseStore.subleaseID}`);
+          console.log(response)
+          photos.value=response;
+          console.log(photos.value.length)
+        } catch (error) {
+          console.error('Error fetching photos:', error);
+        }
+      }
+
+      // Watch for modal visibility and load photos when opened
+      watch(
+        () => props.showSelectedSubleaseModal,
+        (isVisible) => {
+          if (isVisible) fetchPhotos();
+        }
+      );
+
+      return { photos };
+    },
   };
+
   </script>
   
   <style scoped>
