@@ -111,8 +111,9 @@
       async function fetchPhotos() {
         try {
           console.log("fetching photos")
-          const prefix = `${props.selectedSubleaseStore.subleaseID}/`; // Dynamic prefix
-          const response = await getPhotos(`${props.selectedSubleaseStore.listerID}/${props.selectedSubleaseStore.subleaseID}`);
+          const key = `${props.selectedSubleaseStore.listerID}/${props.selectedSubleaseStore.subleaseID}`;// Dynamic prefix
+          console.log(key);
+          const response = await getPhotos(key);
           console.log(response)
           photos.value=response;
           console.log(photos.value.length)
@@ -123,9 +124,9 @@
 
       // Watch for modal visibility and load photos when opened
       watch(
-        () => props.showSelectedSubleaseModal,
-        (isVisible) => {
-          if (isVisible) fetchPhotos();
+        () => props.selectedSubleaseStore.subleaseID,
+        () => {
+          fetchPhotos();
         }
       );
 
