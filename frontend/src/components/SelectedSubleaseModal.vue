@@ -65,7 +65,7 @@
           <!-- Chat Button -->
           <button
             @click="createChatRoom"
-            class="bg-uciblue text-uciyellow font-bold rounded-full py-2 px-6 hover:bg-blue-900 transition-colors duration-200"
+            class="bg-uciblue text-uciyellow text-xl font-bold rounded-md py-1 px-4 hover:bg-blue-900 transition-colors duration-200"
           >
             Chat
           </button>

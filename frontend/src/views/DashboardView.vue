@@ -48,40 +48,40 @@
       <!-- Your buttons, absolutely positioned on top of the map -->
       <div class="absolute flex justify-center items-center space-x-5 top-5 z-10 w-full">
         <SocketConnection :router="router" />
-        <button class="bg-uciblue text-uciyellow font-bold rounded-full p-2 ml-10" @click="Logout">
+        <button class="bg-uciblue text-uciyellow font-bold rounded-md p-2 ml-10" @click="Logout">
           Logout
         </button>
         <button
           @click="turnOnModal"
-          class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
+          class="bg-uciblue text-uciyellow font-bold rounded-md p-2 mb-2"
         >
           Create Listing
         </button>
         <br />
         <button
           @click="toggleFilterModal"
-          class="bg-uciblue text-uciyellow font-bold rounded-full p-2"
+          class="bg-uciblue text-uciyellow font-bold rounded-md p-2"
         >
           Filter
           <i class="fas fa-filter"></i>
         </button>
         <button
           @click="createChatRoom"
-          class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
+          class="bg-uciblue text-uciyellow font-bold rounded-md p-2 mb-2"
         >
           Chat
         </button>
         <br/>
         <button
           @click="getChatRoomID"
-          class="bg-uciblue text-uciyellow font-bold rounded-full p-2 mb-2"
+          class="bg-uciblue text-uciyellow font-bold rounded-md p-2 mb-2"
         >
           Get ChatRoom ID
         </button>
         <br/>
         <button
           @click="getOnlineStore"
-          class="bg-uciblue text-uciyellow font-bold rounded-full p-2"
+          class="bg-uciblue text-uciyellow font-bold rounded-md p-2"
         >
           Check Store
         </button>
