@@ -2,7 +2,7 @@
     <div
         v-if="showSelectedSubleaseModal"
         id="filterModal"
-        class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4 shadow-md border border-gray-200"
+        class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4 shadow-md border border-gray-200 overflow-y-auto"
       >
         <!-- Close button (top-right) -->
         <div class="flex justify-end mb-2">
