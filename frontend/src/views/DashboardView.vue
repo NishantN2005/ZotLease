@@ -4,29 +4,37 @@
     <div
       v-if="createSubleaseModal"
       class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
-      >
-      <div class="bg-white p-4 shadow-lg rounded-lg">
+    >
+      <div class="bg-white p-4 shadow-lg rounded-lg max-h-[95vh] flex flex-col w-2/5">
+        <!-- Title -->
         <h1 class="font-bold flex justify-center items-center text-xl mb-5">
           Enter Sublease Information
         </h1>
+        <!-- Error Message -->
         <h1 v-if="formError.display" class="flex justify-center text-rose-500 italic mb-4">
           *{{ formError.message }}
         </h1>
-        <CreateSubleaseModal 
-        :formData="formData" 
-        :handleFileChange="handleFileChange"
-        :filesRef="filesRef"
-        />
-        <div class="flex items-center justify-center mt-5">
+
+        <!-- Scrollable Form Section -->
+        <div class="flex-grow overflow-y-auto">
+          <CreateSubleaseModal
+            :formData="formData"
+            :handleFileChange="handleFileChange"
+            :filesRef="filesRef"
+          />
+        </div>
+
+        <!-- Fixed Footer with Buttons -->
+        <div class="flex items-center justify-center mt-5 border-t border-gray-200 pt-4">
           <button
             @click="turnOffModal"
-            class="mx-10 px-3 border-2 border-black rounded-md hover:text-uciyellow hover:bg-uciblue"
+            class="mx-10 px-3 py-2 border-2 border-black rounded-md hover:text-uciyellow hover:bg-uciblue"
           >
             Cancel
           </button>
           <button
             @click="createListing"
-            class="mx-10 border-2 border-black px-3 rounded-md hover:text-uciyellow hover:bg-uciblue"
+            class="mx-10 px-3 py-2 border-2 border-black rounded-md hover:text-uciyellow hover:bg-uciblue"
           >
             Post Sublease
           </button>
@@ -34,16 +42,16 @@
       </div>
     </div>
 
-    <div class="relative w-full h-screen"> 
-        <!-- The Leaflet map -->
-        <LeafletMap
-          class="z-0 w-full h-full"
-          :userToken="userStore.userToken"
-          :routerPass="router"
-          :userID="userStore.userID"
-          :turnOnSubleaseModal = "turnOnSubleaseModal"
-          :filterForm = "filterForm"
-        />
+    <div class="relative w-full h-screen">
+      <!-- The Leaflet map -->
+      <LeafletMap
+        class="z-0 w-full h-full"
+        :userToken="userStore.userToken"
+        :routerPass="router"
+        :userID="userStore.userID"
+        :turnOnSubleaseModal="turnOnSubleaseModal"
+        :filterForm="filterForm"
+      />
 
       <!-- Your buttons, absolutely positioned on top of the map -->
       <div class="absolute flex justify-center items-center space-x-5 top-5 z-10 w-full">
@@ -65,64 +73,44 @@
           Filter
           <i class="fas fa-filter"></i>
         </button>
-        <button
-          @click="createChatRoom"
-          class="bg-uciblue text-uciyellow font-bold rounded-md p-2 mb-2"
-        >
-          Chat
-        </button>
-        <br/>
-        <button
-          @click="getChatRoomID"
-          class="bg-uciblue text-uciyellow font-bold rounded-md p-2 mb-2"
-        >
-          Get ChatRoom ID
-        </button>
-        <br/>
-        <button
-          @click="getOnlineStore"
-          class="bg-uciblue text-uciyellow font-bold rounded-md p-2"
-        >
-          Check Store
-        </button>
+        <br />
       </div>
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
-      :showSelectedSubleaseModal="showSelectedSubleaseModal"
-      :selectedSubleaseStore="selectedSubleaseStore"
-      :turnOffSubleaseModal="turnOffSubleaseModal"
-      :createChatRoom="createChatRoom"
+        :showSelectedSubleaseModal="showSelectedSubleaseModal"
+        :selectedSubleaseStore="selectedSubleaseStore"
+        :turnOffSubleaseModal="turnOffSubleaseModal"
+        :createChatRoom="createChatRoom"
       />
 
       <!-- Filter Modal-->
-      <FilterModal 
-      :filterform="filterForm" 
-      :showFilterModal="showFilterModal" 
-      :routerPass="router" 
-      :token="userStore.userToken"
-      :toggleFilterModal="toggleFilterModal"
-      :resetFilters="resetFilters"
+      <FilterModal
+        :filterform="filterForm"
+        :showFilterModal="showFilterModal"
+        :routerPass="router"
+        :token="userStore.userToken"
+        :toggleFilterModal="toggleFilterModal"
+        :resetFilters="resetFilters"
       />
-
     </div>
   </div>
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
-import LeafletMap from '../components/LeafletMap.vue';
-import { useUserStore } from '@/stores/userStore';
-import {useSelectedSubleaseStore} from '@/stores/SelectedSubleaseStore';
-import SocketConnection from '@/components/SocketConnection.vue';
-import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue';
-import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService';
-import { ref,onMounted } from 'vue';
-import { API_URL } from '../../constants.js';
-import FilterModal from '@/components/FilterModal.vue';
-import { useFilterStore } from '@/stores/filterStore';
-import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue';
-import {useAllLocationsStore} from '@/stores/AllLocationsStore';
-import {uploadPhotos} from '../s3client.js';
+import { useRouter } from 'vue-router'
+import LeafletMap from '../components/LeafletMap.vue'
+import { useUserStore } from '@/stores/userStore'
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
+import SocketConnection from '@/components/SocketConnection.vue'
+import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
+import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
+import { ref, onMounted } from 'vue'
+import { API_URL } from '../../constants.js'
+import FilterModal from '@/components/FilterModal.vue'
+import { useFilterStore } from '@/stores/filterStore'
+import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
+import { useAllLocationsStore } from '@/stores/AllLocationsStore'
+import { uploadPhotos } from '../s3client.js'
 
 export default {
   name: 'DashboardView',
@@ -131,7 +119,7 @@ export default {
     SocketConnection,
     CreateSubleaseModal,
     FilterModal,
-    SelectedSubleaseModal
+    SelectedSubleaseModal,
   },
   setup() {
     onMounted(() => {
@@ -143,18 +131,17 @@ export default {
 
     const router = useRouter()
     const userStore = useUserStore()
-    const selectedSubleaseStore = useSelectedSubleaseStore();
-    const filterStore = useFilterStore();
-    const allLocationsStore = useAllLocationsStore();
+    const selectedSubleaseStore = useSelectedSubleaseStore()
+    const filterStore = useFilterStore()
+    const allLocationsStore = useAllLocationsStore()
 
-    const showSelectedSubleaseModal=ref(false);
-    const showFilterModal = ref(false);
+    const showSelectedSubleaseModal = ref(false)
+    const showFilterModal = ref(false)
     const filterForm = ref({
       gender: '',
       minPrice: null,
       maxPrice: null,
-      roomCount:null
-
+      roomCount: null,
     })
     const formError = ref({
       message: '',
@@ -268,10 +255,12 @@ export default {
           const markerInfo = await response.json()
 
           //upload photos to s3
-          const success = uploadPhotos(`${userStore.userID}/${markerInfo.subleaseid}`, filesRef.value);
+          const success = uploadPhotos(
+            `${userStore.userID}/${markerInfo.subleaseid}`,
+            filesRef.value,
+          )
           //update local map render to include new location
-          allLocationsStore.addNewLocation(markerInfo);
-
+          allLocationsStore.addNewLocation(markerInfo)
 
           createSubleaseModal.value = false
           formData.value = {
@@ -304,7 +293,7 @@ export default {
         } else if (response.status == 500) {
           alert('Something went bad on our end :(. Our apologies, try again later or report a bug)')
           //reset state of dashboard
-          filesRef.value=[]
+          filesRef.value = []
           createSubleaseModal.value = false
           formData.value = {
             street_name: '',
@@ -370,42 +359,42 @@ export default {
     const getOnlineStore = () => {
       console.log(userStore.onlineChats.length)
     }
-    const turnOffSubleaseModal=()=>{
-      showSelectedSubleaseModal.value=false;
+    const turnOffSubleaseModal = () => {
+      showSelectedSubleaseModal.value = false
     }
-    const turnOnSubleaseModal=()=>{
-      showSelectedSubleaseModal.value=true;
+    const turnOnSubleaseModal = () => {
+      showSelectedSubleaseModal.value = true
     }
     const toggleFilterModal = () => {
-      showFilterModal.value = !showFilterModal.value;
-      filterForm.value={
-      gender: '',
-      minPrice: null,
-      maxPrice: null,
-      roomCount:null
+      showFilterModal.value = !showFilterModal.value
+      filterForm.value = {
+        gender: '',
+        minPrice: null,
+        maxPrice: null,
+        roomCount: null,
       }
     }
-    const resetFilters=()=>{
-      filterStore.resetFilter();
-      toggleFilterModal();
+    const resetFilters = () => {
+      filterStore.resetFilter()
+      toggleFilterModal()
     }
 
     const handleFileChange = (event) => {
-      const selectedFiles = Array.from(event.target.files || []);
-      
+      const selectedFiles = Array.from(event.target.files || [])
+
       // (Optional) Filter out only PDFs
-      const pdfFiles = selectedFiles.filter(file => file.type === 'image/png');
+      const pdfFiles = selectedFiles.filter((file) => file.type === 'image/png')
 
       // Append new files, avoiding duplicates (by name)
-      const existingFileNames = filesRef.value.map(file => file.name);
-      pdfFiles.forEach(file => {
+      const existingFileNames = filesRef.value.map((file) => file.name)
+      pdfFiles.forEach((file) => {
         if (!existingFileNames.includes(file.name)) {
-          filesRef.value.push(file);
+          filesRef.value.push(file)
         }
-      });
+      })
 
-      console.log('Updated files:', filesRef.value);
-    };
+      console.log('Updated files:', filesRef.value)
+    }
 
     return {
       callTestRoute,
@@ -434,7 +423,7 @@ export default {
       resetFilters,
       allLocationsStore,
       handleFileChange,
-      filesRef
+      filesRef,
     }
   },
 }

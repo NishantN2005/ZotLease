@@ -62,13 +62,13 @@
           class="p-8 bg-white rounded-xl shadow-lg hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105"
         >
           <h3 class="text-xl font-bold mb-4 text-[#0061c4]">Instant Access</h3>
-          <p class="text-gray-700">Get access to thousands of options with just a few clicks.</p>
+          <p class="text-gray-700">Get access to hundreds of options with just a few clicks.</p>
         </div>
       </div>
     </section>
 
     <footer class="bg-[#003f7d] py-8 text-center text-white">
-      <p class="text-sm md:text-base opacity-80">© 2024 Your Company. All rights reserved.</p>
+      <p class="text-sm md:text-base opacity-80">© 2024 ZotLease. All rights reserved.</p>
     </footer>
   </div>
 </template>
