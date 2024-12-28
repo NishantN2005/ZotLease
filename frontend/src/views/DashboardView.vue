@@ -42,7 +42,12 @@
       </div>
     </div>
 
-    <div class="relative w-full h-screen">
+    <div class="flex relative w-full h-screen">
+      <Sidebar
+      :Logout="Logout"
+      :turnOnModal="turnOnModal"
+      :toggleFilterModal="toggleFilterModal"
+      />
       <!-- The Leaflet map -->
       <LeafletMap
         class="z-0 w-full h-full"
@@ -56,24 +61,6 @@
       <!-- Your buttons, absolutely positioned on top of the map -->
       <div class="absolute flex justify-center items-center space-x-5 top-5 z-10 w-full">
         <SocketConnection :router="router" />
-        <button class="bg-uciblue text-uciyellow font-bold rounded-md p-2 ml-10" @click="Logout">
-          Logout
-        </button>
-        <button
-          @click="turnOnModal"
-          class="bg-uciblue text-uciyellow font-bold rounded-md p-2 mb-2"
-        >
-          Create Listing
-        </button>
-        <br />
-        <button
-          @click="toggleFilterModal"
-          class="bg-uciblue text-uciyellow font-bold rounded-md p-2"
-        >
-          Filter
-          <i class="fas fa-filter"></i>
-        </button>
-        <br />
       </div>
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
@@ -111,6 +98,7 @@ import { useFilterStore } from '@/stores/filterStore'
 import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import { uploadPhotos } from '../s3client.js'
+import Sidebar from '@/components/Sidebar.vue';
 
 export default {
   name: 'DashboardView',
@@ -120,6 +108,7 @@ export default {
     CreateSubleaseModal,
     FilterModal,
     SelectedSubleaseModal,
+    Sidebar
   },
   setup() {
     onMounted(() => {
