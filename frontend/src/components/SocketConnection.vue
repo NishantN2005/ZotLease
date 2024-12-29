@@ -3,7 +3,6 @@ import { onMounted, ref } from 'vue'
 import { io } from 'socket.io-client'
 import { useUserStore } from '@/stores/userStore'
 import { useChatStore } from '@/stores/chatStore'
-import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import { makeAuthenticatedRequest } from '@/services/authService'
 
 const props = defineProps({
@@ -15,14 +14,12 @@ const props = defineProps({
 
 const userStore = useUserStore()
 const chatStore = useChatStore()
-const selectedSubleaseStore = useSelectedSubleaseStore()
 
 const socketId = ref(null)
 const socket = ref(null)
 const message = ref('')
 
 // set to 01 but dynamically put recipient id to userID from clicked card/chat
-const recipientID = selectedSubleaseStore.listerID
 const userID = userStore.userID
 
 const sendMessage = () => {
@@ -37,7 +34,10 @@ const sendMessage = () => {
       return response.json()
     })
     .then((data) => {
-      socket.value.emit('directMessage', { ...data.messageData, recipientID })
+      socket.value.emit('directMessage', {
+        ...data.messageData,
+        recipientID: chatStore.activeChatID,
+      })
       message.value = ''
     })
     .catch((error) => {
@@ -66,7 +66,7 @@ onMounted(() => {
         const response = await makeAuthenticatedRequest(
           'chat/getChatRooms',
           { userID: userStore.userID },
-          router,
+          props.router,
           userStore.userToken,
         )
         console.log('Response:', response)

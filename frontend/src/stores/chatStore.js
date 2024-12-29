@@ -5,7 +5,8 @@ export const useChatStore = defineStore('chat', {
   state: () => {
     return {
       chatRoomID: null,
-      chatRooms: [],
+      activeChatID: null,
+      chatRooms: [], // format is {chatRoomID: [fname, unreadMessages, userID]}
       onlineChats: [],
     }
   },
@@ -25,6 +26,9 @@ export const useChatStore = defineStore('chat', {
     },
     setOnlineChats(val) {
       this.onlineChats = val
+    },
+    setActiveChatID(val) {
+      this.activeChatID = val
     },
   },
   getters: {},

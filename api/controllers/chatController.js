@@ -189,6 +189,7 @@ const getChatRooms = async (req, res) => {
       chatRooms[data.chatroomid] = [
         partnerNames[partnerID] || "Unknown",
         unreadMessages,
+        userID === data.userid1 ? data.userid2 : data.userid1,
       ];
     });
 
