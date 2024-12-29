@@ -43,12 +43,9 @@
     </div>
 
     <div class="flex relative w-full h-screen">
-      <Sidebar
-      :Logout="Logout"
-      :turnOnModal="turnOnModal"
-      :toggleFilterModal="toggleFilterModal"
-      />
+      <Sidebar :Logout="Logout" :turnOnModal="turnOnModal" :toggleFilterModal="toggleFilterModal" />
       <!-- The Leaflet map -->
+      <button @click="findChatRooms">CHats</button>
       <LeafletMap
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"
@@ -87,6 +84,7 @@
 import { useRouter } from 'vue-router'
 import LeafletMap from '../components/LeafletMap.vue'
 import { useUserStore } from '@/stores/userStore'
+import { useChatStore } from '@/stores/chatStore'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import SocketConnection from '@/components/SocketConnection.vue'
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
@@ -98,7 +96,7 @@ import { useFilterStore } from '@/stores/filterStore'
 import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import { uploadPhotos } from '../s3client.js'
-import Sidebar from '@/components/Sidebar.vue';
+import Sidebar from '@/components/Sidebar.vue'
 
 export default {
   name: 'DashboardView',
@@ -108,18 +106,19 @@ export default {
     CreateSubleaseModal,
     FilterModal,
     SelectedSubleaseModal,
-    Sidebar
+    Sidebar,
   },
   setup() {
     onMounted(() => {
       if (userStore.isLoggedIn) {
-        userStore.onlineChats = []
+        chatStore.onlineChats = []
         sequencialFetch()
       }
     })
 
     const router = useRouter()
     const userStore = useUserStore()
+    const chatStore = useChatStore()
     const selectedSubleaseStore = useSelectedSubleaseStore()
     const filterStore = useFilterStore()
     const allLocationsStore = useAllLocationsStore()
@@ -179,23 +178,27 @@ export default {
         console.log('res', response)
         const result = await response.json()
         console.log(result)
-        userStore.setChatRooms(result.chatRooms)
+        chatStore.setChatRooms(result.chatRooms)
       } catch (error) {
         console.error('Error fetching chat rooms:', error)
       }
+    }
+
+    const findChatRooms = () => {
+      console.log(chatStore.chatRooms)
     }
 
     const fetchChats = async () => {
       try {
         const response = await makeAuthenticatedRequest(
           'chat/getOfflineChats',
-          { chatRooms: userStore.chatRooms },
+          { chatRooms: chatStore.chatRooms },
           router,
           userStore.userToken,
         )
         const result = await response.json()
         console.log(result)
-        userStore.setOfflineChats(result.messages)
+        chatStore.setOnlineChats(result.messages)
       } catch (error) {
         console.error('Error fetching chat rooms:', error)
       }
@@ -211,20 +214,21 @@ export default {
         router,
         userStore.userToken,
       )
-      console.log(res)
+      const newRes = await res.json()
+      chatStore.setChatRoomID(newRes.chatRoomID)
     }
 
     // gets chatroom id so u can send it through message posts to categorize
     async function getChatRoomID() {
       let response = await makeAuthenticatedRequest(
         `chat/chatRoomID`,
-        chatRoomFormData.value,
+        {}, // change this to a dictionary
         router,
         userStore.userToken,
       )
       const textRes = await response.json()
 
-      userStore.setChatRoomID(textRes.chatRoomID)
+      chatStore.setChatRoomID(textRes.chatRoomID)
     }
 
     async function createListing() {
@@ -317,10 +321,9 @@ export default {
           userStore.setIsLoggedIn(false)
           userStore.setUserToken(null)
           userStore.setUserID(null)
-          userStore.setChatRoomID(null)
-          userStore.setChatRooms([])
-          userStore.setOfflineChats([])
-          userStore.setOnlineChats([])
+          chatStore.setChatRoomID(null)
+          chatStore.setChatRooms([])
+          chatStore.setOnlineChats([])
           router.push('/login')
         } else {
           const resp = await response.json()
@@ -345,9 +348,6 @@ export default {
       router.push('/login')
     }
 
-    const getOnlineStore = () => {
-      console.log(userStore.onlineChats.length)
-    }
     const turnOffSubleaseModal = () => {
       showSelectedSubleaseModal.value = false
     }
@@ -399,7 +399,7 @@ export default {
       getChatRoomID,
       router,
       userStore,
-      getOnlineStore,
+      chatStore,
       selectedSubleaseStore,
       showSelectedSubleaseModal,
       turnOffSubleaseModal,
@@ -413,6 +413,7 @@ export default {
       allLocationsStore,
       handleFileChange,
       filesRef,
+      findChatRooms,
     }
   },
 }

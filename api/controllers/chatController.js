@@ -29,11 +29,12 @@ const createChatRoom = async (req, res) => {
     };
 
     const existingRoom = await pool.query(checkQuery);
+    console.log(existingRoom.rows);
 
     if (existingRoom.rowCount > 0) {
       return res
-        .status(400)
-        .json({ error: "Chat room already exists between these users." });
+        .status(200)
+        .json({ chatRoomID: existingRoom.rows[0].chatroomid });
     }
 
     const insertQuery = {
@@ -144,18 +145,59 @@ const getChatRoomID = async (req, res) => {
   }
 };
 
-// gets chat rooms user is involved in
 const getChatRooms = async (req, res) => {
   try {
     const { userID } = req.body;
-    const selectQuery = {
+
+    // Step 1: Get chat rooms
+    let selectQuery = {
       text: `SELECT * FROM chatRooms WHERE userID1 = $1 OR userID2 = $1;`,
       values: [userID],
     };
-    const response = await pool.query(selectQuery);
-    return res.status(200).json({ chatRooms: response.rows, success: true });
+    let response = await pool.query(selectQuery);
+    console.log("here", response.rows);
+
+    // Step 2: Extract partner IDs
+    const partnerIDS = response.rows.map((data) =>
+      data.userid1 === userID ? data.userid2 : data.userid1
+    );
+    console.log("partners", partnerIDS);
+
+    // Step 3: Fetch partner names
+    const newselectQuery = {
+      text: `SELECT userID, fname FROM users WHERE userID = ANY($1)`,
+      values: [partnerIDS],
+    };
+    const newresponse = await pool.query(newselectQuery);
+    console.log("partners data", newresponse.rows);
+
+    // Step 4: Map userID to fname for easier lookup
+    const partnerNames = {};
+    newresponse.rows.forEach((user) => {
+      partnerNames[user.userid] = user.fname;
+    });
+
+    console.log("partnerNames mapping", partnerNames);
+
+    // Step 5: Create chatRooms object
+    const chatRooms = {};
+
+    response.rows.forEach((data) => {
+      const partnerID = data.userid1 === userID ? data.userid2 : data.userid1;
+      const unreadMessages =
+        userID === data.userid1 ? data.unreadcount1 : data.unreadcount2;
+      chatRooms[data.chatroomid] = [
+        partnerNames[partnerID] || "Unknown",
+        unreadMessages,
+      ];
+    });
+
+    console.log("newChats", chatRooms);
+
+    return res.status(200).json({ chatRooms, success: true });
   } catch (err) {
-    return res.status(500).json({ message: err });
+    console.error("Error fetching chat rooms:", err.message);
+    return res.status(500).json({ message: err.message });
   }
 };
 

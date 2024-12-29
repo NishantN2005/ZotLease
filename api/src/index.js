@@ -65,6 +65,15 @@ io.on("connection", (socket) => {
   socket.on(
     "directMessage",
     ({ chatRoomID, content, id, sender, status, timestamp, recipientID }) => {
+      console.log(
+        chatRoomID,
+        content,
+        id,
+        sender,
+        status,
+        timestamp,
+        recipientID
+      );
       const recipientSocketId = userSockets.get(recipientID);
 
       if (recipientSocketId) {

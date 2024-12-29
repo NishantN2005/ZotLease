@@ -2,6 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { io } from 'socket.io-client'
 import { useUserStore } from '@/stores/userStore'
+import { useChatStore } from '@/stores/chatStore'
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import { makeAuthenticatedRequest } from '@/services/authService'
 
 const props = defineProps({
@@ -12,18 +14,20 @@ const props = defineProps({
 })
 
 const userStore = useUserStore()
+const chatStore = useChatStore()
+const selectedSubleaseStore = useSelectedSubleaseStore()
 
 const socketId = ref(null)
 const socket = ref(null)
 const message = ref('')
 
 // set to 01 but dynamically put recipient id to userID from clicked card/chat
-const recipientId = ref('01')
+const recipientID = selectedSubleaseStore.listerID
 const userID = userStore.userID
 
 const sendMessage = () => {
   const formData = {
-    chatRoomID: userStore.chatRoomID,
+    chatRoomID: chatStore.chatRoomID,
     sender: userStore.userID,
     content: message.value,
   }
@@ -33,7 +37,7 @@ const sendMessage = () => {
       return response.json()
     })
     .then((data) => {
-      socket.value.emit('directMessage', { ...data.messageData, recipientID: recipientId.value })
+      socket.value.emit('directMessage', { ...data.messageData, recipientID })
       message.value = ''
     })
     .catch((error) => {
@@ -52,8 +56,12 @@ onMounted(() => {
   })
 
   socket.value.on('message', async (data) => {
+    console.log('Received message:', data)
+
+    const keys = Object.keys(chatStore.chatRooms)
+    console.log(keys, data.chatRoomID)
     // checks if recieved message room is in user store, if not add it
-    if (!userStore.chatRooms.some((room) => room.chatroomid === data.chatRoomID)) {
+    if (!keys.some((key) => key === data.chatRoomID)) {
       try {
         const response = await makeAuthenticatedRequest(
           'chat/getChatRooms',
@@ -64,7 +72,7 @@ onMounted(() => {
         console.log('Response:', response)
         const result = await response.json()
         console.log('Chat rooms:', result)
-        userStore.setChatRooms(result.chatRooms)
+        chatStore.setChatRooms(result.chatRooms)
 
         return
       } catch (error) {
@@ -73,16 +81,18 @@ onMounted(() => {
       }
     }
 
-    const room = userStore.chatRooms.find((room) => room.chatroomid === data.chatRoomID)
-    if (!room) {
+    const roomKey = keys.find((room) => room === data.chatRoomID)
+    if (!roomKey) {
       console.error('Chat room not found:', data.chatRoomID)
       return
     }
+    const room = chatStore.chatRooms[roomKey]
 
     // updates unread count when chatroom exists in userStore
-    room.userid1 === data.senderID ? (room.unreadcount2 += 1) : (room.unreadcount1 += 1)
+    room[1] += 1
+    chatStore.chatRooms = { ...chatStore.chatRooms }
 
-    console.log('Updated chat rooms:', userStore.chatRooms)
+    console.log('Updated chat rooms:', chatStore.chatRooms)
     console.log('Received message:', data)
 
     const { senderID, content, timestamp } = data
