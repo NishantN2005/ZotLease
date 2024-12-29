@@ -1,9 +1,6 @@
 <template>
-  <div :class="['sidebar', { collapsed: isCollapsed }]">
-    <button @click="toggleSidebar" class="toggle-button">
-      {{ isCollapsed ? '→' : '←' }}
-    </button>
-    <div class="content" v-if="!isCollapsed">
+  <div class="sidebar">
+    <div class="content">
       <!-- Chat List -->
       <div class="chat-list">
         <h3>Chats</h3>
@@ -18,7 +15,7 @@
       </div>
 
       <!-- Chat Messages -->
-      <div class="chat-box">
+      <div class="chat-box" v-if="activeChatId" :class="{'invisible': !activeChatId}">
         <ul class="messages">
           <li
             v-for="message in activeChat.messages"
@@ -29,15 +26,15 @@
             <p class="text">{{ message.text }}</p>
           </li>
         </ul>
-      </div>
-    </div>
-    <div class="input-container" :class="{ hidden: isCollapsed }">
-      <textarea
+      <div class="input-container" v-if="activeChatId">
+        <textarea
         v-model="newMessage"
         placeholder="Type your message..."
         @keydown.enter.prevent="sendMessage"
-      ></textarea>
+        ></textarea>
       <button @click="sendMessage" class="send-button">Send</button>
+    </div>
+      </div>
     </div>
   </div>
 </template>
@@ -46,81 +43,78 @@
 export default {
   data() {
     return {
-      isCollapsed: true,
       chatList: [
         { id: 1, name: 'Nishant' },
         { id: 2, name: 'Brian' },
         { id: 3, name: 'Humayl' },
+        { id: 4, name: 'Bob'},
       ],
-      activeChatId: 1,
+      activeChatId: null,
       chats: {
         1: {
           messages: [{ id: 1, sender: 'system', text: 'Chat with Nishant' }],
         },
         2: {
-          messages: [{ id: 1, sender: 'system', text: 'Chat with Brian' }],
+          messages: [{ id: 2, sender: 'system', text: 'Chat with Brian' }],
         },
         3: {
-          messages: [{ id: 1, sender: 'system', text: 'Chat with Humayl' }],
+          messages: [{ id: 3, sender: 'system', text: 'Chat with Humayl' }],
+        },
+        4: {
+          messages: [{ id: 4, sender: 'system', text: 'Chat with Bob'}],
         },
       },
       newMessage: '',
-    }
+    };
   },
   computed: {
     activeChat() {
-      return this.chats[this.activeChatId]
+      return this.chats[this.activeChatId];
     },
   },
   methods: {
-    toggleSidebar() {
-      this.isCollapsed = !this.isCollapsed
-    },
     selectChat(chatId) {
-      this.activeChatId = chatId
+      this.activeChatId = chatId;
     },
     sendMessage() {
       if (this.newMessage.trim()) {
-        // Add user message to the active chat
         this.activeChat.messages.push({
           id: Date.now(),
           sender: 'user',
           text: this.newMessage.trim(),
-        })
+        });
 
-        // Simulate a system response
         setTimeout(() => {
           this.activeChat.messages.push({
             id: Date.now() + 1,
             sender: 'system',
             text: 'Fake Response',
-          })
-        }, 1000)
+          });
+        }, 1000);
 
-        this.newMessage = ''
+        this.newMessage = '';
       }
     },
     deleteChat(chatID) {
-      this.chatList = this.chatList.filter((chat) => chat.id !== chatID)
+      this.chatList = this.chatList.filter((chat) => chat.id !== chatID);
 
       if (this.activeChatId === chatID) {
-        this.activeChatId = this.chatList.length ? this.chatList[0].id : null
+        this.activeChatId = this.chatList.length ? this.chatList[0].id : null;
       }
     },
   },
-}
+};
 </script>
 
-<style>
+<style scoped>
 * {
   box-sizing: border-box;
 }
 
 .sidebar {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 50%;
+  left: 58px;
+  max-width: 40%;
   height: 100%;
   background: #f9f9f9;
   border-right: 1px solid #ddd;
@@ -131,6 +125,8 @@ export default {
   z-index: 1000;
   padding: 0;
   margin: 0;
+  color: black;
+  bottom: 0;
 }
 
 .sidebar.collapsed {
@@ -207,8 +203,11 @@ export default {
   flex-grow: 1;
   flex-direction: row;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  width: 100%;
+  width: 40%;
+  height: 100%;
+  word-wrap: break-word;
 }
 
 .messages {
@@ -229,6 +228,7 @@ export default {
 
 .user-message {
   align-items: flex-end;
+  word-wrap: break-word;
 }
 
 .system-message {
@@ -248,6 +248,7 @@ export default {
   border-radius: 12px;
   max-width: 100%;
   word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .system-message .text {
@@ -293,5 +294,9 @@ textarea:focus {
 
 .input-container.hidden {
   display: none;
+}
+
+.sidebar .invisible{
+  width: 7%;
 }
 </style>

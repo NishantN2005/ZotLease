@@ -158,7 +158,7 @@
     </div>
   </form>
 
-  <ul class="mt-4 space-y-2 border border-2">
+  <ul class="mt-4 space-y-2 border">
     <li
       v-for="(file, index) in filesRef"
       :key="index"
