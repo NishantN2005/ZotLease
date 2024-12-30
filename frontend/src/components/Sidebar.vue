@@ -29,7 +29,12 @@
           <i class="fas fa-comments"></i>
         </button>
       </div>
-      <Messages v-if="messagesOpen" />
+      <Messages
+        v-if="messagesOpen"
+        :chatStore="chatStore"
+        :router="router"
+        :userStore="userStore"
+      />
     </div>
 
     <!-- Bottom Section: Logout Button -->
@@ -46,7 +51,10 @@
 
 <script>
 import Messages from '../components/messages.vue'
+import { useChatStore } from '@/stores/chatStore'
+import { useUserStore } from '@/stores/userStore'
 import { ref } from 'vue'
+
 export default {
   name: 'Sidebar',
   props: {
@@ -60,6 +68,10 @@ export default {
     },
     toggleFilterModal: {
       type: Function,
+      required: true,
+    },
+    router: {
+      type: Object,
       required: true,
     },
   },
@@ -78,11 +90,15 @@ export default {
     },
   },
   setup(props) {
+    const chatStore = useChatStore()
+    const userStore = useUserStore()
     const messagesOpen = ref(false)
+
     const toggleMessages = () => {
       messagesOpen.value = !messagesOpen.value
     }
-    return { messagesOpen, toggleMessages }
+
+    return { messagesOpen, chatStore, userStore, toggleMessages }
   },
 }
 </script>

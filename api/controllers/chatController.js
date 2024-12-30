@@ -62,7 +62,6 @@ const createChatRoom = async (req, res) => {
 
 const createNewChat = async (req, res) => {
   try {
-    console.log("cahtin");
     const id = nanoid();
     const { chatRoomID, sender, content } = req.body;
     const timestamp = new Date();
@@ -180,17 +179,20 @@ const getChatRooms = async (req, res) => {
     console.log("partnerNames mapping", partnerNames);
 
     // Step 5: Create chatRooms object
-    const chatRooms = {};
+    const chatRooms = [];
 
     response.rows.forEach((data) => {
+      const dataObj = {};
       const partnerID = data.userid1 === userID ? data.userid2 : data.userid1;
       const unreadMessages =
         userID === data.userid1 ? data.unreadcount1 : data.unreadcount2;
-      chatRooms[data.chatroomid] = [
-        partnerNames[partnerID] || "Unknown",
-        unreadMessages,
-        userID === data.userid1 ? data.userid2 : data.userid1,
-      ];
+
+      chatRooms.push({
+        chatRoomID: data.chatroomid,
+        partnerID: partnerID,
+        unreadMessages: unreadMessages,
+        partnerName: partnerNames[partnerID],
+      });
     });
 
     console.log("newChats", chatRooms);
@@ -205,12 +207,10 @@ const getChatRooms = async (req, res) => {
 // this gets all chats from database of user
 const getOfflineChats = async (req, res) => {
   try {
-    const { chatRooms } = req.body;
-    console.log("room", chatRooms);
-    const chatRoomIDS = chatRooms.map((chat) => chat.chatroomid);
+    const { chatRoomID } = req.body;
     const selectQuery = {
-      text: `SELECT * FROM messages WHERE chatRoomID = ANY($1)`,
-      values: [chatRoomIDS],
+      text: `SELECT * FROM messages WHERE chatRoomID = $1 ORDER BY timestamp ASC`,
+      values: [chatRoomID],
     };
     const response = await pool.query(selectQuery);
     return res.status(200).json({ messages: response.rows, success: true });

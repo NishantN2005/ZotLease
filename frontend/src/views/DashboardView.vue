@@ -43,9 +43,13 @@
     </div>
 
     <div class="flex relative w-full h-screen">
-      <Sidebar :Logout="Logout" :turnOnModal="turnOnModal" :toggleFilterModal="toggleFilterModal" />
+      <Sidebar
+        :Logout="Logout"
+        :turnOnModal="turnOnModal"
+        :toggleFilterModal="toggleFilterModal"
+        :router="router"
+      />
       <!-- The Leaflet map -->
-      <button @click="findChatRooms">CHats</button>
       <LeafletMap
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"

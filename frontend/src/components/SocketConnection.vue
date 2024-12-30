@@ -34,9 +34,15 @@ const sendMessage = () => {
       return response.json()
     })
     .then((data) => {
+      console.log('activeeewe', chatStore.activeChatID)
+      const recipientRoom = chatStore.chatRooms.find((room) => {
+        console.log(room.chatRoomID)
+        return room.chatRoomID === chatStore.activeChatID
+      })
+
       socket.value.emit('directMessage', {
         ...data.messageData,
-        recipientID: chatStore.activeChatID,
+        recipientID: recipientRoom.partnerID,
       })
       message.value = ''
     })

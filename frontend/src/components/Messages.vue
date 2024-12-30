@@ -5,50 +5,76 @@
       <div class="chat-list">
         <h3>Chats</h3>
         <ul>
-          <li v-for="chat in chatList" :key="chat.id" :class="{ active: chat.id === activeChatId }">
-            <span @click="selectChat(chat.id)" class="chat-name">
-              {{ chat.name }}
+          <li
+            v-for="chat in chatStore.chatRooms"
+            :key="chat.chatRoomID"
+            :class="{ active: chat.chatRoomID === activeChatId }"
+          >
+            <span @click="selectChat(chat.chatRoomID)" class="chat-name">
+              {{ chat.partnerName }}
             </span>
-            <button @click="deleteChat(chat.id)" class="delete-button">❌</button>
+            <button @click="deleteChat(chat.chatRoomID)" class="delete-button">❌</button>
           </li>
         </ul>
       </div>
 
       <!-- Chat Messages -->
-      <div class="chat-box" v-if="activeChatId" :class="{'invisible': !activeChatId}">
+      <div
+        class="chat-box"
+        v-if="chatStore.activeChatID"
+        :class="{ invisible: !chatStore.activeChatID }"
+      >
         <ul class="messages">
           <li
-            v-for="message in activeChat.messages"
+            v-for="message in messages"
             :key="message.id"
-            :class="['message', message.sender === 'user' ? 'user-message' : 'system-message']"
+            :class="[
+              'message',
+              message.sender === userStore.userID ? 'user-message' : 'system-message',
+            ]"
           >
-            <span class="sender">{{ message.sender === 'user' ? 'You' : 'System' }}:</span>
-            <p class="text">{{ message.text }}</p>
+            <span class="sender"
+              >{{ message.sender === userStore.userID ? 'You' : 'System' }}:</span
+            >
+            <p class="text">{{ message.content }}</p>
           </li>
         </ul>
-      <div class="input-container" v-if="activeChatId">
-        <textarea
-        v-model="newMessage"
-        placeholder="Type your message..."
-        @keydown.enter.prevent="sendMessage"
-        ></textarea>
-      <button @click="sendMessage" class="send-button">Send</button>
-    </div>
+        <div class="input-container" v-if="chatStore.activeChatID">
+          <SocketConnection :router="router" />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { makeAuthenticatedRequest } from '@/services/authService'
+import { ref, watch } from 'vue'
+import SocketConnection from '@/components/SocketConnection.vue'
+
 export default {
+  setup(props) {
+    const messages = ref([])
+    watch(
+      // add response.messages to online chats and push a new chat to it when we get one and make a watch for it
+      () => [props.chatStore.activeChatID],
+      async ([newActiveChatID]) => {
+        console.log('looesc')
+        let response = await makeAuthenticatedRequest(
+          'chat/getOfflineChats',
+          { chatRoomID: newActiveChatID },
+          props.router,
+          props.userStore.userToken,
+        )
+        response = await response.json()
+        messages.value = response.messages
+        console.log(response.messages)
+      },
+    )
+    return { messages }
+  },
   data() {
     return {
-      chatList: [
-        { id: 1, name: 'Nishant' },
-        { id: 2, name: 'Brian' },
-        { id: 3, name: 'Humayl' },
-        { id: 4, name: 'Bob'},
-      ],
       activeChatId: null,
       chats: {
         1: {
@@ -61,49 +87,49 @@ export default {
           messages: [{ id: 3, sender: 'system', text: 'Chat with Humayl' }],
         },
         4: {
-          messages: [{ id: 4, sender: 'system', text: 'Chat with Bob'}],
+          messages: [{ id: 4, sender: 'system', text: 'Chat with Bob' }],
         },
       },
       newMessage: '',
-    };
+    }
   },
   computed: {
     activeChat() {
-      return this.chats[this.activeChatId];
+      return this.chats[this.activeChatId]
     },
   },
+  props: {
+    chatStore: {
+      type: Object,
+      required: true,
+    },
+    router: {
+      type: Object,
+      required: true,
+    },
+    userStore: {
+      type: Object,
+      required: true,
+    },
+  },
+
+  components: {
+    SocketConnection,
+  },
+
   methods: {
     selectChat(chatId) {
-      this.activeChatId = chatId;
-    },
-    sendMessage() {
-      if (this.newMessage.trim()) {
-        this.activeChat.messages.push({
-          id: Date.now(),
-          sender: 'user',
-          text: this.newMessage.trim(),
-        });
-
-        setTimeout(() => {
-          this.activeChat.messages.push({
-            id: Date.now() + 1,
-            sender: 'system',
-            text: 'Fake Response',
-          });
-        }, 1000);
-
-        this.newMessage = '';
-      }
+      this.chatStore.setActiveChatID(chatId)
     },
     deleteChat(chatID) {
-      this.chatList = this.chatList.filter((chat) => chat.id !== chatID);
+      this.chatList = this.chatList.filter((chat) => chat.id !== chatID)
 
       if (this.activeChatId === chatID) {
-        this.activeChatId = this.chatList.length ? this.chatList[0].id : null;
+        this.activeChatId = this.chatList.length ? this.chatList[0].id : null
       }
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -296,7 +322,7 @@ textarea:focus {
   display: none;
 }
 
-.sidebar .invisible{
+.sidebar .invisible {
   width: 7%;
 }
 </style>

@@ -4,7 +4,7 @@ require("dotenv").config("api/.env");
 
 const createSubleaseController = async (req, res) => {
   try {
-    console.log('inside api func tp create')
+    console.log("inside api func tp create");
     const {
       street_name,
       room,
@@ -89,7 +89,12 @@ const createSubleaseController = async (req, res) => {
     console.log(response);
     return res
       .status(200)
-      .json({subleaseid:subleaseID, longitude:lon, latitude:lat,listerid:listerID});
+      .json({
+        subleaseid: subleaseID,
+        longitude: lon,
+        latitude: lat,
+        listerid: listerID,
+      });
   } catch (err) {
     return res.status(500).json({ message: err });
   }
@@ -104,11 +109,11 @@ const getSubleasesController = async (req, res) => {
   return res.status(200).json(response.rows);
 };
 
-const getSubleaseInfoController = async(req, res)=>{
-  const {subleaseID} = req.body;
+const getSubleaseInfoController = async (req, res) => {
+  const { subleaseID } = req.body;
 
-  const query={
-    text:`SELECT 
+  const query = {
+    text: `SELECT 
     s.*,           
     u.fname,  
     u.lname    
@@ -116,62 +121,67 @@ const getSubleaseInfoController = async(req, res)=>{
     JOIN users u 
         ON s.listerID = u.userID
     WHERE s.subleaseid = $1;`,
-    values: [subleaseID]
-  }
-  try{
+    values: [subleaseID],
+  };
+  try {
     const response = await pool.query(query);
-    console.log(response)
+    console.log(response);
     return res.status(200).json(response.rows[0]);
-
-  }catch(err){
+  } catch (err) {
     console.log(`Error trying to fetch sublease data: ${err}`);
   }
 };
 
-const getSubleaseFilterController = async(req, res)=>{
-  let {gender, minPrice, maxPrice, roomCount} = req.body;
-  if(minPrice==null){
+const getSubleaseFilterController = async (req, res) => {
+  let { gender, minPrice, maxPrice, roomCount } = req.body;
+  if (minPrice == null) {
     minPrice = 0;
   }
-  if(maxPrice == null){
+  if (maxPrice == null) {
     maxPrice = 1000000;
   }
-  if(roomCount==''){
-    roomCount=null;
+  if (roomCount == "") {
+    roomCount = null;
   }
-  //if both gender and roomcount were selected 
+  //if both gender and roomcount were selected
   let filterQuery;
-  if(gender!=='' && roomCount!==null){
+  if (gender !== "" && roomCount !== null) {
     filterQuery = {
       text: `SELECT subleaseid FROM sublease WHERE gender=$1 AND price BETWEEN $2 AND $3 AND roomcount = $4`,
-      values: [gender, minPrice, maxPrice, roomCount]
-    }
-  }else if(roomCount!== null){//if gender is any
-    filterQuery={
-      text:`SELECT subleaseid FROM sublease WHERE price BETWEEN $1 AND $2 AND roomcount = $3`,
-      values: [minPrice, maxPrice, roomCount]
-    }
-  }else if(gender!== ''){//roomCount is any
-    filterQuery={
+      values: [gender, minPrice, maxPrice, roomCount],
+    };
+  } else if (roomCount !== null) {
+    //if gender is any
+    filterQuery = {
+      text: `SELECT subleaseid FROM sublease WHERE price BETWEEN $1 AND $2 AND roomcount = $3`,
+      values: [minPrice, maxPrice, roomCount],
+    };
+  } else if (gender !== "") {
+    //roomCount is any
+    filterQuery = {
       text: `SELECT subleaseid From sublease WHERE gender=$1 AND price BETWEEN $2 AND $3`,
-      values: [gender, minPrice, maxPrice]
-    }
-  }else if(gender==='' && roomCount===null){
+      values: [gender, minPrice, maxPrice],
+    };
+  } else if (gender === "" && roomCount === null) {
     filterQuery = {
       text: `SELECT subleaseid FROM sublease WHERE price BETWEEN $1 AND $2`,
-      values: [minPrice, maxPrice]
-    }
+      values: [minPrice, maxPrice],
+    };
   }
-  console.log('filter query here', filterQuery);
-  const response = await pool.query(filterQuery)
-  
-  console.log(response);
-  let acceptedSubleases = []
-  for(sublease of response.rows){
-    acceptedSubleases.push(sublease.subleaseid)
-  }
-  console.log(acceptedSubleases)
-  res.status(200).json({parsedSubleases: acceptedSubleases})
+  console.log("filter query here", filterQuery);
+  const response = await pool.query(filterQuery);
 
-}
-module.exports = { createSubleaseController, getSubleasesController, getSubleaseInfoController,getSubleaseFilterController };
+  console.log(response);
+  let acceptedSubleases = [];
+  for (sublease of response.rows) {
+    acceptedSubleases.push(sublease.subleaseid);
+  }
+  console.log(acceptedSubleases);
+  res.status(200).json({ parsedSubleases: acceptedSubleases });
+};
+module.exports = {
+  createSubleaseController,
+  getSubleasesController,
+  getSubleaseInfoController,
+  getSubleaseFilterController,
+};
