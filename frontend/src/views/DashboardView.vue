@@ -205,8 +205,10 @@ export default {
       const newRes = await res.json()
       chatStore.setChatRoomID(newRes.chatRoomID)
       chatStore.setActiveChatID(userID2)
-      console.log(newRes.chatRoom)
+      console.log('new ROmm!', newRes.newChatRoom)
+      console.log(newRes)
       chatStore.addChatRoom(newRes.newChatRoom)
+      console.log(chatStore.chatRooms)
     }
 
     // gets chatroom id so u can send it through message posts to categorize

@@ -48,13 +48,32 @@ const createChatRoom = async (req, res) => {
       throw new Error("Failed to create the chat room.");
     }
 
-    const newChatRoom = insertResult.rows[0];
+    const data = insertResult.rows[0];
+
+    const partnerID = data.userid1 === userID1 ? data.userid2 : data.userid1;
+    const unreadMessages =
+      userID1 === data.userid1 ? data.unreadcount1 : data.unreadcount2;
+
+    const selection = {
+      text: `SELECT fname FROM users WHERE userID = $1`,
+      values: [partnerID],
+    };
+
+    const selectionResult = await pool.query(selection);
+    const fname = selectionResult.rows[0].fname;
+
+    const dataObj = {
+      partnerID,
+      unreadMessages,
+      chatRoomID: data.chatroomid,
+      partnerName: fname,
+    };
 
     return res.status(200).json({
       message: "Successfully created chat room.",
       success: true,
       chatRoomID,
-      newChatRoom,
+      newChatRoom: dataObj,
     });
   } catch (err) {
     console.error("Error creating chat room:", err);

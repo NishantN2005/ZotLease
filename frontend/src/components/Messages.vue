@@ -13,7 +13,6 @@
             <span @click="selectChat(chat.chatRoomID)" class="chat-name">
               {{ chat.partnerName }}
             </span>
-            <button @click="deleteChat(chat.chatRoomID)" class="delete-button">❌</button>
           </li>
         </ul>
       </div>

@@ -6,7 +6,7 @@ export const useChatStore = defineStore('chat', {
     return {
       chatRoomID: null,
       activeChatID: null,
-      chatRooms: [], // format is {chatRoomID: [fname, unreadMessages, userID]}
+      chatRooms: [],
       onlineChats: [],
     }
   },
