@@ -21,11 +21,11 @@ export const useChatStore = defineStore('chat', {
     addChatRoom(val) {
       this.chatRooms.push(val)
     },
-    addOnlineChats(val) {
-      this.onlineChats.push(val)
-    },
     setOnlineChats(val) {
       this.onlineChats = val
+    },
+    addOnlineChat(val) {
+      this.onlineChats.push(val)
     },
     setActiveChatID(val) {
       this.activeChatID = val

@@ -21,12 +21,12 @@
       <!-- Chat Messages -->
       <div
         class="chat-box"
-        v-if="chatStore.activeChatID"
-        :class="{ invisible: !chatStore.activeChatID }"
+        v-if="chatStore.chatRoomID"
+        :class="{ invisible: !chatStore.chatRoomID }"
       >
         <ul class="messages">
           <li
-            v-for="message in messages"
+            v-for="message in chatStore.onlineChats"
             :key="message.id"
             :class="[
               'message',
@@ -39,7 +39,7 @@
             <p class="text">{{ message.content }}</p>
           </li>
         </ul>
-        <div class="input-container" v-if="chatStore.activeChatID">
+        <div class="input-container" v-if="chatStore.chatRoomID">
           <SocketConnection :router="router" />
         </div>
       </div>
@@ -57,18 +57,17 @@ export default {
     const messages = ref([])
     watch(
       // add response.messages to online chats and push a new chat to it when we get one and make a watch for it
-      () => [props.chatStore.activeChatID],
-      async ([newActiveChatID]) => {
+      () => [props.chatStore.chatRoomID],
+      async ([newActiveChatRoomID]) => {
         console.log('looesc')
         let response = await makeAuthenticatedRequest(
           'chat/getOfflineChats',
-          { chatRoomID: newActiveChatID },
+          { chatRoomID: newActiveChatRoomID },
           props.router,
           props.userStore.userToken,
         )
         response = await response.json()
-        messages.value = response.messages
-        console.log(response.messages)
+        props.chatStore.setOnlineChats(response.messages)
       },
     )
     return { messages }
@@ -119,7 +118,7 @@ export default {
 
   methods: {
     selectChat(chatId) {
-      this.chatStore.setActiveChatID(chatId)
+      this.chatStore.setChatRoomID(chatId)
     },
     deleteChat(chatID) {
       this.chatList = this.chatList.filter((chat) => chat.id !== chatID)

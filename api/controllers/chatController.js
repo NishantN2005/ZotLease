@@ -38,7 +38,7 @@ const createChatRoom = async (req, res) => {
     }
 
     const insertQuery = {
-      text: `INSERT INTO chatRooms (chatRoomID, userID1, userID2) VALUES ($1, $2, $3)`,
+      text: `INSERT INTO chatRooms (chatRoomID, userID1, userID2) VALUES ($1, $2, $3) RETURNING *`,
       values: [chatRoomID, userID1, userID2],
     };
 
@@ -48,12 +48,13 @@ const createChatRoom = async (req, res) => {
       throw new Error("Failed to create the chat room.");
     }
 
-    console.log("Chat room created:", chatRoomID);
+    const newChatRoom = insertResult.rows[0];
 
     return res.status(200).json({
       message: "Successfully created chat room.",
       success: true,
       chatRoomID,
+      newChatRoom,
     });
   } catch (err) {
     console.error("Error creating chat room:", err);

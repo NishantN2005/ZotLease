@@ -34,11 +34,17 @@ const sendMessage = () => {
       return response.json()
     })
     .then((data) => {
-      console.log('activeeewe', chatStore.activeChatID)
+      console.log('activeeewe', chatStore.chatRoomID)
       const recipientRoom = chatStore.chatRooms.find((room) => {
         console.log(room.chatRoomID)
-        return room.chatRoomID === chatStore.activeChatID
+        return room.chatRoomID === chatStore.chatRoomID
       })
+
+      if (data.messageData.chatRoomID === chatStore.chatRoomID) {
+        console.log('yoooooo')
+        chatStore.addOnlineChat(data.messageData)
+      }
+      console.log(chatStore.onlineChats)
 
       socket.value.emit('directMessage', {
         ...data.messageData,
@@ -66,6 +72,9 @@ onMounted(() => {
 
     const keys = Object.keys(chatStore.chatRooms)
     console.log(keys, data.chatRoomID)
+
+    if (chatStore.chatRoomID === data.chatRoomID) chatStore.addOnlineChat(data)
+
     // checks if recieved message room is in user store, if not add it
     if (!keys.some((key) => key === data.chatRoomID)) {
       try {

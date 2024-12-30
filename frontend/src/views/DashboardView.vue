@@ -192,22 +192,6 @@ export default {
       console.log(chatStore.chatRooms)
     }
 
-    const fetchChats = async () => {
-      try {
-        const response = await makeAuthenticatedRequest(
-          'chat/getOfflineChats',
-          { chatRooms: chatStore.chatRooms },
-          router,
-          userStore.userToken,
-        )
-        const result = await response.json()
-        console.log(result)
-        chatStore.setOnlineChats(result.messages)
-      } catch (error) {
-        console.error('Error fetching chat rooms:', error)
-      }
-    }
-
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
       const userID1 = userStore.userID
@@ -221,6 +205,8 @@ export default {
       const newRes = await res.json()
       chatStore.setChatRoomID(newRes.chatRoomID)
       chatStore.setActiveChatID(userID2)
+      console.log(newRes.chatRoom)
+      chatStore.addChatRoom(newRes.newChatRoom)
     }
 
     // gets chatroom id so u can send it through message posts to categorize
