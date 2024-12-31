@@ -59,10 +59,6 @@
         :filterForm="filterForm"
       />
 
-      <!-- Your buttons, absolutely positioned on top of the map -->
-      <div class="absolute flex justify-center items-center space-x-5 top-5 z-10 w-full">
-        <SocketConnection :router="router" />
-      </div>
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
         :showSelectedSubleaseModal="showSelectedSubleaseModal"
@@ -93,7 +89,7 @@ import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import SocketConnection from '@/components/SocketConnection.vue'
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { API_URL } from '../../constants.js'
 import FilterModal from '@/components/FilterModal.vue'
 import { useFilterStore } from '@/stores/filterStore'
@@ -118,6 +114,14 @@ export default {
         chatStore.onlineChats = []
         sequencialFetch()
       }
+
+      // Detect page refresh or tab close
+      window.addEventListener('beforeunload', handleSessionEnd)
+    })
+
+    onUnmounted(() => {
+      // Cleanup event listener when the component is destroyed
+      window.removeEventListener('beforeunload', handleSessionEnd)
     })
 
     const router = useRouter()
@@ -311,6 +315,7 @@ export default {
         console.log(response)
 
         if (response.status == 200) {
+          handleSessionEnd()
           userStore.setIsLoggedIn(false)
           userStore.setUserToken(null)
           userStore.setUserID(null)
@@ -324,6 +329,22 @@ export default {
         }
       } catch (err) {
         console.log(err)
+      }
+    }
+
+    const handleSessionEnd = async () => {
+      try {
+        console.log('in the end')
+        let response = await makeAuthenticatedRequest(
+          'chat/updateUnreadCount',
+          { userID: userStore.userID, chatRooms: chatStore.chatRooms },
+          router,
+          userStore.userToken,
+        )
+        response = await response.json()
+        console.log(response)
+      } catch (error) {
+        console.log('Failed to execute unread update:', error)
       }
     }
 
@@ -405,6 +426,7 @@ export default {
       resetFilters,
       allLocationsStore,
       handleFileChange,
+      handleSessionEnd,
       filesRef,
       findChatRooms,
     }

@@ -70,7 +70,8 @@ onMounted(() => {
   socket.value.on('message', async (data) => {
     console.log('Received message:', data)
 
-    const keys = Object.keys(chatStore.chatRooms)
+    console.log(chatStore.chatRooms)
+    const keys = chatStore.chatRooms.map((chat) => chat.chatRoomID)
     console.log(keys, data.chatRoomID)
 
     if (chatStore.chatRoomID === data.chatRoomID) chatStore.addOnlineChat(data)
@@ -88,7 +89,6 @@ onMounted(() => {
         const result = await response.json()
         console.log('Chat rooms:', result)
         chatStore.setChatRooms(result.chatRooms)
-
         return
       } catch (error) {
         console.error('Error fetching chat rooms:', error)
@@ -96,16 +96,17 @@ onMounted(() => {
       }
     }
 
-    const roomKey = keys.find((room) => room === data.chatRoomID)
-    if (!roomKey) {
+    const room = chatStore.chatRooms.find((room) => room.chatRoomID === data.chatRoomID)
+    if (!room) {
       console.error('Chat room not found:', data.chatRoomID)
       return
     }
-    const room = chatStore.chatRooms[roomKey]
 
     // updates unread count when chatroom exists in userStore
-    room[1] += 1
-    chatStore.chatRooms = { ...chatStore.chatRooms }
+    if (chatStore.chatRoomID !== data.chatRoomID) {
+      room.unreadMessages += 1
+      chatStore.chatRooms = [...chatStore.chatRooms]
+    }
 
     console.log('Updated chat rooms:', chatStore.chatRooms)
     console.log('Received message:', data)

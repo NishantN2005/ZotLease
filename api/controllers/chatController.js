@@ -239,10 +239,52 @@ const getOfflineChats = async (req, res) => {
   }
 };
 
+const updateUnreadCount = async (req, res) => {
+  try {
+    const { userID, chatRooms } = req.body;
+
+    for (const chat of chatRooms) {
+      console.log("From chats!!", chat, userID);
+
+      // Update unreadCount1 for userID1
+      const changeQuery1 = {
+        text: `UPDATE chatRooms
+               SET unreadCount1 = $1
+               WHERE chatRoomID = $2 AND userID1 = $3`,
+        values: [chat.unreadMessages, chat.chatRoomID, userID],
+      };
+
+      // Update unreadCount2 for userID2
+      const changeQuery2 = {
+        text: `UPDATE chatRooms
+               SET unreadCount2 = $1
+               WHERE chatRoomID = $2 AND userID2 = $3`,
+        values: [chat.unreadMessages, chat.chatRoomID, userID],
+      };
+
+      // Execute the queries
+      let response = await pool.query(changeQuery1);
+      console.log("Query1 Response:", response);
+
+      response = await pool.query(changeQuery2);
+      console.log("Query2 Response:", response);
+    }
+
+    // Send a success response
+    res.status(200).json({ message: "Unread counts updated successfully." });
+  } catch (error) {
+    console.error("Error updating unread counts:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating unread counts." });
+  }
+};
+
 module.exports = {
   createChatRoom,
   createNewChat,
   getChatRoomID,
   getChatRooms,
   getOfflineChats,
+  updateUnreadCount,
 };

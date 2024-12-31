@@ -9,10 +9,21 @@
             v-for="chat in chatStore.chatRooms"
             :key="chat.chatRoomID"
             :class="{ active: chat.chatRoomID === activeChatId }"
+            class="relative flex items-center space-x-2"
           >
-            <span @click="selectChat(chat.chatRoomID)" class="chat-name">
+            <span
+              @click="(selectChat(chat.chatRoomID), updateUnreadCount(chat.chatRoomID))"
+              class="chat-name"
+            >
               {{ chat.partnerName }}
             </span>
+            <!-- Unread messages badge -->
+            <div
+              v-if="chat.unreadMessages > 0"
+              class="bg-uciblue rounded-full w-4 h-4 flex items-center justify-center text-white text-xs font-medium absolute right-2 top-1/2 transform -translate-y-1/2"
+            >
+              {{ chat.unreadMessages }}
+            </div>
           </li>
         </ul>
       </div>
@@ -125,6 +136,13 @@ export default {
       if (this.activeChatId === chatID) {
         this.activeChatId = this.chatList.length ? this.chatList[0].id : null
       }
+    },
+    updateUnreadCount(chatroomid) {
+      this.chatStore.chatRooms.forEach((chat) => {
+        if (chat.chatRoomID === chatroomid) {
+          chat.unreadMessages = 0
+        }
+      })
     },
   },
 }
