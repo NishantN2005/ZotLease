@@ -334,17 +334,21 @@ export default {
       }
     }
 
-    const handleSessionEnd = async () => {
+    const handleSessionEnd = async (event) => {
+      event.preventDefault()
       try {
         console.log('in the end')
-        let response = await makeAuthenticatedRequest(
+
+        // Send authenticated request to update session
+        const response = await makeAuthenticatedRequest(
           'chat/updateUnreadCount',
           { userID: userStore.userID, chatRooms: chatStore.chatRooms },
           router,
           userStore.userToken,
         )
-        response = await response.json()
-        console.log(response)
+
+        const data = await response.json()
+        console.log(data)
       } catch (error) {
         console.log('Failed to execute unread update:', error)
       }
