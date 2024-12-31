@@ -3,16 +3,19 @@
     <div class="content">
       <!-- Chat List -->
       <div class="chat-list">
-        <h3>Chats</h3>
-        <ul>
+        <h3 class="text-white border-b border-b-stone-500 py-3">Chats</h3>
+        <ul class="overflow-auto">
           <li
             v-for="chat in chatStore.chatRooms"
             :key="chat.chatRoomID"
             :class="{ active: chat.chatRoomID === activeChatId }"
-            class="relative flex items-center space-x-2"
+            class="relative flex items-center space-x-2 my-4 bg-stone-800 hover:bg-stone-500"
           >
             <span
-              @click="(selectChat(chat.chatRoomID), updateUnreadCount(chat.chatRoomID))"
+              @click="
+                (selectChat(chat.chatRoomID, chat.partnerName, chat.partnerID),
+                updateUnreadCount(chat.chatRoomID))
+              "
               class="chat-name"
             >
               {{ chat.partnerName }}
@@ -20,7 +23,7 @@
             <!-- Unread messages badge -->
             <div
               v-if="chat.unreadMessages > 0"
-              class="bg-uciblue rounded-full w-4 h-4 flex items-center justify-center text-white text-xs font-medium absolute right-2 top-1/2 transform -translate-y-1/2"
+              class="bg-uciblue rounded-full w-5 h-4 flex items-center justify-center text-white text-xs font-medium absolute right-2 top-1/2 transform -translate-y-1/2"
             >
               {{ chat.unreadMessages }}
             </div>
@@ -34,7 +37,14 @@
         v-if="chatStore.chatRoomID"
         :class="{ invisible: !chatStore.chatRoomID }"
       >
-        <ul class="messages">
+        <div class="flex items-center space-x-3 py-4 px-6 bg-stone-800 rounded-t-lg mb-5">
+          <i
+            class="fas fa-user w-10 h-10 bg-stone-600 rounded-full text-white flex items-center justify-center"
+          ></i>
+          <h4 class="text-stone-300 font-bold text-xl">{{ partnerName }}</h4>
+        </div>
+
+        <ul class="messages space-y-6">
           <li
             v-for="message in chatStore.onlineChats"
             :key="message.id"
@@ -43,9 +53,6 @@
               message.sender === userStore.userID ? 'user-message' : 'system-message',
             ]"
           >
-            <span class="sender"
-              >{{ message.sender === userStore.userID ? 'You' : 'System' }}:</span
-            >
             <p class="text">{{ message.content }}</p>
           </li>
         </ul>
@@ -65,11 +72,12 @@ import SocketConnection from '@/components/SocketConnection.vue'
 export default {
   setup(props) {
     const messages = ref([])
+    const partnerName = ref('')
+    const activeChatId = ref(null)
     watch(
       // add response.messages to online chats and push a new chat to it when we get one and make a watch for it
       () => [props.chatStore.chatRoomID],
       async ([newActiveChatRoomID]) => {
-        console.log('looesc')
         let response = await makeAuthenticatedRequest(
           'chat/getOfflineChats',
           { chatRoomID: newActiveChatRoomID },
@@ -80,27 +88,7 @@ export default {
         props.chatStore.setOnlineChats(response.messages)
       },
     )
-    return { messages }
-  },
-  data() {
-    return {
-      activeChatId: null,
-      chats: {
-        1: {
-          messages: [{ id: 1, sender: 'system', text: 'Chat with Nishant' }],
-        },
-        2: {
-          messages: [{ id: 2, sender: 'system', text: 'Chat with Brian' }],
-        },
-        3: {
-          messages: [{ id: 3, sender: 'system', text: 'Chat with Humayl' }],
-        },
-        4: {
-          messages: [{ id: 4, sender: 'system', text: 'Chat with Bob' }],
-        },
-      },
-      newMessage: '',
-    }
+    return { messages, partnerName, activeChatId }
   },
   computed: {
     activeChat() {
@@ -127,15 +115,12 @@ export default {
   },
 
   methods: {
-    selectChat(chatId) {
+    selectChat(chatId, partnerName, partnerID) {
+      this.activeChatId = chatId
+      this.partnerName = partnerName
+      console.log(this.partnerName)
       this.chatStore.setChatRoomID(chatId)
-    },
-    deleteChat(chatID) {
-      this.chatList = this.chatList.filter((chat) => chat.id !== chatID)
-
-      if (this.activeChatId === chatID) {
-        this.activeChatId = this.chatList.length ? this.chatList[0].id : null
-      }
+      this.chatStore.setActiveChatID(partnerID)
     },
     updateUnreadCount(chatroomid) {
       this.chatStore.chatRooms.forEach((chat) => {
@@ -156,10 +141,10 @@ export default {
 .sidebar {
   position: fixed;
   left: 58px;
-  max-width: 40%;
+  max-width: 35%;
   height: 100%;
-  background: #f9f9f9;
-  border-right: 1px solid #ddd;
+  background: rgb(23 23 23);
+  border-left: 1px solid rgb(120 113 108 / var(--tw-bg-opacity, 1));
   transition: width 0.3s ease;
   overflow: hidden;
   display: flex;
@@ -202,7 +187,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding-right: 10px;
-  border-right: 1px solid #ddd;
+  background-color: rgb(23 23 23);
 }
 
 .chat-list ul {
@@ -217,11 +202,11 @@ export default {
   padding: 10px;
   cursor: pointer;
   border-radius: 8px;
-  background: #f1f1f1;
+  color: white;
 }
 
 .chat-list li.active {
-  background: #007bff;
+  background: rgb(120 113 108);
   color: white;
 }
 

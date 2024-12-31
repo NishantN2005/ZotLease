@@ -4,6 +4,10 @@ import { io } from 'socket.io-client'
 import { useUserStore } from '@/stores/userStore'
 import { useChatStore } from '@/stores/chatStore'
 import { makeAuthenticatedRequest } from '@/services/authService'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
+library.add(faPaperPlane)
 
 const props = defineProps({
   router: {
@@ -34,6 +38,7 @@ const sendMessage = () => {
       return response.json()
     })
     .then((data) => {
+      console.log('waiyt what')
       console.log('activeeewe', chatStore.chatRoomID)
       const recipientRoom = chatStore.chatRooms.find((room) => {
         console.log(room.chatRoomID)
@@ -41,10 +46,11 @@ const sendMessage = () => {
       })
 
       if (data.messageData.chatRoomID === chatStore.chatRoomID) {
-        console.log('yoooooo')
         chatStore.addOnlineChat(data.messageData)
       }
+
       console.log(chatStore.onlineChats)
+      console.log(recipientRoom.partnerID)
 
       socket.value.emit('directMessage', {
         ...data.messageData,
@@ -122,9 +128,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <h1>Direct Messaging</h1>
-    <input v-model="message" type="text" placeholder="Type your message" />
-    <button @click="sendMessage">Send</button>
+  <div class="relative w-full">
+    <input
+      v-model="message"
+      type="text"
+      placeholder="Message"
+      class="placeholder-stone-500 text-stone-300 border border-stone-500 bg-neutral-900 w-full pr-16 pl-4 py-2 rounded-lg focus:outline-none"
+      @keydown.enter.prevent="sendMessage"
+    />
+    <FontAwesomeIcon
+      @click="sendMessage"
+      :icon="faPaperPlane"
+      class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-stone-500 text-white px-4 py-1 rounded-lg hover:bg-stone-600"
+    />
   </div>
 </template>

@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import Messages from '../components/messages.vue'
+import Messages from './Messages.vue'
 import { useChatStore } from '@/stores/chatStore'
 import { useUserStore } from '@/stores/userStore'
 import { ref } from 'vue'
@@ -96,6 +96,10 @@ export default {
 
     const toggleMessages = () => {
       messagesOpen.value = !messagesOpen.value
+      if (!messagesOpen.value) {
+        chatStore.chatRoomID = null
+        chatStore.activeChatID = null
+      }
     }
 
     return { messagesOpen, chatStore, userStore, toggleMessages }

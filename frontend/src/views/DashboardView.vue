@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard">
+    <SocketConnection :router="router" v-show="false" />
     <!-- Sublease Modal -->
     <div
       v-if="createSubleaseModal"
@@ -320,6 +321,7 @@ export default {
           userStore.setUserToken(null)
           userStore.setUserID(null)
           chatStore.setChatRoomID(null)
+          chatStore.setActiveChatID(null)
           chatStore.setChatRooms([])
           chatStore.setOnlineChats([])
           router.push('/login')

@@ -10,7 +10,7 @@ export const useChatStore = defineStore('chat', {
       onlineChats: [],
     }
   },
-  persist: true,
+  persist: false,
   actions: {
     setChatRoomID(val) {
       this.chatRoomID = val
