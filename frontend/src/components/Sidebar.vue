@@ -30,6 +30,7 @@
         </button>
       </div>
       <Messages
+        ref="messageRef"
         v-if="messagesOpen"
         :chatStore="chatStore"
         :router="router"
@@ -53,7 +54,7 @@
 import Messages from './Messages.vue'
 import { useChatStore } from '@/stores/chatStore'
 import { useUserStore } from '@/stores/userStore'
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 
 export default {
   name: 'Sidebar',
@@ -104,14 +105,32 @@ export default {
         this.chatStore.setActiveChatID(null)
       }
     },
+
+    toggleDashMessage(chatroomID, partnerName, partnerID) {
+      this.messagesOpen = true
+
+      if (this.messagesOpen && this.filterOpen) {
+        this.toggleFilterModal()
+        this.filterOpen = false
+      }
+
+      this.$nextTick(() => {
+        if (this.messageRef) {
+          this.messageRef.selectChat(chatroomID, partnerName, partnerID)
+          this.messageRef.updateUnreadCount(chatroomID)
+        }
+      })
+    },
   },
+
   setup(props) {
     const chatStore = useChatStore()
     const userStore = useUserStore()
     const messagesOpen = ref(false)
     const filterOpen = ref(false)
+    const messageRef = ref(null)
 
-    return { messagesOpen, filterOpen, chatStore, userStore }
+    return { messagesOpen, filterOpen, chatStore, userStore, messageRef }
   },
 }
 </script>

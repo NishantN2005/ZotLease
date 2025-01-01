@@ -129,6 +129,7 @@ export default {
 
   methods: {
     selectChat(chatId, partnerName, partnerID) {
+      console.log('in select chat')
       this.activeChatId = chatId
       this.partnerName = partnerName
       console.log(this.partnerName)
@@ -136,6 +137,7 @@ export default {
       this.chatStore.setActiveChatID(partnerID)
     },
     updateUnreadCount(chatroomid) {
+      console.log('in message update')
       this.chatStore.chatRooms.forEach((chat) => {
         if (chat.chatRoomID === chatroomid) {
           chat.unreadMessages = 0

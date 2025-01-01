@@ -81,6 +81,8 @@
 <script>
 import { ref, watch } from 'vue'
 import { getPhotos } from '../s3client.js'
+import SocketConnection from './SocketConnection.vue'
+
 export default {
   name: 'SelectedSubleaseModal',
   props: {
@@ -98,6 +100,10 @@ export default {
     },
     createChatRoom: {
       type: Function,
+      required: true,
+    },
+    router: {
+      type: Object,
       required: true,
     },
   },
