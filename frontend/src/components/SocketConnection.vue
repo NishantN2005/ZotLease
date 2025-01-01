@@ -102,16 +102,21 @@ onMounted(() => {
       }
     }
 
-    const room = chatStore.chatRooms.find((room) => room.chatRoomID === data.chatRoomID)
-    if (!room) {
+    const roomIndex = chatStore.chatRooms.findIndex((room) => room.chatRoomID === data.chatRoomID)
+    if (roomIndex === -1) {
       console.error('Chat room not found:', data.chatRoomID)
       return
     }
 
     // updates unread count when chatroom exists in userStore
     if (chatStore.chatRoomID !== data.chatRoomID) {
+      const room = chatStore.chatRooms[roomIndex]
+
       room.unreadMessages += 1
-      chatStore.chatRooms = [...chatStore.chatRooms]
+
+      const [updatedRoom] = chatStore.chatRooms.splice(roomIndex, 1)
+
+      chatStore.chatRooms = [updatedRoom, ...chatStore.chatRooms]
     }
 
     console.log('Updated chat rooms:', chatStore.chatRooms)

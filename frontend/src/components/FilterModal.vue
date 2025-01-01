@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="showFilterModal"
-    class="fixed top-0 left-[3.8%] h-full w-80 bg-neutral-900 shadow-lg border-l border-stone-500 p-6 z-50"
+    class="fixed top-0 left-[3.8%] h-full w-80 bg-neutral-900 shadow-lg border-l border-stone-500 p-6 z-20"
   >
     <h1 class="font-bold text-xl text-center mb-4 text-white">Filter by:</h1>
 

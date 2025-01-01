@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <div class="content">
+    <div class="content relative z-20">
       <!-- Chat List -->
       <div class="chat-list">
         <h3 class="text-white border-b border-b-stone-500 py-3">Chats</h3>
@@ -44,7 +44,7 @@
           <h4 class="text-stone-300 font-bold text-xl">{{ partnerName }}</h4>
         </div>
 
-        <ul class="messages space-y-6">
+        <ul class="messages space-y-6" ref="messagesContainer">
           <li
             v-for="message in chatStore.onlineChats"
             :key="message.id"
@@ -66,7 +66,7 @@
 
 <script>
 import { makeAuthenticatedRequest } from '@/services/authService'
-import { ref, watch } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import SocketConnection from '@/components/SocketConnection.vue'
 
 export default {
@@ -74,6 +74,19 @@ export default {
     const messages = ref([])
     const partnerName = ref('')
     const activeChatId = ref(null)
+    const messagesContainer = ref(null)
+
+    const scrollToBottom = () => {
+      nextTick(() => {
+        if (messagesContainer.value) {
+          messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+        }
+      })
+    }
+
+    watch(() => props.chatStore.onlineChats, scrollToBottom)
+    watch(() => props.chatStore.onlineChats.length, scrollToBottom)
+
     watch(
       // add response.messages to online chats and push a new chat to it when we get one and make a watch for it
       () => [props.chatStore.chatRoomID],
@@ -88,7 +101,7 @@ export default {
         props.chatStore.setOnlineChats(response.messages)
       },
     )
-    return { messages, partnerName, activeChatId }
+    return { messages, partnerName, activeChatId, messagesContainer }
   },
   computed: {
     activeChat() {
@@ -149,7 +162,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  z-index: 1000;
+  z-index: 10;
   padding: 0;
   margin: 0;
   color: black;
@@ -193,6 +206,10 @@ export default {
 .chat-list ul {
   list-style: none;
   padding: 0;
+}
+
+.chat-list ul::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar */
 }
 
 .chat-list li {
@@ -244,6 +261,7 @@ export default {
   width: 100%;
   overflow: scroll;
   box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 
 .message {
@@ -251,6 +269,10 @@ export default {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.messages::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar */
 }
 
 .user-message {

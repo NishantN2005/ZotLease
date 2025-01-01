@@ -383,6 +383,17 @@ export default {
         roomCount: null,
       }
     }
+
+    const toggleMessages = () => {
+      messagesOpen.value = !messagesOpen.value
+      if (messagesOpen.value) {
+        filterOpen.value = false
+      } else {
+        chatStore.chatRoomID = null
+        chatStore.activeChatID = null
+      }
+    }
+
     const resetFilters = () => {
       filterStore.resetFilter()
       toggleFilterModal()
@@ -425,6 +436,7 @@ export default {
       turnOffSubleaseModal,
       turnOnSubleaseModal,
       toggleFilterModal,
+      toggleMessages,
       showFilterModal,
       filterForm,
       FilterModal,

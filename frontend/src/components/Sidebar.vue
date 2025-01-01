@@ -17,7 +17,7 @@
           <i class="fas fa-plus"></i>
         </button>
         <button
-          @click="toggleFilterModal"
+          @click="toggleFilterModals"
           class="hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
         >
           <i class="fas fa-filter"></i>
@@ -85,24 +85,33 @@ export default {
     turnOnModal() {
       this.turnOnModal()
     },
-    toggleFilterModal() {
+    toggleFilterModals() {
+      this.filterOpen = !this.filterOpen
+      if (this.filterOpen) {
+        this.messagesOpen = false
+        this.chatStore.setChatRoomID(null)
+        this.chatStore.setActiveChatID(null)
+      }
       this.toggleFilterModal()
+    },
+    toggleMessages() {
+      this.messagesOpen = !this.messagesOpen
+      if (this.messagesOpen && this.filterOpen) {
+        this.toggleFilterModal()
+        this.filterOpen = false
+      } else {
+        this.chatStore.setChatRoomID(null)
+        this.chatStore.setActiveChatID(null)
+      }
     },
   },
   setup(props) {
     const chatStore = useChatStore()
     const userStore = useUserStore()
     const messagesOpen = ref(false)
+    const filterOpen = ref(false)
 
-    const toggleMessages = () => {
-      messagesOpen.value = !messagesOpen.value
-      if (!messagesOpen.value) {
-        chatStore.chatRoomID = null
-        chatStore.activeChatID = null
-      }
-    }
-
-    return { messagesOpen, chatStore, userStore, toggleMessages }
+    return { messagesOpen, filterOpen, chatStore, userStore }
   },
 }
 </script>
