@@ -1,4 +1,4 @@
-name: ZOTLEASE API CI
+name: ZOTLEASE CI
 
 on:
   push:
@@ -66,4 +66,14 @@ jobs:
         cd api
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-    
+        
+    - name: Build, Tag, and Push the Frontend Image to Amazon ECR
+      id: build-frontend-image
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: zotlease/frontend
+        IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
+      run: |
+        cd frontend
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
