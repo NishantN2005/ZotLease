@@ -14,7 +14,7 @@ const cron = require("node-cron");
 const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
 require("dotenv").config("api/.env");
 const jwt = require("jsonwebtoken");
-
+ 
 const app = express();
 app.use(compression());
 
