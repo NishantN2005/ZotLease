@@ -45,6 +45,7 @@
 
     <div class="flex relative w-full h-screen">
       <Sidebar
+        ref="sidebarRef"
         :Logout="Logout"
         :turnOnModal="turnOnModal"
         :toggleFilterModal="toggleFilterModal"
@@ -66,6 +67,7 @@
         :selectedSubleaseStore="selectedSubleaseStore"
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
+        :router="router"
       />
 
       <!-- Filter Modal-->
@@ -165,6 +167,7 @@ export default {
 
     const messageBar = ref(false)
     const filterOpen = ref(false)
+    const sidebarRef = ref(null)
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -212,9 +215,17 @@ export default {
           userStore.userToken,
         )
         const newRes = await res.json()
-        chatStore.setChatRoomID(newRes.chatRoomID)
-        chatStore.setActiveChatID(userID2)
+
+        const { chatRoomID, partnerID, partnerName } = newRes.newChatRoom
+
         chatStore.addChatRoom(newRes.newChatRoom)
+        sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
+      } else {
+        const chat = chatStore.chatRooms.find(
+          (chat) => chat.partnerID === selectedSubleaseStore.listerID,
+        )
+        const { chatRoomID, partnerID, partnerName } = chat
+        sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
       }
     }
 
@@ -449,6 +460,7 @@ export default {
       handleSessionEnd,
       filesRef,
       findChatRooms,
+      sidebarRef,
     }
   },
 }
