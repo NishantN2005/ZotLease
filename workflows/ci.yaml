@@ -63,6 +63,7 @@ jobs:
         REPOSITORY: zotlease/api
         IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
       run: |
+        cd api
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
     
