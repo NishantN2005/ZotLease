@@ -291,7 +291,7 @@ export default {
 }
 
 .text {
-  background: #007bff;
+  background: rgb(120 113 108);
   color: #fff;
   padding: 8px 12px;
   border-radius: 12px;
@@ -301,8 +301,9 @@ export default {
 }
 
 .system-message .text {
-  background: #f1f1f1;
-  color: #333;
+  background: rgb(23 23 23);
+  color: white;
+  border: 1px solid rgb(120 113 108);
 }
 
 .input-container {

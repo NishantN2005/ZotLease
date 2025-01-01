@@ -163,6 +163,9 @@ export default {
 
     const createSubleaseModal = ref(false)
 
+    const messageBar = ref(false)
+    const filterOpen = ref(false)
+
     const turnOffModal = () => {
       console.log('modal off')
       createSubleaseModal.value = false
@@ -199,21 +202,20 @@ export default {
 
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      const userID1 = userStore.userID
-      const userID2 = selectedSubleaseStore.listerID
-      const res = await makeAuthenticatedRequest(
-        `chat/createRoom`,
-        { userID1, userID2 },
-        router,
-        userStore.userToken,
-      )
-      const newRes = await res.json()
-      chatStore.setChatRoomID(newRes.chatRoomID)
-      chatStore.setActiveChatID(userID2)
-      console.log('new ROmm!', newRes.newChatRoom)
-      console.log(newRes)
-      chatStore.addChatRoom(newRes.newChatRoom)
-      console.log(chatStore.chatRooms)
+      if (!chatStore.chatRooms.some((chat) => chat.partnerID === selectedSubleaseStore.listerID)) {
+        const userID1 = userStore.userID
+        const userID2 = selectedSubleaseStore.listerID
+        const res = await makeAuthenticatedRequest(
+          `chat/createRoom`,
+          { userID1, userID2 },
+          router,
+          userStore.userToken,
+        )
+        const newRes = await res.json()
+        chatStore.setChatRoomID(newRes.chatRoomID)
+        chatStore.setActiveChatID(userID2)
+        chatStore.addChatRoom(newRes.newChatRoom)
+      }
     }
 
     // gets chatroom id so u can send it through message posts to categorize
@@ -385,8 +387,8 @@ export default {
     }
 
     const toggleMessages = () => {
-      messagesOpen.value = !messagesOpen.value
-      if (messagesOpen.value) {
+      messageBar.value = !messageBar.value
+      if (messageBar.value) {
         filterOpen.value = false
       } else {
         chatStore.chatRoomID = null
