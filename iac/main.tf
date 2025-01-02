@@ -16,7 +16,7 @@ terraform {
 resource "aws_db_instance" "zotlease_db" {
   allocated_storage    = 20
   engine               = "postgres"
-  engine_version       = "13.3"
+  engine_version       = "16.3"
   instance_class       = "db.t3.micro"
   identifier           = "zotlease"
   username             = var.db_username
