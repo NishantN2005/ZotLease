@@ -97,4 +97,4 @@ jobs:
         aws lightsail create-container-service-deployment \
         --service-name zotlease-api \
         --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={80=http}}" \
-        --public-endpoint "containerName=api,port=80"
+        --public-endpoint "containerName=api,containerPort=80"
