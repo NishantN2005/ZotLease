@@ -30,7 +30,7 @@ resource "aws_db_instance" "zotlease_db" {
   engine               = "postgres"
   engine_version       = "13.3"
   instance_class       = "db.t3.micro"
-  name                 = "zotlease"
+  identifier           = "zotlease"
   username             = var.db_username
   password             = var.db_password
   parameter_group_name = "default.postgres13"
@@ -76,8 +76,8 @@ resource "null_resource" "create_db_admin_user" {
 
   provisioner "local-exec" {
     command = <<EOT
-      PGPASSWORD=${var.db_password} psql -h ${aws_db_instance.zotlease_db.address} -U ${var.db_username} -d ${aws_db_instance.zotlease_db.name} -c "CREATE USER admin WITH PASSWORD '${random_password.db_admin_password.result}';"
-      PGPASSWORD=${var.db_password} psql -h ${aws_db_instance.zotlease_db.address} -U ${var.db_username} -d ${aws_db_instance.zotlease_db.name} -c "GRANT ALL PRIVILEGES ON DATABASE ${aws_db_instance.zotlease_db.name} TO admin;"
+      PGPASSWORD=${var.db_password} psql -h ${aws_db_instance.zotlease_db.address} -U ${var.db_username} -d ${aws_db_instance.zotlease_db.identifier} -c "CREATE USER admin WITH PASSWORD '${random_password.db_admin_password.result}';"
+      PGPASSWORD=${var.db_password} psql -h ${aws_db_instance.zotlease_db.address} -U ${var.db_username} -d ${aws_db_instance.zotlease_db.identifier} -c "GRANT ALL PRIVILEGES ON DATABASE ${aws_db_instance.zotlease_db.identifier} TO admin;"
     EOT
   }
 }
