@@ -42,6 +42,24 @@
         </div>
       </div>
     </div>
+    <div
+      class="absolute w-20 h-8 bg-gray-200 rounded-full flex items-center shadow-md z-20 right-1/2 bg-opacity-80 transform translate-x-1/2 mt-5"
+    >
+      <button
+        :class="mapView ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-600 opacity-70'"
+        class="flex-1 h-full rounded-full font-bold text-xs text-center transition-all"
+        @click="toggleDashView()"
+      >
+        map
+      </button>
+      <button
+        :class="!mapView ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-600 opacity-70'"
+        class="flex-1 h-full rounded-full font-bold text-xs text-center transition-all"
+        @click="toggleDashView(false)"
+      >
+        list
+      </button>
+    </div>
 
     <div class="flex relative w-full h-screen">
       <Sidebar
@@ -51,8 +69,10 @@
         :toggleFilterModal="toggleFilterModal"
         :router="router"
       />
+
       <!-- The Leaflet map -->
       <LeafletMap
+        v-show="mapView"
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"
         :routerPass="router"
@@ -60,6 +80,8 @@
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :filterForm="filterForm"
       />
+
+      <LeaseList v-show="listView" />
 
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
@@ -86,6 +108,7 @@
 <script>
 import { useRouter } from 'vue-router'
 import LeafletMap from '../components/LeafletMap.vue'
+import LeaseList from '../components/leaseList.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useChatStore } from '@/stores/chatStore'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
@@ -110,6 +133,7 @@ export default {
     FilterModal,
     SelectedSubleaseModal,
     Sidebar,
+    LeaseList,
   },
   setup() {
     onMounted(() => {
@@ -168,6 +192,8 @@ export default {
     const messageBar = ref(false)
     const filterOpen = ref(false)
     const sidebarRef = ref(null)
+    const mapView = ref(true)
+    const listView = ref(false)
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -180,6 +206,17 @@ export default {
 
     const sequencialFetch = async () => {
       await fetchChatRooms()
+    }
+    const toggleDashView = (mapOn = true) => {
+      if (mapOn) {
+        // turn off list view, turn on mapview
+        listView.value = false
+        mapView.value = true
+      } else {
+        // turn off map view turn on list view
+        mapView.value = false
+        listView.value = true
+      }
     }
 
     const fetchChatRooms = async () => {
@@ -461,6 +498,10 @@ export default {
       filesRef,
       findChatRooms,
       sidebarRef,
+      mapView,
+      toggleDashView,
+      listView,
+      LeaseList,
     }
   },
 }
