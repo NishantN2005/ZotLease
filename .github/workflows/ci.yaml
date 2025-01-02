@@ -93,6 +93,8 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: us-west-2
         IMAGE_TAG: ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: zotlease/frontend
       run: |
         aws lightsail create-container-service-deployment \
         --service-name zotlease-api \
