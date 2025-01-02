@@ -32,6 +32,21 @@ resource "aws_db_instance" "zotlease_db" {
   skip_final_snapshot  = true
 }
 
+# Store DB connection details in Secrets Manager
+resource "aws_secretsmanager_secret" "db_connection_details" {
+  name = "zotlease-db-connection-details"
+}
+
+resource "aws_secretsmanager_secret_version" "db_connection_details_version" {
+  secret_id     = aws_secretsmanager_secret.db_connection_details.id
+  secret_string = jsonencode({
+    db_host     = aws_db_instance.zotlease_db.address
+    db_port     = aws_db_instance.zotlease_db.port
+    db_user     = var.db_username
+    db_password = var.db_password
+  })
+}
+
 # S3 Bucket
 resource "aws_s3_bucket" "zotlease_bucket" {
   bucket = "zotlease-photoupload"

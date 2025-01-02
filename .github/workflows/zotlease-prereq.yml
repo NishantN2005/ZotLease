@@ -1,0 +1,24 @@
+name: Zotlease Prerequisites
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_db_tables:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install PostgreSQL client
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+    - name: Run SQL script to create tables
+      env:
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: |
+        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d zotlease -f database/create_tables.sql
