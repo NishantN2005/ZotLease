@@ -12,6 +12,13 @@ terraform {
   }
 }
 
+# Custom DB Parameter Group for PostgreSQL 16.3
+resource "aws_db_parameter_group" "custom_postgres16" {
+  name        = "custom-postgres16"
+  family      = "postgres16"
+  description = "Custom parameter group for PostgreSQL 16.3"
+}
+
 # RDS PostgreSQL Database
 resource "aws_db_instance" "zotlease_db" {
   allocated_storage    = 20
@@ -21,7 +28,7 @@ resource "aws_db_instance" "zotlease_db" {
   identifier           = "zotlease"
   username             = var.db_username
   password             = var.db_password
-  parameter_group_name = "default.postgres13"
+  parameter_group_name = aws_db_parameter_group.custom_postgres16.name
   skip_final_snapshot  = true
 }
 
