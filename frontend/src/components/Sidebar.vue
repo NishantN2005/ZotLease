@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-neutral-900 w-[4%] h-screen flex flex-col justify-between text-stone-300 py-4">
+  <div
+    class="bg-neutral-900 w-[4%] h-screen flex flex-col justify-between text-stone-300 py-4 relative"
+  >
     <!-- Top Section: Profile Picture -->
     <div class="flex flex-col items-center space-y-6">
       <button
@@ -18,11 +20,13 @@
         </button>
         <button
           @click="toggleFilterModals"
+          :class="filterOpen ? 'bg-stone-500' : ''"
           class="hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
         >
           <i class="fas fa-filter"></i>
         </button>
         <button
+          :class="messagesOpen ? 'bg-stone-500' : ''"
           class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
           @click="toggleMessages"
         >

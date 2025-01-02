@@ -27,7 +27,8 @@
 </template>
 
 <script>
-import { getPhotos } from '@/s3client.js'
+import { getFirstPhoto } from '@/s3client.js'
+import { ref, onMounted } from 'vue'
 export default {
   name: 'leaseList',
   props: {
@@ -36,27 +37,46 @@ export default {
       required: true,
     },
   },
-  // setup(props) {
-  //   const photos = ref([])
+  setup(props) {
+    console.log('lol')
+    const photos = ref([])
 
-  //   async function fetchPhotos(listerID, subleaseID) {
-  //     try {
-  //       const key = `${listerID}/${subleaseID}`
-  //       const response = await getPhotos(key)
-  //       photos.value = response[0]
-  //     } catch (error) {
-  //       console.error('Error fetching photos:', error)
-  //     }
-  //   }
+    async function fetchPhotos() {
+      console.log('what')
+      for (const listing of props.allLocations.allLocations) {
+        try {
+          const key = `${listing.listerid}/${listing.subleaseid}`
+          console.log('helo')
+          console.log('Fetching photo for key:', key)
 
-  //   // Fetch photos on component mount
-  //   onMounted(fetchPhotos)
+          const response = await getFirstPhoto(key)
 
-  //   return {
-  //     photos,
-  //     fetchPhotos,
-  //   }
-  // },
+          // Log the whole response to see what it's returning
+          console.log('Response from getFirstPhoto:', response)
+
+          if (response && response.length > 0) {
+            console.log('Pushing first photo to photos:', response[0])
+            photos.value.push(response[0])
+          } else {
+            console.log('No response or empty response for key:', key)
+          }
+        } catch (error) {
+          console.error('Error fetching photos for key', listing, ':', error)
+        }
+      }
+    }
+
+    // Fetch photos on component mount
+    onMounted(() => {
+      console.log('mounted')
+      fetchPhotos()
+    })
+
+    return {
+      photos,
+      fetchPhotos,
+    }
+  },
   methods: {
     clearInput() {
       const input = document.getElementById('searchInput')

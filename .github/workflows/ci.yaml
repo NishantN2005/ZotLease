@@ -1,11 +1,11 @@
-name: ZOTLEASE API CI
+name: ZOTLEASE CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-    types: [ opened, reopened, edited ]
+  #push:
+  #  branches: [ "main" ]
+  #pull_request:
+  #  branches: [ "main" ]
+  #  types: [ opened, reopened, edited ]
   workflow_dispatch:
     inputs:
       environ:
@@ -48,7 +48,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-west-1
+        aws-region: us-east-1
         
     - name: Login to Amazon ECR
       id: login-ecr
@@ -66,4 +66,37 @@ jobs:
         cd api
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-    
+        
+    - name: Build, Tag, and Push the Frontend Image to Amazon ECR
+      id: build-frontend-image
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: zotlease/frontend
+        IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
+      run: |
+        cd frontend
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+    - name: Create Lightsail Container Service if not exists
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: us-west-2
+      run: |
+        aws lightsail create-container-service \
+          --service-name zotlease-api \
+          --power nano \
+          --scale 1 || true
+    - name: Deploy to AWS Lightsail
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: us-west-2
+        IMAGE_TAG: ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: zotlease/frontend
+      run: |
+        aws lightsail create-container-service-deployment \
+        --service-name zotlease-api \
+        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={80=HTTP}}" \
+        --public-endpoint "containerName=api,containerPort=80"

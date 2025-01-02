@@ -70,3 +70,33 @@ export async function getPhotos(prefix) {
       return [];
     }
   }
+
+/**
+ * Get the first photo from an S3 bucket given a prefix.
+ * @param {string} bucket - The name of the S3 bucket.
+ * @param {string} prefix - The prefix (directory) to search for photos.
+ * @returns {Promise<string>} - A pre-signed URL for the first photo.
+ */
+export async function getFirstPhoto(prefix) {
+  try {
+    // List all objects in the directory
+    const params = { Bucket: PHOTO_BUCKET, Prefix: prefix, MaxKeys: 1 };
+    const command = new ListObjectsV2Command(params);
+    const data = await s3Client.send(command);
+
+    if (!data.Contents || data.Contents.length === 0) {
+      console.log('No photos found in the directory.');
+      return null;
+    }
+
+    // Generate pre-signed URL for the first object
+    const getObjectParams = { Bucket: PHOTO_BUCKET, Key: data.Contents[0].Key };
+    const getObjectCommand = new GetObjectCommand(getObjectParams);
+    const signedUrl = await getSignedUrl(s3Client, getObjectCommand, { expiresIn: 3600 }); // URL expires in 1 hour
+
+    return signedUrl;
+  } catch (error) {
+    console.error('Error retrieving the first photo from S3:', error);
+    return null;
+  }
+}
