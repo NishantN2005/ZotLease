@@ -34,7 +34,7 @@ resource "aws_db_instance" "zotlease_db" {
 
 # S3 Bucket
 resource "aws_s3_bucket" "zotlease_bucket" {
-  bucket = "zotlease-dev-photoupload"
+  bucket = "zotlease-photoupload"
   acl    = "private"
 }
 
