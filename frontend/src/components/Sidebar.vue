@@ -28,6 +28,20 @@
         >
           <i class="fas fa-comments"></i>
         </button>
+        <button
+          :class="mapView ? 'bg-stone-500' : ''"
+          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
+          @click="toggleView()"
+        >
+          <i class="fas fa-map-location-dot"></i>
+        </button>
+        <button
+          :class="!mapView ? 'bg-stone-500' : ''"
+          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
+          @click="toggleView(false)"
+        >
+          <i class="fas fa-list"></i>
+        </button>
       </div>
       <Messages
         ref="messageRef"
@@ -73,6 +87,14 @@ export default {
     },
     router: {
       type: Object,
+      required: true,
+    },
+    mapView: {
+      type: Boolean,
+      required: true,
+    },
+    toggleView: {
+      type: Function,
       required: true,
     },
   },

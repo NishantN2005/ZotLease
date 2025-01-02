@@ -87,14 +87,12 @@ const createSubleaseController = async (req, res) => {
     };
     const response = await pool.query(insertQuery);
     console.log(response);
-    return res
-      .status(200)
-      .json({
-        subleaseid: subleaseID,
-        longitude: lon,
-        latitude: lat,
-        listerid: listerID,
-      });
+    return res.status(200).json({
+      subleaseid: subleaseID,
+      longitude: lon,
+      latitude: lat,
+      listerid: listerID,
+    });
   } catch (err) {
     return res.status(500).json({ message: err });
   }
@@ -103,7 +101,7 @@ const createSubleaseController = async (req, res) => {
 const getSubleasesController = async (req, res) => {
   console.log("Hello");
   const query =
-    "SELECT subleaseID, listerID, latitude, longitude FROM sublease";
+    "SELECT subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code FROM sublease";
   const response = await pool.query(query);
 
   return res.status(200).json(response.rows);

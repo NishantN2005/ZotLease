@@ -42,24 +42,6 @@
         </div>
       </div>
     </div>
-    <div
-      class="absolute w-20 h-8 bg-gray-200 rounded-full flex items-center shadow-md z-20 right-1/2 bg-opacity-80 transform translate-x-1/2 mt-5"
-    >
-      <button
-        :class="mapView ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-600 opacity-70'"
-        class="flex-1 h-full rounded-full font-bold text-xs text-center transition-all"
-        @click="toggleDashView()"
-      >
-        map
-      </button>
-      <button
-        :class="!mapView ? 'bg-blue-500 text-white' : 'bg-transparent text-gray-600 opacity-70'"
-        class="flex-1 h-full rounded-full font-bold text-xs text-center transition-all"
-        @click="toggleDashView(false)"
-      >
-        list
-      </button>
-    </div>
 
     <div class="flex relative w-full h-screen">
       <Sidebar
@@ -68,6 +50,8 @@
         :turnOnModal="turnOnModal"
         :toggleFilterModal="toggleFilterModal"
         :router="router"
+        :mapView="mapView"
+        :toggleView="toggleDashView"
       />
 
       <!-- The Leaflet map -->
@@ -81,7 +65,7 @@
         :filterForm="filterForm"
       />
 
-      <LeaseList v-show="listView" />
+      <LeaseList v-show="listView" :allLocations="allLocationsStore" />
 
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
@@ -108,7 +92,7 @@
 <script>
 import { useRouter } from 'vue-router'
 import LeafletMap from '../components/LeafletMap.vue'
-import LeaseList from '../components/leaseList.vue'
+import LeaseList from '@/components/LeaseList.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useChatStore } from '@/stores/chatStore'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
@@ -501,7 +485,6 @@ export default {
       mapView,
       toggleDashView,
       listView,
-      LeaseList,
     }
   },
 }
