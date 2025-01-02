@@ -11,14 +11,31 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
     - name: Install PostgreSQL client
       run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
+    - name: Retrieve DB connection details from Secrets Manager
+      id: get_secret
+      run: |
+        secret=$(aws secretsmanager get-secret-value --secret-id zotlease-db-connection-details --query SecretString --output text)
+        echo "$secret" > secret.json
+        echo "DB_HOST=$(jq -r .db_host secret.json)" >> $GITHUB_ENV
+        echo "DB_PORT=$(jq -r .db_port secret.json)" >> $GITHUB_ENV
+        echo "DB_USER=$(jq -r .db_user secret.json)" >> $GITHUB_ENV
+        echo "DB_PASSWORD=$(jq -r .db_password secret.json)" >> $GITHUB_ENV
+
     - name: Run SQL script to create tables
       env:
-        DB_HOST: ${{ secrets.DB_HOST }}
-        DB_PORT: ${{ secrets.DB_PORT }}
-        DB_USER: ${{ secrets.DB_USER }}
-        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_HOST: ${{ env.DB_HOST }}
+        DB_PORT: ${{ env.DB_PORT }}
+        DB_USER: ${{ env.DB_USER }}
+        DB_PASSWORD: ${{ env.DB_PASSWORD }}
       run: |
         PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d zotlease -f database/create_tables.sql

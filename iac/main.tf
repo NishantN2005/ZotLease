@@ -92,8 +92,8 @@ resource "null_resource" "create_db_admin_user" {
 
   provisioner "local-exec" {
     command = <<EOT
-      PGPASSWORD=${random_password.db_password.result} psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "CREATE USER admin WITH PASSWORD '${random_password.db_admin_password.result}';"
-      PGPASSWORD=${random_password.db_password.result} psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "GRANT ALL PRIVILEGES ON DATABASE ${aws_db_instance.zotlease_db.identifier} TO admin;"
+      PGPASSWORD='${random_password.db_password.result}' psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "CREATE USER admin WITH PASSWORD '${random_password.db_admin_password.result}';"
+      PGPASSWORD='${random_password.db_password.result}' psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "GRANT ALL PRIVILEGES ON DATABASE ${aws_db_instance.zotlease_db.identifier} TO admin;"
     EOT
   }
 }
