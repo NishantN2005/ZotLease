@@ -1,11 +1,11 @@
 name: ZOTLEASE CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-    types: [ opened, reopened, edited ]
+  #push:
+  #  branches: [ "main" ]
+  #pull_request:
+  #  branches: [ "main" ]
+  #  types: [ opened, reopened, edited ]
   workflow_dispatch:
     inputs:
       environ:
@@ -85,7 +85,7 @@ jobs:
       run: |
         aws lightsail create-container-service \
           --service-name zotlease-api \
-          --power small \
+          --power nano \
           --scale 1 || true
     - name: Deploy to AWS Lightsail
       env:
