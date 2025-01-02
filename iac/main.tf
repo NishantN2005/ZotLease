@@ -2,12 +2,6 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# S3 Bucket for Terraform state
-resource "aws_s3_bucket" "terraform_state" {
-  bucket = "zotlease-tf-state"
-  acl    = "private"
-}
-
 # DynamoDB table for Terraform state locking
 resource "aws_dynamodb_table" "terraform_locks" {
   name         = "terraform-locks"
