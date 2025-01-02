@@ -25,27 +25,6 @@ resource "random_password" "db_password" {
   special = true
 }
 
-# Security Group for RDS
-resource "aws_security_group" "rds_sg" {
-  name        = "rds_sg"
-  description = "Allow PostgreSQL traffic"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Allow from all IPs, adjust as needed
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 # RDS PostgreSQL Database
 resource "aws_db_instance" "zotlease_db" {
   allocated_storage    = 20
@@ -56,8 +35,6 @@ resource "aws_db_instance" "zotlease_db" {
   username             = "zotlease_admin"
   password             = random_password.db_password.result
   parameter_group_name = aws_db_parameter_group.custom_postgres16.name
-  publicly_accessible  = true
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot  = true
 }
 
@@ -115,13 +92,8 @@ resource "null_resource" "create_db_admin_user" {
 
   provisioner "local-exec" {
     command = <<EOT
-      sleep 60
-      for i in {1..5}; do
-        PGPASSWORD='${random_password.db_password.result}' psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "CREATE USER admin WITH PASSWORD '${random_password.db_admin_password.result}';" && break || sleep 15;
-      done
-      for i in {1..5}; do
-        PGPASSWORD='${random_password.db_password.result}' psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "GRANT ALL PRIVILEGES ON DATABASE ${aws_db_instance.zotlease_db.identifier} TO admin;" && break || sleep 15;
-      done
+      PGPASSWORD='${random_password.db_password.result}' psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "CREATE USER admin WITH PASSWORD '${random_password.db_admin_password.result}';"
+      PGPASSWORD='${random_password.db_password.result}' psql -h ${aws_db_instance.zotlease_db.address} -U zotlease_admin -d ${aws_db_instance.zotlease_db.identifier} -c "GRANT ALL PRIVILEGES ON DATABASE ${aws_db_instance.zotlease_db.identifier} TO admin;"
     EOT
   }
 }
