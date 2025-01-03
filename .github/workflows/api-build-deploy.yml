@@ -97,7 +97,7 @@ jobs:
         AWS_REGION: us-east-1
         IMAGE_TAG: ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: zotlease/frontend
+        REPOSITORY: zotlease/api
         DB_HOST: ${{ env.DB_HOST }}
         DB_PORT: ${{ env.DB_PORT }}
         DB_USER: ${{ env.DB_USER }}
