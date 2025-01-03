@@ -70,14 +70,14 @@ jobs:
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MY_SECRET --query SecretString --output text)
         echo "my_secret=$secret"
-        echo "MY_SECRET=$(echo $secret | jq -r .MY_SECRET | jq -sRr @uri)" >> $GITHUB_ENV
+        echo "MY_SECRET=$(echo $secret | jq -sRr @uri)" >> $GITHUB_ENV
 
     - name: Retrieve MAPBOX_KEY from Secrets Manager
       id: get_mapbox_key
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
         echo "mapbox_key=$secret"
-        echo "MAPBOX_KEY=$(echo $secret | jq -r .MAPBOX_KEY | jq -sRr @uri)" >> $GITHUB_ENV
+        echo "MAPBOX_KEY=$(echo $secret | jq -sRr @uri)" >> $GITHUB_ENV
 
     - name: Deploy to AWS Lightsail
       env:
