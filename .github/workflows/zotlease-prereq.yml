@@ -24,7 +24,7 @@ jobs:
     - name: Retrieve DB connection details from Secrets Manager
       id: get_secret
       run: |
-        secret=$(aws secretsmanager get-secret-value --secret-id zotlease-db-connection-details --query SecretString --output text)
+        secret=$(aws secretsmanager get-secret-value --secret-id zotlease-db-connection --query SecretString --output text)
         echo "$secret" > secret.json
         echo "DB_HOST=$(jq -r .db_host secret.json)" >> $GITHUB_ENV
         echo "DB_PORT=$(jq -r .db_port secret.json)" >> $GITHUB_ENV
