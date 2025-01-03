@@ -14,7 +14,7 @@ const cron = require("node-cron");
 const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
 require("dotenv").config("api/.env");
 const jwt = require("jsonwebtoken");
- 
+
 const app = express();
 app.use(compression());
 
@@ -38,6 +38,11 @@ app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/sublease", subleaseRoutes);
 app.use("/chat", chatRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'UP' });
+});
 
 // Schedule the cleanup task to run once a day at midnight
 cron.schedule(
