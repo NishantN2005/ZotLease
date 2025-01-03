@@ -108,6 +108,6 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, IP, () => {
   console.log(
-    `Cellborg API listening at http://localhost:${PORT} in the ${ENVIRONMENT} environment`
+    ` Zotlease API listening at http://localhost:${PORT} in the ${ENVIRONMENT} environment`
   );
 });
