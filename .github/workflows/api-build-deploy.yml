@@ -39,17 +39,6 @@ jobs:
         cd api
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-        
-    - name: Build, Tag, and Push the Frontend Image to Amazon ECR
-      id: build-frontend-image
-      env:
-        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPOSITORY: zotlease/frontend
-        IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
-      run: |
-        cd frontend
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
   deploy:
     runs-on: ubuntu-latest
@@ -74,19 +63,19 @@ jobs:
         echo "DB_HOST=$(jq -r .db_host secret.json)" >> $GITHUB_ENV
         echo "DB_PORT=$(jq -r .db_port secret.json)" >> $GITHUB_ENV
         echo "DB_USER=$(jq -r .db_user secret.json)" >> $GITHUB_ENV
-        echo "DB_PASSWORD=$(jq -r .db_password secret.json)" >> $GITHUB_ENV
+        echo "DB_PASSWORD=$(jq -r .db_password secret.json | jq -sRr @uri)" >> $GITHUB_ENV
 
     - name: Retrieve MY_SECRET from Secrets Manager
       id: get_my_secret
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MY_SECRET --query SecretString --output text)
-        echo "MY_SECRET=$(echo $secret | jq -r .MY_SECRET)" >> $GITHUB_ENV
+        echo "MY_SECRET=$(echo $secret | jq -r .MY_SECRET | jq -sRr @uri)" >> $GITHUB_ENV
 
     - name: Retrieve MAPBOX_KEY from Secrets Manager
       id: get_mapbox_key
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
-        echo "MAPBOX_KEY=$(echo $secret | jq -r .MAPBOX_KEY)" >> $GITHUB_ENV
+        echo "MAPBOX_KEY=$(echo $secret | jq -r .MAPBOX_KEY | jq -sRr @uri)" >> $GITHUB_ENV
 
     - name: Deploy to AWS Lightsail
       env:
@@ -105,5 +94,5 @@ jobs:
       run: |
         aws lightsail create-container-service-deployment \
         --service-name zotlease-api \
-        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={80=HTTP},environment={DB_HOST=$DB_HOST,DB_PORT=$DB_PORT,DB_USER=$DB_USER,DB_PASSWORD=$DB_PASSWORD,MY_SECRET=$MY_SECRET,MAPBOX_KEY=$MAPBOX_KEY}}" \
+        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={80=HTTP},environment={DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\"}}" \
         --public-endpoint "containerName=api,containerPort=80"
