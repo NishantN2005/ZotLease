@@ -18,11 +18,19 @@ const jwt = require("jsonwebtoken");
 const app = express();
 app.use(compression());
 
-const coorsOptions = {
-  origin: ORIGIN,
-  credentials: true,
-};
-app.use(cors(coorsOptions));
+// Enable CORS for all routes except the health check endpoint
+app.use((req, res, next) => {
+  if (req.path === '/health') {
+    next();
+  } else {
+    cors({
+      origin: ORIGIN,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    })(req, res, next);
+  }
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -113,6 +121,6 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, IP, () => {
   console.log(
-    ` Zotlease API listening at http://localhost:${PORT} in the ${ENVIRONMENT} environment`
+    ` Zotlease API listening at http://${IP}:${PORT} in the ${ENVIRONMENT} environment`
   );
 });
