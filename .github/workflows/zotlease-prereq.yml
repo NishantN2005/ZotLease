@@ -38,4 +38,4 @@ jobs:
         DB_USER: ${{ env.DB_USER }}
         DB_PASSWORD: ${{ env.DB_PASSWORD }}
       run: |
-        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d zotlease -f database/create_tables.sql
+        PGPASSWORD=$DB_PASSWORD psql -h $DB_HOST -U $DB_USER -d postgres -f database/create_tables.sql
