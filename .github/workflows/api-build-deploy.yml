@@ -1,4 +1,4 @@
-name: zotlease-api-build-deployß
+name: zotlease-api-build-deploy
 
 on:
   workflow_dispatch:
