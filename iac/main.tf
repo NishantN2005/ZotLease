@@ -40,7 +40,7 @@ resource "aws_db_instance" "zotlease_db" {
 
 # Store DB connection details in Secrets Manager
 resource "aws_secretsmanager_secret" "db_connection_details" {
-  name = "zotlease-db-connection-details"
+  name = "zotlease-db-connection"
 }
 
 resource "aws_secretsmanager_secret_version" "db_connection_details_version" {
