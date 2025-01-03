@@ -143,3 +143,27 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.messages
     OWNER to postgres;
+
+-- Table: public.refresh_token_blacklist
+
+-- DROP TABLE IF EXISTS public.refresh_token_blacklist;
+
+CREATE TABLE IF NOT EXISTS public.refresh_token_blacklist
+(
+    token_id uuid NOT NULL,
+    expiry timestamp without time zone NOT NULL,
+    CONSTRAINT refresh_token_blacklist_pkey PRIMARY KEY (token_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.refresh_token_blacklist
+    OWNER to postgres;
+-- Index: idx_expiry
+
+-- DROP INDEX IF EXISTS public.idx_expiry;
+
+CREATE INDEX IF NOT EXISTS idx_expiry
+    ON public.refresh_token_blacklist USING btree
+    (expiry ASC NULLS LAST)
+    TABLESPACE pg_default;
