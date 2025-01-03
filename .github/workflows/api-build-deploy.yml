@@ -55,12 +55,6 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-      with:
-        mask-password: 'true'
-
     - name: Retrieve DB connection details from Secrets Manager
       id: get_db_secret
       run: |
@@ -82,6 +76,13 @@ jobs:
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
         echo "MAPBOX_KEY=$(echo $secret | jq -sRr @uri)" >> $GITHUB_ENV
+
+    - name: Create Lightsail Container Service if not exists
+      run: |
+        aws lightsail create-container-service \
+        --service-name zotlease-api \
+        --power nano \
+        --scale 1 || true
 
     - name: Deploy to AWS Lightsail
       env:
