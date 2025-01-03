@@ -69,19 +69,19 @@ jobs:
         echo "DB_HOST=$(jq -r .db_host secret.json)" >> $GITHUB_ENV
         echo "DB_PORT=$(jq -r .db_port secret.json)" >> $GITHUB_ENV
         echo "DB_USER=$(jq -r .db_user secret.json)" >> $GITHUB_ENV
-        echo "DB_PASSWORD=$(jq -r .db_password secret.json | jq -sRr @uri)" >> $GITHUB_ENV
+        echo "DB_PASSWORD=$(jq -r .db_password secret.json | jq -sRr @sh)" >> $GITHUB_ENV
 
     - name: Retrieve MY_SECRET from Secrets Manager
       id: get_my_secret
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MY_SECRET --query SecretString --output text)
-        echo "MY_SECRET=$(echo $secret | jq -sRr @uri)" >> $GITHUB_ENV
+        echo "MY_SECRET=$(echo $secret | jq -sRr @sh)" >> $GITHUB_ENV
 
     - name: Retrieve MAPBOX_KEY from Secrets Manager
       id: get_mapbox_key
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
-        echo "MAPBOX_KEY=$(echo $secret | jq -sRr @uri)" >> $GITHUB_ENV
+        echo "MAPBOX_KEY=$(echo $secret | jq -sRr @sh)" >> $GITHUB_ENV
 
     - name: Create Lightsail Container Service if not exists
       run: |
