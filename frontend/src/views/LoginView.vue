@@ -50,6 +50,22 @@ function handleLogin() {
     console.log(err.message)
   }
 }
+
+function testRoute(){
+  fetch(`${API_URL}/health`)
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`Health check failed: ${res.statusText}`)
+      }
+      return res.json()
+    })
+    .then((data) => {
+      console.log('Health check successful:', data)
+    })
+    .catch((err) => {
+      console.log('Error:', err.message)
+    })
+}
 </script>
 
 <template>
@@ -66,6 +82,9 @@ function handleLogin() {
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
+      <div @click="testRoute">
+        <h1>Test health</h1>
+      </div>
       <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
         <div class="w-full h-full">
           <video autoplay muted playsinline class="rounded-xl">
