@@ -107,5 +107,5 @@ jobs:
       run: |
         aws lightsail create-container-service-deployment \
         --service-name zotlease-api \
-        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\"},healthCheck={path=/health,intervalSeconds=10,timeoutSeconds=5,healthyThreshold=2,unhealthyThreshold=2}}" \
-        --public-endpoint "containerName=api,containerPort=5555"
+        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\"}" \
+        --public-endpoint "containerName=api,containerPort=5555, healthCheck={path=/health, healthyThreshold=2, unhealthyThreshold=2, timeoutSeconds=5, intervalSeconds=10}" \
