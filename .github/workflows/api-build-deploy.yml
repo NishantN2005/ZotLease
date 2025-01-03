@@ -55,6 +55,12 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        mask-password: 'true'
+
     - name: Retrieve DB connection details from Secrets Manager
       id: get_db_secret
       run: |
@@ -69,14 +75,12 @@ jobs:
       id: get_my_secret
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MY_SECRET --query SecretString --output text)
-        echo "my_secret=$secret"
         echo "MY_SECRET=$(echo $secret | jq -sRr @uri)" >> $GITHUB_ENV
 
     - name: Retrieve MAPBOX_KEY from Secrets Manager
       id: get_mapbox_key
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
-        echo "mapbox_key=$secret"
         echo "MAPBOX_KEY=$(echo $secret | jq -sRr @uri)" >> $GITHUB_ENV
 
     - name: Deploy to AWS Lightsail
