@@ -52,11 +52,21 @@
         :router="router"
         :mapView="mapView"
         :toggleView="toggleDashView"
+        :toggleCheckMessage="toggleCheckMessage"
       />
 
       <!-- The Leaflet map -->
       <LeafletMap
         v-show="mapView"
+        :style="{
+          left: showFilterModal
+            ? '320px'
+            : chatStore.chatRoomID
+              ? '510px'
+              : checkMessage
+                ? '220px'
+                : '0',
+        }"
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"
         :routerPass="router"
@@ -65,7 +75,20 @@
         :filterForm="filterForm"
       />
 
-      <LeaseList v-show="listView" :allLocations="allLocationsStore" />
+      <LeaseList
+        v-show="listView"
+        :allLocations="allLocationsStore"
+        :style="{
+          left: showFilterModal
+            ? '320px'
+            : chatStore.chatRoomID
+              ? '510px'
+              : checkMessage
+                ? '220px'
+                : '0',
+          width: widthStyle,
+        }"
+      />
 
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
@@ -99,7 +122,7 @@ import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import SocketConnection from '@/components/SocketConnection.vue'
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { API_URL } from '../../constants.js'
 import FilterModal from '@/components/FilterModal.vue'
 import { useFilterStore } from '@/stores/filterStore'
@@ -174,10 +197,31 @@ export default {
     const createSubleaseModal = ref(false)
 
     const messageBar = ref(false)
+    const checkMessage = ref(false)
     const filterOpen = ref(false)
     const sidebarRef = ref(null)
     const mapView = ref(true)
     const listView = ref(false)
+
+    const widthStyle = computed(() => {
+      let leftPosition = 0
+
+      if (showFilterModal.value) {
+        leftPosition = 320
+      } else if (chatStore.chatRoomID) {
+        leftPosition = 510
+      } else if (checkMessage.value) {
+        leftPosition = 220
+      }
+
+      const screenWidth = window.innerWidth
+      const remainingWidth = screenWidth - leftPosition
+
+      const minimumWidth = 300
+      const calculatedWidth = remainingWidth > minimumWidth ? remainingWidth : minimumWidth
+
+      return `${calculatedWidth}px`
+    })
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -222,6 +266,10 @@ export default {
 
     const findChatRooms = () => {
       console.log(chatStore.chatRooms)
+    }
+
+    const toggleCheckMessage = () => {
+      checkMessage.value = !checkMessage.value
     }
 
     // creates chat room whenever user starts chat with new leaser
@@ -420,6 +468,7 @@ export default {
 
     const toggleMessages = () => {
       messageBar.value = !messageBar.value
+      console.log(messageBar.value)
       if (messageBar.value) {
         filterOpen.value = false
       } else {
@@ -485,6 +534,9 @@ export default {
       mapView,
       toggleDashView,
       listView,
+      toggleCheckMessage,
+      checkMessage,
+      widthStyle,
     }
   },
 }

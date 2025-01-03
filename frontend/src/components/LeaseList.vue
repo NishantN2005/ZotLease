@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen w-screen bg-gray-100 flex flex-col items-center py-6">
+  <div class="h-screen w-screen bg-gray-100 flex flex-col items-center py-6 relative">
     <div class="relative w-5/6">
       <input
         type="text"
@@ -43,27 +43,27 @@ export default {
 
     async function fetchPhotos() {
       console.log('what')
-      for (const listing of props.allLocations.allLocations) {
-        try {
-          const key = `${listing.listerid}/${listing.subleaseid}`
-          console.log('helo')
-          console.log('Fetching photo for key:', key)
+      // for (const listing of props.allLocations.allLocations) {
+      //   try {
+      //     const key = `${listing.listerid}/${listing.subleaseid}`
+      //     console.log('helo')
+      //     console.log('Fetching photo for key:', key)
 
-          const response = await getFirstPhoto(key)
+      //     const response = await getFirstPhoto(key)
 
-          // Log the whole response to see what it's returning
-          console.log('Response from getFirstPhoto:', response)
+      //     // Log the whole response to see what it's returning
+      //     console.log('Response from getFirstPhoto:', response)
 
-          if (response && response.length > 0) {
-            console.log('Pushing first photo to photos:', response[0])
-            photos.value.push(response[0])
-          } else {
-            console.log('No response or empty response for key:', key)
-          }
-        } catch (error) {
-          console.error('Error fetching photos for key', listing, ':', error)
-        }
-      }
+      //     if (response && response.length > 0) {
+      //       console.log('Pushing first photo to photos:', response[0])
+      //       photos.value.push(response[0])
+      //     } else {
+      //       console.log('No response or empty response for key:', key)
+      //     }
+      //   } catch (error) {
+      //     console.error('Error fetching photos for key', listing, ':', error)
+      //   }
+      // }
     }
 
     // Fetch photos on component mount

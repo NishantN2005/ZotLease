@@ -101,6 +101,10 @@ export default {
       type: Function,
       required: true,
     },
+    toggleCheckMessage: {
+      type: Function,
+      required: true,
+    },
   },
   components: {
     Messages,
@@ -123,6 +127,8 @@ export default {
     },
     toggleMessages() {
       this.messagesOpen = !this.messagesOpen
+      this.toggleCheckMessage()
+
       if (this.messagesOpen && this.filterOpen) {
         this.toggleFilterModal()
         this.filterOpen = false
@@ -134,6 +140,7 @@ export default {
 
     toggleDashMessage(chatroomID, partnerName, partnerID) {
       this.messagesOpen = true
+      this.toggleCheckMessage()
 
       if (this.messagesOpen && this.filterOpen) {
         this.toggleFilterModal()
