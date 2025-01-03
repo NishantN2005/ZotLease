@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: zotlease-api-build-deployß
 
 on:
   workflow_dispatch:
