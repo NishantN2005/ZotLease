@@ -1,7 +1,7 @@
 const { Pool } = require("pg");
 const fs = require("fs");
 require("dotenv").config();
-const {SSL_PATH} = require("./constants.js");
+const {SSL_PATH} = require("../constants.js");
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
