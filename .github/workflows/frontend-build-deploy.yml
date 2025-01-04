@@ -75,7 +75,7 @@ jobs:
     - name: Retrieve API URL from Lightsail
       id: get_api_url
       run: |
-        api_url=$(aws lightsail get-container-services --service-name zotlease-api --query 'containerServices[0].privateDomainName' --output text)
+        api_url=$(aws lightsail get-container-services --service-name zotlease-api --query 'containerServices[0].url' --output text)
         echo "$api_url"
         echo "API_URL=$api_url" >> $GITHUB_ENV
 

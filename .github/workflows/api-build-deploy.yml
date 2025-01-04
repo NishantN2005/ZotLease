@@ -86,7 +86,7 @@ jobs:
     - name: Retrieve Frontend URL from Lightsail
       id: get_frontend_url
       run: |
-        frontend_url=$(aws lightsail get-container-services --service-name zotlease-frontend --query 'containerServices[0].privateDomainName' --output text)
+        frontend_url=$(aws lightsail get-container-services --service-name zotlease-frontend --query 'containerServices[0].url' --output text)
         echo "$frontend_url"
         echo "FRONTEND_URL=$frontend_url" >> $GITHUB_ENV
 
