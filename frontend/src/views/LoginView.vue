@@ -22,6 +22,7 @@ function backToLogin(){
 function handleLogin() {
   try {
     console.log(formData.value)
+    console.log(API_URL)
     fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
