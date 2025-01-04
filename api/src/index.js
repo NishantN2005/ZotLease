@@ -41,7 +41,6 @@ app.use("/chat", chatRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  console.log('Health checkpoint has been hit')
   res.status(200).json({ status: 'UP' });
 });
 
