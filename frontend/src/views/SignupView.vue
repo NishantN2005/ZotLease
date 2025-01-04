@@ -81,7 +81,7 @@ function handleSignup() {
       <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
         <div class="w-full min-h-full flex items-center justify-center">
           <video autoplay muted playsinline class="rounded-xl">
-            <source src="/ZotLease2.mp4" type="video/mp4" />
+            <source src="@/assets/ZotLease2.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>

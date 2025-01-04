@@ -1,6 +1,6 @@
 //define environment code is running in
-const ENVIRONMENT = import.meta.env.VITE_ENV== "beta"?"beta":"dev";
+const ENVIRONMENT = import.meta.env.VITE_ENV
 
-export const API_URL = ENVIRONMENT=="beta"? 'https://beta.zotlease.com':'http://localhost:5555';
+export const API_URL = import.meta.env.VITE_API_URL
 
 export const PHOTO_BUCKET = `zotlease-${ENVIRONMENT}-photoupload`;

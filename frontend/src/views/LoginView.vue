@@ -50,10 +50,11 @@ function handleLogin() {
     console.log(err.message)
   }
 }
+
 </script>
 
 <template>
-  <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen">
+  <section class="bg-cover bg-center bg-[url('@/assets/yellowuci.jpg')] min-h-screen">
     <div
       class="flex flex-col md:flex-row items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
     >
@@ -69,7 +70,7 @@ function handleLogin() {
       <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
         <div class="w-full h-full">
           <video autoplay muted playsinline class="rounded-xl">
-            <source src="/ZotLease2.mp4" type="video/mp4" />
+            <source src="@/assets/ZotLease2.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>
