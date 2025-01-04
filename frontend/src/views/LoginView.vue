@@ -51,25 +51,10 @@ function handleLogin() {
   }
 }
 
-function testRoute(){
-  fetch(`${API_URL}/health`)
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error(`Health check failed: ${res.statusText}`)
-      }
-      return res.json()
-    })
-    .then((data) => {
-      console.log('Health check successful:', data)
-    })
-    .catch((err) => {
-      console.log('Error:', err.message)
-    })
-}
 </script>
 
 <template>
-  <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen">
+  <section class="bg-cover bg-center bg-[url('@/assets/yellowuci.jpg')] min-h-screen">
     <div
       class="flex flex-col md:flex-row items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
     >
@@ -82,13 +67,10 @@ function testRoute(){
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
-      <div @click="testRoute">
-        <h1>Test health</h1>
-      </div>
       <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
         <div class="w-full h-full">
           <video autoplay muted playsinline class="rounded-xl">
-            <source src="/ZotLease2.mp4" type="video/mp4" />
+            <source src="@/assets/ZotLease2.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>

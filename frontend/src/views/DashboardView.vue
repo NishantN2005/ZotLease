@@ -244,7 +244,7 @@ export default {
 
     async function createListing() {
       try {
-        formError.display = false
+        formError.value.display = false
 
         let response = await makeAuthenticatedRequest(
           `sublease/create`,

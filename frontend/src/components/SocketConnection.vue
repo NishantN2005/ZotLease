@@ -67,7 +67,7 @@ onMounted(() => {
   socket.value = io('http://localhost:5555')
 
   socket.value.on('connect', () => {
-    socketId.value = socket.id
+    socketId.value = socket.value.id
     console.log('Connected with Socket ID:', socket.value.id)
 
     socket.value.emit('setUser', userID)

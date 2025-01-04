@@ -17,4 +17,11 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server:{
+    port:5173,
+    host: true, // This makes the server accessible externally
+  },
+  build: {
+    outDir: 'dist', // Ensure the output directory is set correctly
+  },
 })
