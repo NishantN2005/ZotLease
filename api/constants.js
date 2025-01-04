@@ -1,4 +1,4 @@
-const ENVIRONMENT = process.env.ENV== "beta"?"beta":"dev";
+const ENVIRONMENT = process.env.ENV
 
 const ORIGIN = ENVIRONMENT=="dev"?"http://localhost:5173":"";
 const PORT = 5555;
