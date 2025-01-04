@@ -51,8 +51,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
         IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
-        MAPBOX_KEY: ${{ steps.get_mapbox_key.outputs.secret }}
-        API_URL: ${{ steps.get_api_url.outputs.api_url }}
+        MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
+        API_URL: ${{ env.API_URL }}
       run: |
         cd frontend
         docker buildx build --build-arg VITE_AWS_ACCESS_KEY_ID=${{env.AWS_ACCESS_KEY_ID}} \
@@ -111,9 +111,9 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: zotlease/frontend
         MY_SECRET: ${{ env.MY_SECRET }}
-        VITE_MAPBOX_TOKEN: ${{ steps.get_mapbox_key.outputs.secret }}
+        VITE_MAPBOX_TOKEN: ${{ env.MAPBOX_KEY }}
         VITE_ENV: beta
-        VITE_API_URL: ${{ steps.get_api_url.outputs.api_url }}
+        VITE_API_URL: ${{ env.API_URL }}
 
 
       run: |
