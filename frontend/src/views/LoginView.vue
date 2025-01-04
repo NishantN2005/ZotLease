@@ -53,7 +53,7 @@ function handleLogin() {
 }
 
 function apihealthcheck(){
-  fetch(`${API_URL}healthcheck`, {
+  fetch(`${API_URL}health`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
