@@ -19,14 +19,14 @@ const app = express();
 app.use(compression());
 
 const coorsOptions = {
-  origin: '*',
+  origin: ORIGIN,
   credentials: true,
 };
 app.use(cors(coorsOptions));
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: ORIGIN,
     methods: ["GET", "POST"],
   },
 });
@@ -114,6 +114,6 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, IP, () => {
   console.log(
-    ` Zotlease API listening at http://${IP}:${PORT} in the ${ENVIRONMENT} environment`
+    ` Zotlease API listening at http://${IP}:${PORT} in the ${ENVIRONMENT} environment only accepting connectections from ${ORIGIN}`
   );
 });
