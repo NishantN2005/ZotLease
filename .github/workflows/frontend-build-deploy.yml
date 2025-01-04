@@ -40,12 +40,14 @@ jobs:
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: zotlease/frontend
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
         MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
       run: |
         cd frontend
-        docker build --build-arg VITE_AWS_ACCESS_KEY_ID =${{secrets.AWS_ACCESS_KEY_ID}} 
-                     --build-arg VITE_AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}
+        docker build --build-arg VITE_AWS_ACCESS_KEY_ID =${{env.AWS_ACCESS_KEY_ID}} 
+                     --build-arg VITE_AWS_SECRET_ACCESS_KEY=${{env.AWS_SECRET_ACCESS_KEY}}
                      --build-arg VITE_AWS_REGION=us-east-1
                      --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}}
                      --build-arg VITE_ENV=beta
