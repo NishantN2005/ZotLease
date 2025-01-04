@@ -47,7 +47,7 @@ jobs:
       run: |
         cd frontend
         docker build 
-                     -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .\
+                     -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
                      --build-arg VITE_AWS_ACCESS_KEY_ID =${{env.AWS_ACCESS_KEY_ID}} \
                      --build-arg VITE_AWS_SECRET_ACCESS_KEY=${{env.AWS_SECRET_ACCESS_KEY}} \
                      --build-arg VITE_AWS_REGION=us-east-1 \
