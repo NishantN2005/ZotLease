@@ -11,6 +11,11 @@ const pool = new Pool({
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
+  ssl:true,
+  dialect: 'postgres',
+  dialectOptions: {
+    "ssl": {"require":true }
+  }
   // ssl: {
   //   rejectUnauthorized: false,
   //   ca: fs.readFileSync("src/rds-combined-ca-bundle.pem").toString(), // if you're using SSL
