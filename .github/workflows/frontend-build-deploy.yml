@@ -50,8 +50,8 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
         IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
-        MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
-        API_URL: ${{ env.API_URL }}
+        MAPBOX_KEY: ${{ steps.get_mapbox_key.outputs.secret }}
+        API_URL: ${{ steps.get_api_url.outputs.api_url }}
       run: |
         cd frontend
         docker buildx build --build-arg VITE_AWS_ACCESS_KEY_ID=${{env.AWS_ACCESS_KEY_ID}} \
