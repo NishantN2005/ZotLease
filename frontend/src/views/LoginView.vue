@@ -23,7 +23,7 @@ function handleLogin() {
   try {
     console.log(formData.value)
     console.log(API_URL)
-    fetch(`${API_URL}/auth/login`, {
+    fetch(`${API_URL}auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
