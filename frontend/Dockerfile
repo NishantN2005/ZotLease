@@ -10,6 +10,20 @@ COPY package*.json ./
 # Remove node_modules and package-lock.json if they exist
 RUN rm -rf node_modules package-lock.json
 
+#Set environment variables before building
+
+ARG VITE_AWS_ACCESS_KEY_ID
+ARG VITE_AWS_SECRET_ACCESS_KEY
+ARG VITE_AWS_REGION
+ARG VIT_MAPBOX_TOKEN
+ARG VITE_ENV
+
+ENV VITE_AWS_ACCESS_KEY_ID=$VITE_AWS_ACCESS_KEY_ID
+ENV VITE_AWS_SECRET_ACCESS_KEY=$VITE_AWS_SECRET_ACCESS_KEY
+ENV VITE_AWS_REGION=$VITE_AWS_REGION
+ENV VIT_MAPBOX_TOKEN=$VIT_MAPBOX_TOKEN
+ENV VITE_ENV=$VITE_ENV
+
 # Install dependencies
 RUN npm install
 
