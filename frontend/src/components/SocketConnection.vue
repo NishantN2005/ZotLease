@@ -1,12 +1,13 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { io } from 'socket.io-client'
-import { useUserStore } from '@/stores/userStore'
-import { useChatStore } from '@/stores/chatStore'
-import { makeAuthenticatedRequest } from '@/services/authService'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { onMounted, ref } from 'vue';
+import { io } from 'socket.io-client';
+import { useUserStore } from '@/stores/userStore';
+import { useChatStore } from '@/stores/chatStore';
+import { makeAuthenticatedRequest } from '@/services/authService';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {API_URL} from '../../constants.js';
 library.add(faPaperPlane)
 
 const props = defineProps({
@@ -64,7 +65,7 @@ const sendMessage = () => {
 }
 
 onMounted(() => {
-  socket.value = io('http://localhost:5555')
+  socket.value = io(API_URL);
 
   socket.value.on('connect', () => {
     socketId.value = socket.value.id
