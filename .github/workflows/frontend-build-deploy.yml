@@ -33,6 +33,7 @@ jobs:
       id: get_mapbox_key
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
+        echo "$secret"
         echo "MAPBOX_KEY=$secret" >> $GITHUB_ENV
     
     - name: Retrieve API URL from Lightsail
