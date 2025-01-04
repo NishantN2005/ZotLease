@@ -34,6 +34,13 @@ jobs:
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
         echo "MAPBOX_KEY=$secret" >> $GITHUB_ENV
+    
+    - name: Retrieve API URL from Lightsail
+      id: get_api_url
+      run: |
+        api_url=$(aws lightsail get-container-services --service-name zotlease-api --query 'containerServices[0].url' --output text)
+        echo "$api_url"
+        echo "API_URL=$api_url" >> $GITHUB_ENV
 
     - name: Build, Tag, and Push the Frontend Image to Amazon ECR
       id: build-frontend-image
@@ -44,6 +51,7 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
         IMAGE_TAG:  ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
         MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
+        API_URL: ${{ env.API_URL }}
       run: |
         cd frontend
         docker buildx build --build-arg VITE_AWS_ACCESS_KEY_ID=${{env.AWS_ACCESS_KEY_ID}} \
@@ -51,6 +59,7 @@ jobs:
                      --build-arg VITE_AWS_REGION=us-east-1 \
                      --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                      --build-arg VITE_ENV=beta \
+                    --build-arg VITE_API_URL=${{env.API_URL}} \
                      -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
