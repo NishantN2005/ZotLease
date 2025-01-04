@@ -10,7 +10,7 @@ import { makeAuthenticatedRequest } from '../services/authService.js';
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js';
 import {useFilterStore} from '@/stores/filterStore';
 import {useAllLocationsStore} from '@/stores/AllLocationsStore';
-
+import {MAPBOX_ACCESS_TOKEN} from '../../constants.js';
 export default {
   name: 'LeafletMap',
   props: {
@@ -42,7 +42,6 @@ export default {
     let map = null;
     let markersLayer = null;
 
-    const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
     const MAPBOX_TILE_URL = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`;
 
     const selectedSubleaseStore = useSelectedSubleaseStore();
