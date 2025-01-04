@@ -46,12 +46,14 @@ jobs:
         MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
       run: |
         cd frontend
-        docker build --build-arg VITE_AWS_ACCESS_KEY_ID =${{env.AWS_ACCESS_KEY_ID}} \
+        docker build 
+                     -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .\
+                     --build-arg VITE_AWS_ACCESS_KEY_ID =${{env.AWS_ACCESS_KEY_ID}} \
                      --build-arg VITE_AWS_SECRET_ACCESS_KEY=${{env.AWS_SECRET_ACCESS_KEY}} \
                      --build-arg VITE_AWS_REGION=us-east-1 \
                      --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                      --build-arg VITE_ENV=beta \
-                    -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                     --no-cache .
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
     runs-on: ubuntu-latest
