@@ -33,7 +33,7 @@ jobs:
       id: get_mapbox_key
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
-        echo "MAPBOX_KEY=$secret" >> $GITHUB_ENV'
+        echo "MAPBOX_KEY=$secret" >> $GITHUB_ENV
 
     - name: Build, Tag, and Push the Frontend Image to Amazon ECR
       id: build-frontend-image
