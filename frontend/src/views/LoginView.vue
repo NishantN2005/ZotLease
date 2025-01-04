@@ -52,27 +52,6 @@ function handleLogin() {
   }
 }
 
-function apihealthcheck(){
-  fetch(`${API_URL}health`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  })
-    .then((res) => {
-      if (!res.ok) {
-        throw new Error(`Healthcheck failed: ${res.statusText}`)
-      }
-      return res.json()
-    })
-    .then((data) => {
-      console.log('Healthcheck successful:', data)
-    })
-    .catch((err) => {
-      console.log('Error:', err.message)
-    })
-}
 
 </script>
 
@@ -90,9 +69,6 @@ function apihealthcheck(){
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
-      <div @click="apihealthcheck">
-        <h1>Check api connection</h1>
-      </div>
       <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
         <div class="w-full h-full">
           <video autoplay muted playsinline class="rounded-xl">
