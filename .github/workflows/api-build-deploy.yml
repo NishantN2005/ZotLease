@@ -104,9 +104,9 @@ jobs:
         DB_PASSWORD: ${{ env.DB_PASSWORD }}
         MY_SECRET: ${{ env.MY_SECRET }}
         MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
-        ENV: beta
+        ENV: ${{github.event.inputs.environ}}
       run: |
         aws lightsail create-container-service-deployment \
         --service-name zotlease-api \
-        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\"}}" \
+        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\", ENV=\"$ENV\"}}" \
         --public-endpoint "containerName=api,containerPort=5555, healthCheck={path=/health, healthyThreshold=2, unhealthyThreshold=2, timeoutSeconds=5, intervalSeconds=10}" \
