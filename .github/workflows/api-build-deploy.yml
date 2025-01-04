@@ -113,8 +113,9 @@ jobs:
         MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
         ENV: ${{github.event.inputs.environ}}
         ORIGIN: ${{ env.FRONTEND_URL }}
+        SSL_PATH: /app/rds-combined-ca-bundle.pem
       run: |
         aws lightsail create-container-service-deployment \
         --service-name zotlease-api \
-        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={ORIGIN=\"$ORIGIN\",DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\", ENV=\"$ENV\"}}" \
+        --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={SSL_PATH=\"$SSL_PATH\",ORIGIN=\"$ORIGIN\",DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\", ENV=\"$ENV\"}}" \
         --public-endpoint "containerName=api,containerPort=5555, healthCheck={path=/health, healthyThreshold=2, unhealthyThreshold=2, timeoutSeconds=5, intervalSeconds=10}" \

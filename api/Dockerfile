@@ -4,6 +4,9 @@ FROM node:23-alpine3.20
 # Set the working directory inside the container
 WORKDIR /app
 
+#download ssl certificate for db connection from aws
+RUN curl -o rds-combined-ca-bundle.pem https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
+
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
