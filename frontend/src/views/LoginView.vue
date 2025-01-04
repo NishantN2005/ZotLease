@@ -22,7 +22,8 @@ function backToLogin(){
 function handleLogin() {
   try {
     console.log(formData.value)
-    fetch(`${API_URL}/auth/login`, {
+    console.log(API_URL)
+    fetch(`${API_URL}auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,6 +51,7 @@ function handleLogin() {
     console.log(err.message)
   }
 }
+
 
 </script>
 

@@ -38,7 +38,7 @@ function handleSignup() {
   // post user details
   try {
     console.log(formData.value)
-    fetch(`${API_URL}/auth/signup`, {
+    fetch(`${API_URL}auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -4,7 +4,7 @@ export const refreshAccessToken = async (router) => {
   const userStore = useUserStore()
 
   try {
-    const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
+    const refreshResponse = await fetch(`${API_URL}auth/refresh`, {
       method: 'POST',
       credentials: 'include',
     })
@@ -44,7 +44,7 @@ export const makeAuthenticatedRequest = async (
   token,
   methodType = 'POST',
 ) => {
-  let response = await fetch(`${API_URL}/${endpoint}`, {
+  let response = await fetch(`${API_URL}${endpoint}`, {
     method: methodType,
     credentials: 'include',
     headers: {
@@ -61,7 +61,7 @@ export const makeAuthenticatedRequest = async (
       const newAccessToken = await refreshAccessToken(router)
       if (newAccessToken) {
         //make another request with new access token
-        let resp = await fetch(`${API_URL}/${endpoint}`, {
+        let resp = await fetch(`${API_URL}${endpoint}`, {
           method: 'POST',
           credentials: 'include',
           headers: {
