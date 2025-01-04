@@ -110,9 +110,9 @@ jobs:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: zotlease/frontend
         MY_SECRET: ${{ env.MY_SECRET }}
-        VITE_MAPBOX_TOKEN: ${{ env.MAPBOX_KEY }}
+        VITE_MAPBOX_TOKEN: ${{ steps.get_mapbox_key.outputs.secret }}
         VITE_ENV: beta
-        VITE_API_URL: ${{ env.API_URL }}
+        VITE_API_URL: ${{ steps.get_api_url.outputs.api_url }}
 
 
       run: |
