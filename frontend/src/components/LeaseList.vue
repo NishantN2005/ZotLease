@@ -19,6 +19,10 @@
         :key="allLocations.subleaseid"
         class="listing-card"
       >
+        <img
+          :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
+          alt="Failed to Render Photo"
+        />
         <h3 class="bold text-green-700 font-bold">${{ listing.price }}</h3>
         <p class="text-gray-600">{{ [listing.street_name, listing.city].join(', ') }}</p>
       </div>
@@ -28,7 +32,8 @@
 
 <script>
 import { getFirstPhoto } from '@/s3client.js'
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
+import housePlaceholder from '@/assets/house-placeholder.jpg'
 export default {
   name: 'leaseList',
   props: {
@@ -39,42 +44,47 @@ export default {
   },
   setup(props) {
     console.log('lol')
-    const photos = ref([])
+    const photos = ref({})
 
     async function fetchPhotos() {
       console.log('what')
-      // for (const listing of props.allLocations.allLocations) {
-      //   try {
-      //     const key = `${listing.listerid}/${listing.subleaseid}`
-      //     console.log('helo')
-      //     console.log('Fetching photo for key:', key)
+      console.log(props.allLocations.allLocations)
+      for (const listing of props.allLocations.allLocations) {
+        try {
+          const key = `${listing.listerid}/${listing.subleaseid}`
+          console.log('helo')
+          console.log('Fetching photo for key:', key)
 
-      //     const response = await getFirstPhoto(key)
+          const response = await getFirstPhoto(key)
 
-      //     // Log the whole response to see what it's returning
-      //     console.log('Response from getFirstPhoto:', response)
+          // Log the whole response to see what it's returning
+          console.log('Response from getFirstPhoto:', response)
 
-      //     if (response && response.length > 0) {
-      //       console.log('Pushing first photo to photos:', response[0])
-      //       photos.value.push(response[0])
-      //     } else {
-      //       console.log('No response or empty response for key:', key)
-      //     }
-      //   } catch (error) {
-      //     console.error('Error fetching photos for key', listing, ':', error)
-      //   }
-      // }
+          if (response && response.length > 0) {
+            console.log('Pushing first photo to photos:', response)
+            photos.value[listing.subleaseid] = response
+          } else {
+            console.log('No response or empty response for key:', key)
+          }
+        } catch (error) {
+          console.error('Error fetching photos for key', listing, ':', error)
+        }
+      }
     }
 
     // Fetch photos on component mount
-    onMounted(() => {
-      console.log('mounted')
-      fetchPhotos()
-    })
+
+    watch(
+      () => [props.allLocations.allLocations],
+      ([]) => {
+        fetchPhotos()
+      },
+    )
 
     return {
       photos,
       fetchPhotos,
+      housePlaceholder,
     }
   },
   methods: {
