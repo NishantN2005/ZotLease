@@ -21,9 +21,9 @@ export const useSelectedSubleaseStore = defineStore('selectedsublease', {
       description: null,
     }
   },
-  persist: true,
   actions: {
     setSelectedSublease(subID, first_name, last_name, lister, price, gender, roomCount, bathroomCount, street_name,city, room, postal_code, startTerm, endTerm ,description){
+        console.log(`inside selected store changing it from ${this.subleaseID} to ${subID}`);
         this.subleaseID = subID;
         this.fName = first_name;
         this.lName = last_name;
@@ -39,6 +39,7 @@ export const useSelectedSubleaseStore = defineStore('selectedsublease', {
         this.startTerm = startTerm;
         this.endTerm = endTerm;
         this.description = description;
+        console.log(this.subleaseID);
     }
   },
   getters: {},
