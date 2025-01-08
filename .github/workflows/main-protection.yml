@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: '18.x'
 
       - name: Install API dependencies
         run: |
@@ -44,9 +44,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          
-      - name: Verify Node.js version
-        run: node -v
 
       - name: Install Frontend dependencies
         run: |
