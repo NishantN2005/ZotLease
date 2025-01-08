@@ -54,20 +54,31 @@
         :toggleView="toggleDashView"
         :toggleCheckMessage="toggleCheckMessage"
         :filterOpen="filterOpen"
+        :toggleMessages="toggleMessages"
+        :showFilterModal="showFilterModal"
+        :messagesOpen="messagesOpen"
+      />
+      <!-- Filter Modal-->
+      <FilterModal
+        :filterform="filterForm"
+        :showFilterModal="showFilterModal"
+        :routerPass="router"
+        :token="userStore.userToken"
+        :toggleFilterModal="toggleFilterModal"
+        :resetFilters="resetFilters"
+      />
+      <!-- Messages Modal -->
+      <Messages
+        ref="messageRef"
+        :messagesOpen="messagesOpen"
+        :chatStore="chatStore"
+        :router="router"
+        :userStore="userStore"
       />
 
       <!-- The Leaflet map -->
       <LeafletMap
         v-show="mapView"
-        :style="{
-          left: showFilterModal
-            ? '320px'
-            : chatStore.chatRoomID
-              ? '510px'
-              : checkMessage
-                ? '220px'
-                : '0',
-        }"
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"
         :routerPass="router"
@@ -81,18 +92,8 @@
         :allLocations="allLocationsStore"
         :filterStore="filterStore"
         :turnOnSubleaseModal="turnOnSubleaseModal"
-        :userToken="userStore.userToken"
+        :userToken="userToken"
         :routerPass="router"
-        :style="{
-          left: showFilterModal
-            ? '320px'
-            : chatStore.chatRoomID
-              ? '510px'
-              : checkMessage
-                ? '220px'
-                : '0',
-          width: widthStyle,
-        }"
       />
 
       <!-- Selected Sublease modal-->
@@ -102,16 +103,6 @@
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
         :router="router"
-      />
-
-      <!-- Filter Modal-->
-      <FilterModal
-        :filterform="filterForm"
-        :showFilterModal="showFilterModal"
-        :routerPass="router"
-        :token="userStore.userToken"
-        :toggleFilterModal="toggleFilterModal"
-        :resetFilters="resetFilters"
       />
     </div>
   </div>
@@ -135,8 +126,7 @@ import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import { uploadPhotos } from '../s3client.js'
 import Sidebar from '@/components/Sidebar.vue'
-import { debounce } from 'lodash'
-import { filter } from 'lodash'
+import Messages from '../components/Messages.vue'
 
 export default {
   name: 'DashboardView',
@@ -148,7 +138,9 @@ export default {
     SelectedSubleaseModal,
     Sidebar,
     LeaseList,
+    Messages,
   },
+  methods: {},
   setup() {
     onMounted(() => {
       if (userStore.isLoggedIn) {
@@ -159,14 +151,12 @@ export default {
       console.log('component unmounted')
       // Detect page refresh or tab close
       window.addEventListener('beforeunload', handleSessionEnd)
-      window.addEventListener('resize', handleResize)
     })
 
     onUnmounted(() => {
       // Cleanup event listener when the component is destroyed
       console.log('Component unmounted')
       window.removeEventListener('beforeunload', handleSessionEnd)
-      window.removeEventListener('resize', handleResize)
     })
 
     const router = useRouter()
@@ -178,6 +168,8 @@ export default {
 
     const showSelectedSubleaseModal = ref(false)
     const showFilterModal = ref(false)
+    const messagesOpen = ref(false)
+    const messageRef = ref(null)
     const filterForm = ref({
       gender: '',
       minPrice: null,
@@ -209,30 +201,10 @@ export default {
 
     const messageBar = ref(false)
     const checkMessage = ref(false)
-    const filterOpen = ref(false)
     const sidebarRef = ref(null)
     const mapView = ref(true)
     const listView = ref(false)
-    const currentWidth = ref(window.innerWidth)
-
-    const widthStyle = computed(() => {
-      let leftPosition = 0
-
-      if (showFilterModal.value) {
-        leftPosition = 320
-      } else if (chatStore.chatRoomID) {
-        leftPosition = 510
-      } else if (checkMessage.value) {
-        leftPosition = 220
-      }
-
-      const remainingWidth = currentWidth.value - leftPosition
-
-      const minimumWidth = 300
-      const calculatedWidth = remainingWidth > minimumWidth ? remainingWidth : minimumWidth
-
-      return `${calculatedWidth}px`
-    })
+    const filterOpen = ref(false)
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -242,9 +214,6 @@ export default {
       console.log('modal on')
       createSubleaseModal.value = true
     }
-    const handleResize = debounce(() => {
-      currentWidth.value = window.innerWidth
-    }, 200)
 
     const sequencialFetch = async () => {
       await fetchChatRooms()
@@ -471,6 +440,10 @@ export default {
       showSelectedSubleaseModal.value = true
     }
     const toggleFilterModal = () => {
+      //turn of messages if modal is getting turned on
+      if (messagesOpen.value) {
+        toggleMessages()
+      }
       showFilterModal.value = !showFilterModal.value
       filterOpen.value = !filterOpen.value
       console.log(showFilterModal.value, filterOpen.value)
@@ -483,15 +456,14 @@ export default {
     }
 
     const toggleMessages = () => {
-      messageBar.value = !messageBar.value
-      console.log('inside mssaggess')
-      console.log(messageBar.value)
-      if (messageBar.value) {
-        filterOpen.value = false
-      } else {
-        chatStore.chatRoomID = null
-        chatStore.activeChatID = null
+      //if filter is open, close it
+      if (showFilterModal.value) {
+        toggleFilterModal()
       }
+      messagesOpen.value = !messagesOpen.value
+      toggleCheckMessage()
+      chatStore.setChatRoomID(null)
+      chatStore.setActiveChatID(null)
     }
 
     const resetFilters = () => {
@@ -536,7 +508,6 @@ export default {
       turnOffSubleaseModal,
       turnOnSubleaseModal,
       toggleFilterModal,
-      toggleMessages,
       showFilterModal,
       filterForm,
       FilterModal,
@@ -553,8 +524,10 @@ export default {
       listView,
       toggleCheckMessage,
       checkMessage,
-      widthStyle,
       filterOpen,
+      messagesOpen,
+      messageRef,
+      toggleMessages,
     }
   },
 }

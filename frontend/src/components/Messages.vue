@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar">
+  <div v-if="messagesOpen" class="sidebar">
     <div class="content relative z-20">
       <!-- Chat List -->
       <div class="chat-list">
@@ -8,7 +8,7 @@
           <li
             v-for="chat in chatStore.chatRooms"
             :key="chat.chatRoomID"
-            :class="{ active: chat.chatRoomID === activeChatId }"
+            :class="{ active: chat.chatRoomID === activeChatId && chatStore.activeChatID }"
             class="relative flex items-center space-x-2 my-4 bg-stone-800 hover:bg-stone-500"
           >
             <span
@@ -70,6 +70,7 @@ import { ref, watch, nextTick } from 'vue'
 import SocketConnection from '@/components/SocketConnection.vue'
 
 export default {
+  name: 'Messages',
   setup(props) {
     const messages = ref([])
     const partnerName = ref('')
@@ -121,6 +122,10 @@ export default {
       type: Object,
       required: true,
     },
+    messagesOpen: {
+      type: Boolean,
+      required: true,
+    },
   },
 
   components: {
@@ -129,7 +134,7 @@ export default {
 
   methods: {
     selectChat(chatId, partnerName, partnerID) {
-      console.log('in select chat')
+      console.log(chatId, partnerName, partnerID)
       this.activeChatId = chatId
       this.partnerName = partnerName
       console.log(this.partnerName)
@@ -154,10 +159,6 @@ export default {
 }
 
 .sidebar {
-  position: fixed;
-  left: 58px;
-  max-width: 35%;
-  height: 100%;
   background: rgb(23 23 23);
   border-left: 1px solid rgb(120 113 108 / var(--tw-bg-opacity, 1));
   transition: width 0.3s ease;
@@ -226,7 +227,6 @@ export default {
 
 .chat-list li.active {
   background: rgb(120 113 108);
-  color: white;
 }
 
 .chat-name {

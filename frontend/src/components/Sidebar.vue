@@ -20,7 +20,7 @@
         </button>
         <button
           @click="toggleFilterModals"
-          :class="filterOpen ? 'bg-stone-500' : ''"
+          :class="showFilterModal ? 'bg-stone-500' : ''"
           class="hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
         >
           <i class="fas fa-filter"></i>
@@ -47,13 +47,6 @@
           <i class="fas fa-list"></i>
         </button>
       </div>
-      <Messages
-        ref="messageRef"
-        v-if="messagesOpen"
-        :chatStore="chatStore"
-        :router="router"
-        :userStore="userStore"
-      />
     </div>
 
     <!-- Bottom Section: Logout Button -->
@@ -105,7 +98,15 @@ export default {
       type: Function,
       required: true,
     },
-    filterOpen: {
+    toggleMessages: {
+      type: Function,
+      required: true,
+    },
+    showFilterModal: {
+      type: Boolean,
+      required: true,
+    },
+    messagesOpen: {
       type: Boolean,
       required: true,
     },
@@ -121,50 +122,20 @@ export default {
       this.turnOnModal()
     },
     toggleFilterModals() {
-      if (this.filterOpen && this.messagesOpen) {
-        this.toggleCheckMessage()
-        this.messagesOpen = false
+      this.filterOpen = !this.filterOpen
+      if (this.filterOpen) {
         this.chatStore.setChatRoomID(null)
         this.chatStore.setActiveChatID(null)
       }
       this.toggleFilterModal()
-    },
-    toggleMessages() {
-      this.messagesOpen = !this.messagesOpen
-      this.toggleCheckMessage()
-
-      if (this.messagesOpen && this.filterOpen) {
-        this.toggleFilterModal()
-      } else {
-        this.chatStore.setChatRoomID(null)
-        this.chatStore.setActiveChatID(null)
-      }
-    },
-
-    toggleDashMessage(chatroomID, partnerName, partnerID) {
-      this.messagesOpen = true
-      this.toggleCheckMessage()
-
-      if (this.messagesOpen && this.filterOpen) {
-        this.toggleFilterModal()
-      }
-
-      this.$nextTick(() => {
-        if (this.messageRef) {
-          this.messageRef.selectChat(chatroomID, partnerName, partnerID)
-          this.messageRef.updateUnreadCount(chatroomID)
-        }
-      })
     },
   },
 
   setup(props) {
     const chatStore = useChatStore()
     const userStore = useUserStore()
-    const messagesOpen = ref(false)
-    const messageRef = ref(null)
 
-    return { messagesOpen, chatStore, userStore, messageRef }
+    return { chatStore, userStore }
   },
 }
 </script>
