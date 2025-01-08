@@ -66,7 +66,7 @@
         Chat
       </button>
     </div>
-    <div v-if="true" class="mt-4 grid grid-cols-1 gap-4">
+    <div class="mt-4 grid grid-cols-1 gap-4">
       <img
         v-for="(photo, index) in photos"
         :key="index"
@@ -128,6 +128,7 @@ export default {
     watch(
       () => props.selectedSubleaseStore.subleaseID,
       () => {
+        console.log('i was triggered')
         fetchPhotos()
       },
     )
