@@ -1,5 +1,6 @@
 <template>
-  <div class="sidebar">
+  <div v-if="messagesOpen"
+  class="sidebar">
     <div class="content relative z-20">
       <!-- Chat List -->
       <div class="chat-list">
@@ -70,6 +71,7 @@ import { ref, watch, nextTick } from 'vue'
 import SocketConnection from '@/components/SocketConnection.vue'
 
 export default {
+  name: 'Messages',
   setup(props) {
     const messages = ref([])
     const partnerName = ref('')
@@ -121,6 +123,10 @@ export default {
       type: Object,
       required: true,
     },
+    messagesOpen:{
+      type: Boolean,
+      required: true,
+    }
   },
 
   components: {
@@ -154,10 +160,6 @@ export default {
 }
 
 .sidebar {
-  position: fixed;
-  left: 58px;
-  max-width: 35%;
-  height: 100%;
   background: rgb(23 23 23);
   border-left: 1px solid rgb(120 113 108 / var(--tw-bg-opacity, 1));
   transition: width 0.3s ease;
