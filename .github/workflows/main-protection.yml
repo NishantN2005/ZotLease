@@ -44,6 +44,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
+          
+      - name: Verify Node.js version
+        run: node -v
 
       - name: Install Frontend dependencies
         run: |
