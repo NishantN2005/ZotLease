@@ -55,6 +55,7 @@
         :toggleCheckMessage="toggleCheckMessage"
         :toggleMessages="toggleMessages"
         :showFilterModal="showFilterModal"
+        :messagesOpen="messagesOpen"
       />
       <!-- Filter Modal-->
       <FilterModal

@@ -106,6 +106,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    messagesOpen:{
+      type: Boolean,
+      required: true,
+    }
   },
   components: {
     Messages,
