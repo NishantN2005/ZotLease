@@ -62,6 +62,7 @@
       <button
         @click="createChatRoom"
         class="bg-uciblue text-uciyellow text-xl font-bold rounded-md py-1 px-4 hover:bg-blue-900 transition-colors duration-200"
+        v-if="selectedSubleaseStore.listerID !== userStore.userID"
       >
         Chat
       </button>
@@ -82,6 +83,7 @@
 import { ref, watch } from 'vue'
 import { getPhotos } from '../s3client.js'
 import SocketConnection from './SocketConnection.vue'
+import { useUserStore } from '@/stores/userStore.js'
 
 export default {
   name: 'SelectedSubleaseModal',
@@ -109,6 +111,7 @@ export default {
   },
   setup(props) {
     const photos = ref([])
+    const userStore = useUserStore()
 
     async function fetchPhotos() {
       try {
@@ -132,7 +135,7 @@ export default {
       },
     )
 
-    return { photos }
+    return { photos, userStore }
   },
 }
 </script>

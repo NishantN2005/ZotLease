@@ -105,6 +105,10 @@ export default {
       type: Function,
       required: true,
     },
+    filterOpen: {
+      type: Boolean,
+      required: true,
+    },
   },
   components: {
     Messages,
@@ -117,8 +121,8 @@ export default {
       this.turnOnModal()
     },
     toggleFilterModals() {
-      this.filterOpen = !this.filterOpen
-      if (this.filterOpen) {
+      if (this.filterOpen && this.messagesOpen) {
+        this.toggleCheckMessage()
         this.messagesOpen = false
         this.chatStore.setChatRoomID(null)
         this.chatStore.setActiveChatID(null)
@@ -131,7 +135,6 @@ export default {
 
       if (this.messagesOpen && this.filterOpen) {
         this.toggleFilterModal()
-        this.filterOpen = false
       } else {
         this.chatStore.setChatRoomID(null)
         this.chatStore.setActiveChatID(null)
@@ -144,7 +147,6 @@ export default {
 
       if (this.messagesOpen && this.filterOpen) {
         this.toggleFilterModal()
-        this.filterOpen = false
       }
 
       this.$nextTick(() => {
@@ -160,10 +162,9 @@ export default {
     const chatStore = useChatStore()
     const userStore = useUserStore()
     const messagesOpen = ref(false)
-    const filterOpen = ref(false)
     const messageRef = ref(null)
 
-    return { messagesOpen, filterOpen, chatStore, userStore, messageRef }
+    return { messagesOpen, chatStore, userStore, messageRef }
   },
 }
 </script>
