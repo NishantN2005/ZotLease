@@ -53,20 +53,31 @@
         :mapView="mapView"
         :toggleView="toggleDashView"
         :toggleCheckMessage="toggleCheckMessage"
+        :toggleMessages="toggleMessages"
+        :showFilterModal="showFilterModal"
       />
+      <!-- Filter Modal-->
+      <FilterModal
+        :filterform="filterForm"
+        :showFilterModal="showFilterModal"
+        :routerPass="router"
+        :token="userStore.userToken"
+        :toggleFilterModal="toggleFilterModal"
+        :resetFilters="resetFilters"
+      />
+      <!-- Messages Modal -->
+      <Messages
+        ref="messageRef"
+        :messagesOpen="messagesOpen"
+        :chatStore="chatStore"
+        :router="router"
+        :userStore="userStore"
+      />
+      
 
       <!-- The Leaflet map -->
       <LeafletMap
         v-show="mapView"
-        :style="{
-          left: showFilterModal
-            ? '320px'
-            : chatStore.chatRoomID
-              ? '510px'
-              : checkMessage
-                ? '220px'
-                : '0',
-        }"
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"
         :routerPass="router"
@@ -78,16 +89,6 @@
       <LeaseList
         v-show="listView"
         :allLocations="allLocationsStore"
-        :style="{
-          left: showFilterModal
-            ? '320px'
-            : chatStore.chatRoomID
-              ? '510px'
-              : checkMessage
-                ? '220px'
-                : '0',
-          width: widthStyle,
-        }"
       />
 
       <!-- Selected Sublease modal-->
@@ -97,16 +98,6 @@
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
         :router="router"
-      />
-
-      <!-- Filter Modal-->
-      <FilterModal
-        :filterform="filterForm"
-        :showFilterModal="showFilterModal"
-        :routerPass="router"
-        :token="userStore.userToken"
-        :toggleFilterModal="toggleFilterModal"
-        :resetFilters="resetFilters"
       />
     </div>
   </div>
@@ -130,6 +121,7 @@ import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import { uploadPhotos } from '../s3client.js'
 import Sidebar from '@/components/Sidebar.vue'
+import Messages from '../components/Messages.vue';
 
 export default {
   name: 'DashboardView',
@@ -141,6 +133,9 @@ export default {
     SelectedSubleaseModal,
     Sidebar,
     LeaseList,
+    Messages
+  },
+  methods:{
   },
   setup() {
     onMounted(() => {
@@ -167,6 +162,8 @@ export default {
 
     const showSelectedSubleaseModal = ref(false)
     const showFilterModal = ref(false)
+    const messagesOpen = ref(false);
+    const messageRef = ref(null)
     const filterForm = ref({
       gender: '',
       minPrice: null,
@@ -198,10 +195,21 @@ export default {
 
     const messageBar = ref(false)
     const checkMessage = ref(false)
-    const filterOpen = ref(false)
     const sidebarRef = ref(null)
     const mapView = ref(true)
     const listView = ref(false)
+
+
+    const toggleMessages = () =>{
+      //if filter is open, close it
+      if(showFilterModal.value){
+        toggleFilterModal();
+      }
+      messagesOpen.value = !messagesOpen.value
+      toggleCheckMessage()
+      chatStore.setChatRoomID(null)
+      chatStore.setActiveChatID(null)
+    }
 
     const widthStyle = computed(() => {
       let leftPosition = 0
@@ -457,23 +465,16 @@ export default {
       showSelectedSubleaseModal.value = true
     }
     const toggleFilterModal = () => {
+      //turn of messages if modal is getting turned on
+      if(messagesOpen.value){
+        toggleMessages();
+      }
       showFilterModal.value = !showFilterModal.value
       filterForm.value = {
         gender: '',
         minPrice: null,
         maxPrice: null,
         roomCount: null,
-      }
-    }
-
-    const toggleMessages = () => {
-      messageBar.value = !messageBar.value
-      console.log(messageBar.value)
-      if (messageBar.value) {
-        filterOpen.value = false
-      } else {
-        chatStore.chatRoomID = null
-        chatStore.activeChatID = null
       }
     }
 
@@ -519,7 +520,6 @@ export default {
       turnOffSubleaseModal,
       turnOnSubleaseModal,
       toggleFilterModal,
-      toggleMessages,
       showFilterModal,
       filterForm,
       FilterModal,
@@ -537,6 +537,9 @@ export default {
       toggleCheckMessage,
       checkMessage,
       widthStyle,
+      messagesOpen,
+      messageRef,
+      toggleMessages
     }
   },
 }
