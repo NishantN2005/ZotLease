@@ -95,7 +95,6 @@
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
         :showSelectedSubleaseModal="showSelectedSubleaseModal"
-        :selectedSubleaseStore="selectedSubleaseStore"
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
         :router="router"
@@ -283,9 +282,9 @@ export default {
 
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      if (!chatStore.chatRooms.some((chat) => chat.partnerID === selectedSubleaseStore.listerID)) {
+      if (!chatStore.chatRooms.some((chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid)) {
         const userID1 = userStore.userID
-        const userID2 = selectedSubleaseStore.listerID
+        const userID2 = selectedSubleaseStore.selectedSublet.listerid
         const res = await makeAuthenticatedRequest(
           `chat/createRoom`,
           { userID1, userID2 },
@@ -300,7 +299,7 @@ export default {
         sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
       } else {
         const chat = chatStore.chatRooms.find(
-          (chat) => chat.partnerID === selectedSubleaseStore.listerID,
+          (chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid,
         )
         const { chatRoomID, partnerID, partnerName } = chat
         sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
@@ -516,7 +515,6 @@ export default {
       router,
       userStore,
       chatStore,
-      selectedSubleaseStore,
       showSelectedSubleaseModal,
       turnOffSubleaseModal,
       turnOnSubleaseModal,
