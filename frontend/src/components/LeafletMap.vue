@@ -111,10 +111,10 @@ export default {
               props.routerPass,
               props.userToken
             );
-
+            console.log(info)
             // parse JSON
             const subleaseData = await info.json();
-
+            console.log(subleaseData)
             // set Pinia store state
             selectedSubleaseStore.setSelectedSublease(
               subleaseData.subleaseid,

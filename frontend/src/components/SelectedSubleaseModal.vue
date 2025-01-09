@@ -180,6 +180,7 @@ export default {
     watch(
       () => props.selectedSubleaseStore.subleaseID,
       () => {
+        console.log('i was triggered')
         fetchPhotos()
       },
     )
