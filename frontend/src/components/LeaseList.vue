@@ -95,7 +95,12 @@
             class="w-full h-48 rounded-t-lg"
           />
           <div class="p-3">
-            <h3 class="bold text-emerald-600 font-bold">${{ listing.price }}</h3>
+            <h3
+              class="font-bold text-black"
+              style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
+            >
+              ${{ listing.price }}
+            </h3>
             <p class="text-gray-600">{{ [listing.street_name, listing.city].join(', ') }}</p>
           </div>
         </div>

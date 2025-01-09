@@ -57,6 +57,7 @@
         :toggleMessages="toggleMessages"
         :showFilterModal="showFilterModal"
         :messagesOpen="messagesOpen"
+        :messageRef="messageRef"
       />
       <!-- Filter Modal-->
       <FilterModal

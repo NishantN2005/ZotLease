@@ -4,56 +4,101 @@
     id="filterModal"
     class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4 shadow-md border border-gray-200 overflow-y-auto"
   >
-    <!-- Close button (top-right) -->
-    <div class="flex justify-end mb-2">
+    <div class="flex items-center justify-between mb-4">
+      <!-- Title -->
+      <h1 class="font-bold text-2xl text-gray-900 text-center flex-1">
+        {{
+          selectedSubleaseStore.fName.charAt(0).toUpperCase() +
+          selectedSubleaseStore.fName.slice(1).toLowerCase()
+        }}
+        {{
+          selectedSubleaseStore.lName.charAt(0).toUpperCase() +
+          selectedSubleaseStore.lName.slice(1).toLowerCase()
+        }}'s Apartment
+      </h1>
+
+      <!-- Close Button -->
       <button @click="turnOffSubleaseModal" class="text-gray-600 hover:text-gray-900">
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
 
     <!-- Content Container -->
-    <div class="space-y-4 text-gray-700">
-      <!-- Title -->
-      <h1 class="font-bold text-2xl text-gray-900">
-        {{ selectedSubleaseStore.fName }} {{ selectedSubleaseStore.lName }}
-      </h1>
+    <div
+      class="space-y-3 text-gray-700 overflow-auto mt-2"
+      style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
+    >
+      <div v-if="true" class="mt-4 flex flex-col gap-1">
+        <!-- Top Image -->
+        <img
+          v-for="(photo, index) in photos.slice(0, 1)"
+          :key="index"
+          :src="photo"
+          :alt="'Photo ' + (index + 1)"
+          class="rounded shadow w-full h-64"
+        />
+
+        <div class="flex gap-1 relative">
+          <img
+            v-for="(photo, index) in photos.slice(1, 3)"
+            :key="index"
+            :src="photo"
+            :alt="'Photo ' + (index + 2)"
+            class="rounded shadow w-1/2 h-48"
+          />
+
+          <!-- View All Button (on the 3rd image) -->
+          <button
+            class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-3 py-1 rounded"
+            @click="handleViewAll"
+            v-if="photos.length > 3"
+          >
+            View All {{ photos.length }} Photos
+          </button>
+        </div>
+      </div>
 
       <!-- Price -->
-      <div><span class="font-semibold">Price:</span> ${{ selectedSubleaseStore.price }}</div>
-
-      <!-- Gender -->
-      <div><span class="font-semibold">Gender:</span> {{ selectedSubleaseStore.gender }}</div>
+      <div class="flex justify-between">
+        <div class="font-extrabold text-3xl text-black">
+          ${{ selectedSubleaseStore.price
+          }}<span class="text-gray-500 font-normal text-lg">/mo</span>
+        </div>
+        <!-- Start/End Term -->
+        <div class="border border-gray-500 flex space-x-6 w-fit px-5 rounded-md text-sm text-black">
+          <div>
+            <span class="text-xs text-gray-800">Start Term:</span> <br />{{
+              selectedSubleaseStore.startTerm
+            }}
+          </div>
+          <div class="border-l border-gray-500 pl-2">
+            <span class="text-xs text-gray-800">End Term:</span> <br />
+            {{ selectedSubleaseStore.endTerm }}
+          </div>
+        </div>
+      </div>
 
       <!-- Rooms/Bathrooms -->
-      <div>
-        <span class="font-semibold">Rooms/Bathrooms:</span>
-        {{ selectedSubleaseStore.roomCount }}/{{ selectedSubleaseStore.bathroomCount }}
+      <div class="text-black text-extrabold text-lg">
+        <span class="font-semibold"></span>
+        {{ selectedSubleaseStore.roomCount }}
+        <span class="font-normal text-base text-gray-700">bed</span>
+        {{ selectedSubleaseStore.bathroomCount }}
+        <span class="font-normal text-base text-gray-700 mr-5">bath</span>
+        {{ selectedSubleaseStore.gender }}
+        <span class="font-normal text-base text-gray-700">occupation</span>
       </div>
 
       <!-- Address -->
-      <div>
-        <span class="font-semibold">Address:</span>
+      <div class="text-gray-700">
         {{ selectedSubleaseStore.street_name }}, {{ selectedSubleaseStore.city }}, California,
-        {{ selectedSubleaseStore.postal_code }}
-      </div>
-
-      <!-- Room -->
-      <div>
-        <span class="font-semibold">Room:</span>
-        {{ selectedSubleaseStore.room }}
-      </div>
-
-      <!-- Start/End Term -->
-      <div>
-        <span class="font-semibold">Start Term:</span> {{ selectedSubleaseStore.startTerm }}
-        <br />
-        <span class="font-semibold">End Term:</span> {{ selectedSubleaseStore.endTerm }}
+        {{ selectedSubleaseStore.postal_code }} #{{ selectedSubleaseStore.room }}
       </div>
 
       <!-- Description -->
       <div>
-        <span class="font-semibold">Description:</span>
-        <p class="whitespace-pre-line mt-1">
+        <span class="font-semibold text-black">Special Notes:</span>
+        <p class="whitespace-pre-line mt-2 border border-gray-500 rounded-sm p-2">
           {{ selectedSubleaseStore.description }}
         </p>
       </div>
@@ -61,13 +106,14 @@
       <!-- Chat Button -->
       <button
         @click="createChatRoom"
-        class="bg-uciblue text-uciyellow text-xl font-bold rounded-md py-1 px-4 hover:bg-blue-900 transition-colors duration-200"
+        class="bg-neutral-900 text-stone-200 text-xl font-bold rounded-md py-1 px-4 transition-colors duration-200 w-full hover:bg-neutral-700"
         v-if="selectedSubleaseStore.listerID !== userStore.userID"
       >
         Chat
       </button>
     </div>
-    <div v-if="true" class="mt-4 grid grid-cols-1 gap-4">
+
+    <!-- <div v-if="true" class="mt-4 grid grid-cols-1 gap-4">
       <img
         v-for="(photo, index) in photos"
         :key="index"
@@ -75,7 +121,7 @@
         :alt="'Photo ' + (index + 1)"
         class="w-full h-auto rounded shadow"
       />
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -127,6 +173,9 @@ export default {
       }
     }
 
+    const handleViewAll = () => {
+      console.log('view')
+    }
     // Watch for modal visibility and load photos when opened
     watch(
       () => props.selectedSubleaseStore.subleaseID,
@@ -135,13 +184,12 @@ export default {
       },
     )
 
-    return { photos, userStore }
+    return { photos, userStore, handleViewAll }
   },
 }
 </script>
 
 <style scoped>
-/* Optional fade transition */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
