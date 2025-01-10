@@ -134,7 +134,7 @@ export default {
     async function fetchPhotos(newSublet) {
       try {
         console.log('fetching photos')
-        const key = `${newSublet.listerid}/${props.selectedSubleaseStore.subleaseID}` // Dynamic prefix
+        const key = `${newSublet.listerid}/${selectedSubleaseStore.subleaseID}` // Dynamic prefix
         console.log(key)
         const response = await getPhotos(key)
         console.log(response)
