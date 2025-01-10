@@ -31,7 +31,7 @@
       <div v-if="true" class="mt-4 flex flex-col gap-1">
         <!-- Top Image -->
         <img
-          v-for="(photo, index) in photos.slice(0, 1)"
+          v-for="(photo, index) in selectedSubleaseStore.photos.slice(0, 1)"
           :key="index"
           :src="photo"
           :alt="'Photo ' + (index + 1)"
@@ -40,7 +40,7 @@
 
         <div class="flex gap-1 relative">
           <img
-            v-for="(photo, index) in photos.slice(1, 3)"
+            v-for="(photo, index) in selectedSubleaseStore.photos.slice(1, 3)"
             :key="index"
             :src="photo"
             :alt="'Photo ' + (index + 2)"
@@ -50,10 +50,10 @@
           <!-- View All Button (on the 3rd image) -->
           <button
             class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-3 py-1 rounded"
-            @click="handleViewAll"
-            v-if="photos.length > 3"
+            @click="togglePhotoGallery"
+            v-if="selectedSubleaseStore.photos.length > 3"
           >
-            View All {{ photos.length }} Photos
+            View All {{ selectedSubleaseStore.photos.length }} Photos
           </button>
         </div>
       </div>
@@ -112,23 +112,12 @@
         Chat
       </button>
     </div>
-
-    <!-- <div v-if="true" class="mt-4 grid grid-cols-1 gap-4">
-      <img
-        v-for="(photo, index) in photos"
-        :key="index"
-        :src="photo"
-        :alt="'Photo ' + (index + 1)"
-        class="w-full h-auto rounded shadow"
-      />
-    </div> -->
   </div>
 </template>
 
 <script>
-import { ref, watch } from 'vue'
+import { watch } from 'vue'
 import { getPhotos } from '../s3client.js'
-import SocketConnection from './SocketConnection.vue'
 import { useUserStore } from '@/stores/userStore.js'
 
 export default {
@@ -154,9 +143,12 @@ export default {
       type: Object,
       required: true,
     },
+    togglePhotoGallery: {
+      type: Function,
+      required: true,
+    },
   },
   setup(props) {
-    const photos = ref([])
     const userStore = useUserStore()
 
     async function fetchPhotos() {
@@ -166,16 +158,13 @@ export default {
         console.log(key)
         const response = await getPhotos(key)
         console.log(response)
-        photos.value = response
-        console.log(photos.value.length)
+        props.selectedSubleaseStore.setPhotos(response)
+        console.log(props.selectedSubleaseStore?.photos?.length)
       } catch (error) {
         console.error('Error fetching photos:', error)
       }
     }
 
-    const handleViewAll = () => {
-      console.log('view')
-    }
     // Watch for modal visibility and load photos when opened
     watch(
       () => props.selectedSubleaseStore.subleaseID,
@@ -185,7 +174,7 @@ export default {
       },
     )
 
-    return { photos, userStore, handleViewAll }
+    return { userStore }
   },
 }
 </script>

@@ -19,28 +19,49 @@ export const useSelectedSubleaseStore = defineStore('selectedsublease', {
       startTerm: null,
       endTerm: null,
       description: null,
+      photos: [],
     }
   },
   actions: {
-    setSelectedSublease(subID, first_name, last_name, lister, price, gender, roomCount, bathroomCount, street_name,city, room, postal_code, startTerm, endTerm ,description){
-        console.log(`inside selected store changing it from ${this.subleaseID} to ${subID}`);
-        this.subleaseID = subID;
-        this.fName = first_name;
-        this.lName = last_name;
-        this.listerID = lister;
-        this.price = price;
-        this.gender = gender;
-        this.roomCount = roomCount;
-        this.bathroomCount = bathroomCount;
-        this.street_name = street_name;
-        this.city = city;
-        this.room = room;
-        this.postal_code = postal_code;
-        this.startTerm = startTerm;
-        this.endTerm = endTerm;
-        this.description = description;
-        console.log(this.subleaseID);
-    }
+    setPhotos(val) {
+      this.photos = val
+      console.log(this.photos)
+    },
+    setSelectedSublease(
+      subID,
+      first_name,
+      last_name,
+      lister,
+      price,
+      gender,
+      roomCount,
+      bathroomCount,
+      street_name,
+      city,
+      room,
+      postal_code,
+      startTerm,
+      endTerm,
+      description,
+    ) {
+      console.log(`inside selected store changing it from ${this.subleaseID} to ${subID}`)
+      this.subleaseID = subID
+      this.fName = first_name
+      this.lName = last_name
+      this.listerID = lister
+      this.price = price
+      this.gender = gender
+      this.roomCount = roomCount
+      this.bathroomCount = bathroomCount
+      this.street_name = street_name
+      this.city = city
+      this.room = room
+      this.postal_code = postal_code
+      this.startTerm = startTerm
+      this.endTerm = endTerm
+      this.description = description
+      console.log(this.subleaseID)
+    },
   },
   getters: {},
 })

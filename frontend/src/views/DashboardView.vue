@@ -104,6 +104,14 @@
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
         :router="router"
+        :togglePhotoGallery="togglePhotoGallery"
+      />
+
+      <PhotoGalleryModal
+        v-if="showPhotoGallery"
+        :selectedSubleaseStore="selectedSubleaseStore"
+        :router="router"
+        :togglePhotoGallery="togglePhotoGallery"
       />
     </div>
   </div>
@@ -128,6 +136,7 @@ import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import { uploadPhotos } from '../s3client.js'
 import Sidebar from '@/components/Sidebar.vue'
 import Messages from '../components/Messages.vue'
+import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 
 export default {
   name: 'DashboardView',
@@ -140,6 +149,7 @@ export default {
     Sidebar,
     LeaseList,
     Messages,
+    PhotoGalleryModal,
   },
   methods: {},
   setup() {
@@ -168,6 +178,7 @@ export default {
     const allLocationsStore = useAllLocationsStore()
 
     const showSelectedSubleaseModal = ref(false)
+    const showPhotoGallery = ref(false)
     const showFilterModal = ref(false)
     const messagesOpen = ref(false)
     const messageRef = ref(null)
@@ -229,6 +240,12 @@ export default {
         mapView.value = false
         listView.value = true
       }
+    }
+
+    const togglePhotoGallery = () => {
+      showPhotoGallery.value = !showPhotoGallery.value
+      if (showPhotoGallery.value) turnOffSubleaseModal()
+      else turnOnSubleaseModal()
     }
 
     const fetchChatRooms = async () => {
@@ -529,6 +546,8 @@ export default {
       messagesOpen,
       messageRef,
       toggleMessages,
+      togglePhotoGallery,
+      showPhotoGallery,
     }
   },
 }
