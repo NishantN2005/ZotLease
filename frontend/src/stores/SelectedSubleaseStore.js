@@ -21,6 +21,11 @@ export const useSelectedSubleaseStore = defineStore('selectedsublease', {
     },
     setSelectedSubleaseID(subID){
         this.subleaseID = subID;
+    },
+    resetSelectedSublease(){
+      this.subleaseID = null;
+      this.subletters = [];
+      this.selectedSublet = null;
     }
   },
   getters: {},

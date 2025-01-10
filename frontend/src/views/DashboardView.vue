@@ -459,7 +459,9 @@ export default {
     }
 
     const turnOffSubleaseModal = () => {
-      showSelectedSubleaseModal.value = false
+      showSelectedSubleaseModal.value = false;
+      selectedSubleaseStore.resetSelectedSublease();
+
     }
     const turnOnSubleaseModal = () => {
       showSelectedSubleaseModal.value = true
