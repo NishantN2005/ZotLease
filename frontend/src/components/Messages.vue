@@ -312,7 +312,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: auto; /* Push the input container to the bottom */
+  margin-top: auto;
   gap: 10px;
   padding: 10px;
 }

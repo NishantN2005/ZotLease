@@ -3,8 +3,9 @@
     v-if="showSelectedSubleaseModal"
     id="filterModal"
     class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4 shadow-md border border-gray-200 overflow-y-auto"
+    style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
   >
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between">
       <!-- Title -->
       <h1 class="font-bold text-2xl text-gray-900 text-center flex-1">
         {{
@@ -24,10 +25,7 @@
     </div>
 
     <!-- Content Container -->
-    <div
-      class="space-y-3 text-gray-700 overflow-auto mt-2"
-      style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
-    >
+    <div class="space-y-3 text-gray-700 overflow-auto mt-2">
       <div v-if="true" class="mt-4 flex flex-col gap-1">
         <!-- Top Image -->
         <img
