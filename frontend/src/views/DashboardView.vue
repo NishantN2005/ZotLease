@@ -240,6 +240,7 @@ export default {
         mapView.value = false
         listView.value = true
       }
+      turnOffSubleaseModal()
     }
 
     const togglePhotoGallery = () => {
