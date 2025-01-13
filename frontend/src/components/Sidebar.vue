@@ -5,7 +5,7 @@
     <!-- Top Section: Profile Picture -->
     <div class="flex flex-col items-center space-y-6">
       <button
-        class="w-10 h-10 border border-stone-500 rounded-full flex items-center justify-center"
+        class="w-10 h-10 border border-stone-500 rounded-full flex items-center justify-center hover:cursor-pointer"
         @click="redirectToProfile"
       >
         <!-- Font Awesome Icon for Profile Picture -->
