@@ -93,26 +93,20 @@
         :allLocations="allLocationsStore"
         :filterStore="filterStore"
         :turnOnSubleaseModal="turnOnSubleaseModal"
-        :userToken="userToken"
+        :userToken="userStore.userToken"
         :routerPass="router"
       />
 
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
         :showSelectedSubleaseModal="showSelectedSubleaseModal"
-        :selectedSubleaseStore="selectedSubleaseStore"
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
         :router="router"
         :togglePhotoGallery="togglePhotoGallery"
       />
 
-      <PhotoGalleryModal
-        v-if="showPhotoGallery"
-        :selectedSubleaseStore="selectedSubleaseStore"
-        :router="router"
-        :togglePhotoGallery="togglePhotoGallery"
-      />
+      <PhotoGalleryModal v-if="showPhotoGallery" :togglePhotoGallery="togglePhotoGallery" />
     </div>
   </div>
 </template>
@@ -181,7 +175,7 @@ export default {
     const showPhotoGallery = ref(false)
     const showFilterModal = ref(false)
     const messagesOpen = ref(false)
-    const messageRef = ref(null)
+    const messageRef = ref({})
     const filterForm = ref({
       gender: '',
       minPrice: null,
@@ -241,12 +235,11 @@ export default {
         listView.value = true
       }
       turnOffSubleaseModal()
+      if (showPhotoGallery.value) showPhotoGallery.value = false
     }
 
     const togglePhotoGallery = () => {
       showPhotoGallery.value = !showPhotoGallery.value
-      if (showPhotoGallery.value) turnOffSubleaseModal()
-      else turnOnSubleaseModal()
     }
 
     const fetchChatRooms = async () => {
@@ -276,9 +269,13 @@ export default {
 
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      if (!chatStore.chatRooms.some((chat) => chat.partnerID === selectedSubleaseStore.listerID)) {
+      if (
+        !chatStore.chatRooms.some(
+          (chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid,
+        )
+      ) {
         const userID1 = userStore.userID
-        const userID2 = selectedSubleaseStore.listerID
+        const userID2 = selectedSubleaseStore.selectedSublet.listerid
         const res = await makeAuthenticatedRequest(
           `chat/createRoom`,
           { userID1, userID2 },
@@ -293,7 +290,7 @@ export default {
         sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
       } else {
         const chat = chatStore.chatRooms.find(
-          (chat) => chat.partnerID === selectedSubleaseStore.listerID,
+          (chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid,
         )
         const { chatRoomID, partnerID, partnerName } = chat
         sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
@@ -454,8 +451,10 @@ export default {
 
     const turnOffSubleaseModal = () => {
       showSelectedSubleaseModal.value = false
+      selectedSubleaseStore.resetSelectedSublease()
     }
     const turnOnSubleaseModal = () => {
+      if (showPhotoGallery.value) showPhotoGallery.value = false
       showSelectedSubleaseModal.value = true
     }
     const toggleFilterModal = () => {
@@ -522,7 +521,6 @@ export default {
       router,
       userStore,
       chatStore,
-      selectedSubleaseStore,
       showSelectedSubleaseModal,
       turnOffSubleaseModal,
       turnOnSubleaseModal,

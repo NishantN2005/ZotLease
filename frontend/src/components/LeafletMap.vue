@@ -82,12 +82,14 @@ export default {
 
     // 3. Add markers for given locations, respecting the filter store
     const addMarkers = (locations) => {
+      const addedLeases = new Set();
       locations.forEach((location) => {
         // Check valid lat/lng and if sublease passes the filter
         const passesFilter = !filterStore.isFiltered ||
           filterStore.acceptedSubleases.includes(location.subleaseid);
 
-        if (location.latitude && location.longitude && passesFilter) {
+        if (location.latitude && location.longitude && passesFilter&&!addedLeases.has(location.subleaseid)) {
+          addedLeases.add(location.subleaseid);
           const isUserLeaser = String(location.listerid).trim() === String(props.userID).trim();
           const markerColor = isUserLeaser ? '#FFD700' : '#007BFF';
           const markerIcon = createHexMarker(markerColor);
@@ -116,23 +118,17 @@ export default {
             const subleaseData = await info.json();
             console.log(subleaseData)
             // set Pinia store state
-            selectedSubleaseStore.setSelectedSublease(
-              subleaseData.subleaseid,
-              subleaseData.fname,
-              subleaseData.lname,
-              subleaseData.listerid,
-              subleaseData.price,
-              subleaseData.gender,
-              subleaseData.roomcount,
-              subleaseData.bathroomcount,
-              subleaseData.street_name,
-              subleaseData.city,
-              subleaseData.room,
-              subleaseData.postal_code,
-              subleaseData.startterm,
-              subleaseData.endterm,
-              subleaseData.description
-            );
+            /**
+             * If it is a new sublease the user clicked on then load data
+             */
+            if(selectedSubleaseStore.subleaseID!==subleaseData[0].subleaseid){
+              selectedSubleaseStore.resetSelectedSublease();
+              selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid);
+              subleaseData.forEach(subletter=>{
+                const {subleaseid, id, ...subletterData} = subletter;
+                selectedSubleaseStore.addSubletter(subletterData);
+              })
+            }
 
             // open your sublease modal
             props.turnOnSubleaseModal();

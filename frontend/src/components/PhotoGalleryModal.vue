@@ -8,12 +8,12 @@
       <i class="fa-solid fa-arrow-left cursor-pointer" @click="togglePhotoGallery"></i>
       <h1 class="font-bold text-2xl text-gray-900 text-center flex-1">
         {{
-          selectedSubleaseStore.fName.charAt(0).toUpperCase() +
-          selectedSubleaseStore.fName.slice(1).toLowerCase()
+          selectedSubleaseStore.selectedSublet.fname.charAt(0).toUpperCase() +
+          selectedSubleaseStore.selectedSublet.fname.slice(1).toLowerCase()
         }}
         {{
-          selectedSubleaseStore.lName.charAt(0).toUpperCase() +
-          selectedSubleaseStore.lName.slice(1).toLowerCase()
+          selectedSubleaseStore.selectedSublet.lname.charAt(0).toUpperCase() +
+          selectedSubleaseStore.selectedSublet.lname.slice(1).toLowerCase()
         }}'s Apartment
       </h1>
     </div>
@@ -46,17 +46,18 @@
 </template>
 
 <script>
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
 export default {
   name: 'PhotoGalleryModal',
   props: {
-    selectedSubleaseStore: {
-      type: Object,
-      required: true,
-    },
     togglePhotoGallery: {
       type: Function,
       required: true,
     },
+  },
+  setup() {
+    const selectedSubleaseStore = useSelectedSubleaseStore()
+    return { selectedSubleaseStore }
   },
   computed: {
     photoGroups() {

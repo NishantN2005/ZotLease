@@ -143,7 +143,7 @@ export default {
       }
 
       this.$nextTick(() => {
-        if (this.messageRef) {
+        if (Object.keys(this.messageRef).length > 0) {
           this.messageRef.selectChat(chatroomID, partnerName, partnerID)
           this.messageRef.updateUnreadCount(chatroomID)
         }

@@ -147,6 +147,7 @@ export default {
     console.log('allLocationsStore:', props.allLocations)
     console.log('filterStore:', props.filterStore)
     console.log('lol')
+    console.log(props.userToken)
     let listings = ref([...props.allLocations.allLocations])
     const filterActive = ref(false)
     const selectedSubleaseStore = useSelectedSubleaseStore()
@@ -170,23 +171,14 @@ export default {
       const subleaseData = await info.json()
 
       // set Pinia store state
-      selectedSubleaseStore.setSelectedSublease(
-        subleaseData.subleaseid,
-        subleaseData.fname,
-        subleaseData.lname,
-        subleaseData.listerid,
-        subleaseData.price,
-        subleaseData.gender,
-        subleaseData.roomcount,
-        subleaseData.bathroomcount,
-        subleaseData.street_name,
-        subleaseData.city,
-        subleaseData.room,
-        subleaseData.postal_code,
-        subleaseData.startterm,
-        subleaseData.endterm,
-        subleaseData.description,
-      )
+      if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
+        selectedSubleaseStore.resetSelectedSublease()
+        selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
+        subleaseData.forEach((subletter) => {
+          const { subleaseid, id, ...subletterData } = subletter
+          selectedSubleaseStore.addSubletter(subletterData)
+        })
+      }
 
       // open your sublease modal
       props.turnOnSubleaseModal()
