@@ -6,27 +6,32 @@ export const useSelectedSubleaseStore = defineStore('selectedsublease', {
     return {
       subleaseID: null,
       subletters: [],
-      selectedSublet:null
+      selectedSublet: null,
+      photos: [],
     }
   },
   actions: {
-    setSelectedSublease(subletter){
-        this.selectedSublet = subletter;
+    setSelectedSublease(subletter) {
+      this.selectedSublet = subletter
     },
-    addSubletter(subletter){
-        this.subletters.push(subletter);
-        if(this.selectedSublet === null){
-            this.selectedSublet = subletter;
-        }
+    setPhotos(val) {
+      this.photos = val
+      console.log(this.photos)
     },
-    setSelectedSubleaseID(subID){
-        this.subleaseID = subID;
+    addSubletter(subletter) {
+      this.subletters.push(subletter)
+      if (this.selectedSublet === null) {
+        this.selectedSublet = subletter
+      }
     },
-    resetSelectedSublease(){
-      this.subleaseID = null;
-      this.subletters = [];
-      this.selectedSublet = null;
-    }
+    setSelectedSubleaseID(subID) {
+      this.subleaseID = subID
+    },
+    resetSelectedSublease() {
+      this.subleaseID = null
+      this.subletters = []
+      this.selectedSublet = null
+    },
   },
   getters: {},
 })
