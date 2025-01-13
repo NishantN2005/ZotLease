@@ -30,8 +30,8 @@
       </div>
 
       <!-- Price Range -->
-      <div>
-        <label class="block mb-1 font-semibold">Price:</label>
+      <div class="text-black">
+        <label class="block mb-1 font-semibold text-white">Price:</label>
         <div class="flex space-x-2">
           <input
             type="number"
@@ -51,8 +51,8 @@
       </div>
 
       <!-- Room Count -->
-      <div>
-        <label for="filterRoomCount" class="block mb-1 font-semibold">Room Count:</label>
+      <div class="text-black">
+        <label for="filterRoomCount" class="block mb-1 font-semibold text-white">Room Count:</label>
         <input
           type="number"
           id="filterRoomCount"
@@ -69,12 +69,12 @@
       >
         Apply Filters
       </button>
-      <div
+      <button
         @click="resetFilters"
-        class="w-full py-2 rounded border border-stone-500 text-white font-semibold hover:stone-500 text-center"
+        class="w-full py-2 rounded border border-stone-500 text-white font-semibold hover:bg-stone-500"
       >
         Remove Filters
-      </div>
+      </button>
     </form>
   </div>
 </template>

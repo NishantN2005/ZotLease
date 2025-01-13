@@ -53,9 +53,11 @@
         :mapView="mapView"
         :toggleView="toggleDashView"
         :toggleCheckMessage="toggleCheckMessage"
+        :filterOpen="filterOpen"
         :toggleMessages="toggleMessages"
         :showFilterModal="showFilterModal"
         :messagesOpen="messagesOpen"
+        :messageRef="messageRef"
       />
       <!-- Filter Modal-->
       <FilterModal
@@ -74,7 +76,6 @@
         :router="router"
         :userStore="userStore"
       />
-      
 
       <!-- The Leaflet map -->
       <LeafletMap
@@ -90,6 +91,10 @@
       <LeaseList
         v-show="listView"
         :allLocations="allLocationsStore"
+        :filterStore="filterStore"
+        :turnOnSubleaseModal="turnOnSubleaseModal"
+        :userToken="userStore.userToken"
+        :routerPass="router"
       />
 
       <!-- Selected Sublease modal-->
@@ -98,7 +103,10 @@
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
         :router="router"
+        :togglePhotoGallery="togglePhotoGallery"
       />
+
+      <PhotoGalleryModal v-if="showPhotoGallery" :togglePhotoGallery="togglePhotoGallery" />
     </div>
   </div>
 </template>
@@ -121,7 +129,8 @@ import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import { uploadPhotos } from '../s3client.js'
 import Sidebar from '@/components/Sidebar.vue'
-import Messages from '../components/Messages.vue';
+import Messages from '../components/Messages.vue'
+import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 
 export default {
   name: 'DashboardView',
@@ -133,10 +142,10 @@ export default {
     SelectedSubleaseModal,
     Sidebar,
     LeaseList,
-    Messages
+    Messages,
+    PhotoGalleryModal,
   },
-  methods:{
-  },
+  methods: {},
   setup() {
     onMounted(() => {
       if (userStore.isLoggedIn) {
@@ -144,12 +153,14 @@ export default {
         sequencialFetch()
       }
 
+      console.log('component unmounted')
       // Detect page refresh or tab close
       window.addEventListener('beforeunload', handleSessionEnd)
     })
 
     onUnmounted(() => {
       // Cleanup event listener when the component is destroyed
+      console.log('Component unmounted')
       window.removeEventListener('beforeunload', handleSessionEnd)
     })
 
@@ -161,9 +172,10 @@ export default {
     const allLocationsStore = useAllLocationsStore()
 
     const showSelectedSubleaseModal = ref(false)
+    const showPhotoGallery = ref(false)
     const showFilterModal = ref(false)
-    const messagesOpen = ref(false);
-    const messageRef = ref(null)
+    const messagesOpen = ref(false)
+    const messageRef = ref({})
     const filterForm = ref({
       gender: '',
       minPrice: null,
@@ -198,38 +210,7 @@ export default {
     const sidebarRef = ref(null)
     const mapView = ref(true)
     const listView = ref(false)
-
-
-    const toggleMessages = () =>{
-      //if filter is open, close it
-      if(showFilterModal.value){
-        toggleFilterModal();
-      }
-      messagesOpen.value = !messagesOpen.value
-      toggleCheckMessage()
-      chatStore.setChatRoomID(null)
-      chatStore.setActiveChatID(null)
-    }
-
-    const widthStyle = computed(() => {
-      let leftPosition = 0
-
-      if (showFilterModal.value) {
-        leftPosition = 320
-      } else if (chatStore.chatRoomID) {
-        leftPosition = 510
-      } else if (checkMessage.value) {
-        leftPosition = 220
-      }
-
-      const screenWidth = window.innerWidth
-      const remainingWidth = screenWidth - leftPosition
-
-      const minimumWidth = 300
-      const calculatedWidth = remainingWidth > minimumWidth ? remainingWidth : minimumWidth
-
-      return `${calculatedWidth}px`
-    })
+    const filterOpen = ref(false)
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -253,6 +234,12 @@ export default {
         mapView.value = false
         listView.value = true
       }
+      turnOffSubleaseModal()
+      if (showPhotoGallery.value) showPhotoGallery.value = false
+    }
+
+    const togglePhotoGallery = () => {
+      showPhotoGallery.value = !showPhotoGallery.value
     }
 
     const fetchChatRooms = async () => {
@@ -282,7 +269,11 @@ export default {
 
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      if (!chatStore.chatRooms.some((chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid)) {
+      if (
+        !chatStore.chatRooms.some(
+          (chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid,
+        )
+      ) {
         const userID1 = userStore.userID
         const userID2 = selectedSubleaseStore.selectedSublet.listerid
         const res = await makeAuthenticatedRequest(
@@ -459,25 +450,38 @@ export default {
     }
 
     const turnOffSubleaseModal = () => {
-      showSelectedSubleaseModal.value = false;
-      selectedSubleaseStore.resetSelectedSublease();
-
+      showSelectedSubleaseModal.value = false
+      selectedSubleaseStore.resetSelectedSublease()
     }
     const turnOnSubleaseModal = () => {
+      if (showPhotoGallery.value) showPhotoGallery.value = false
       showSelectedSubleaseModal.value = true
     }
     const toggleFilterModal = () => {
       //turn of messages if modal is getting turned on
-      if(messagesOpen.value){
-        toggleMessages();
+      if (messagesOpen.value) {
+        toggleMessages()
       }
       showFilterModal.value = !showFilterModal.value
+      filterOpen.value = !filterOpen.value
+      console.log(showFilterModal.value, filterOpen.value)
       filterForm.value = {
         gender: '',
         minPrice: null,
         maxPrice: null,
         roomCount: null,
       }
+    }
+
+    const toggleMessages = () => {
+      //if filter is open, close it
+      if (showFilterModal.value) {
+        toggleFilterModal()
+      }
+      messagesOpen.value = !messagesOpen.value
+      toggleCheckMessage()
+      chatStore.setChatRoomID(null)
+      chatStore.setActiveChatID(null)
     }
 
     const resetFilters = () => {
@@ -537,10 +541,12 @@ export default {
       listView,
       toggleCheckMessage,
       checkMessage,
-      widthStyle,
+      filterOpen,
       messagesOpen,
       messageRef,
-      toggleMessages
+      toggleMessages,
+      togglePhotoGallery,
+      showPhotoGallery,
     }
   },
 }

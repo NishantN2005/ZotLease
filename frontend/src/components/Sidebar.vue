@@ -106,10 +106,14 @@ export default {
       type: Boolean,
       required: true,
     },
-    messagesOpen:{
+    messagesOpen: {
       type: Boolean,
       required: true,
-    }
+    },
+    messageRef: {
+      type: Object,
+      required: true,
+    },
   },
   components: {
     Messages,
@@ -124,11 +128,26 @@ export default {
     toggleFilterModals() {
       this.filterOpen = !this.filterOpen
       if (this.filterOpen) {
-        this.messagesOpen = false
         this.chatStore.setChatRoomID(null)
         this.chatStore.setActiveChatID(null)
       }
       this.toggleFilterModal()
+    },
+
+    toggleDashMessage(chatroomID, partnerName, partnerID) {
+      console.log('heyyy')
+      this.toggleMessages()
+
+      if (this.messagesOpen && this.filterOpen) {
+        this.toggleFilterModal()
+      }
+
+      this.$nextTick(() => {
+        if (Object.keys(this.messageRef).length > 0) {
+          this.messageRef.selectChat(chatroomID, partnerName, partnerID)
+          this.messageRef.updateUnreadCount(chatroomID)
+        }
+      })
     },
   },
 
@@ -136,7 +155,7 @@ export default {
     const chatStore = useChatStore()
     const userStore = useUserStore()
 
-    return {chatStore, userStore}
+    return { chatStore, userStore }
   },
 }
 </script>
