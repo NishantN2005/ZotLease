@@ -33,21 +33,37 @@ const createSubleaseController = async (req, res) => {
     ) {
       return res.status(400).json({ message: "Params are incomeplete" });
     }
-    //need to add subleaseID,longitud/latitude, and photos somehow
-    const subleaseID = uuidv4();
-
+    /**
+     * Check if address exists, if it does, get the subleaseID
+     * using lat/lon so no need to santize the address
+     */
+    let coordinates;
     //get log/lat
     const resp = await fetch(`
-            https://api.mapbox.com/search/geocode/v6/forward?address_line1=${street_name}&place=${city}&region=California&postcode=${postal_code}&limit=1&permanent=true&access_token=${process.env.MAPBOX_KEY}`);
+      https://api.mapbox.com/search/geocode/v6/forward?address_line1=${street_name}&place=${city}&region=California&postcode=${postal_code}&limit=1&permanent=true&access_token=${process.env.MAPBOX_KEY}`);
     const val = await resp.json();
-    const coordinates = val.features[0].geometry.coordinates;
     //check if address exists
     if (val.length == 0) {
       return res.status(400).json({ message: "Address does not exist" });
     }
 
+    coordinates = val.features[0].geometry.coordinates;
     const lat = coordinates[1];
     const lon = coordinates[0];
+    
+    const checkIfExistsQuery = {
+      text: `SELECT * FROM sublease WHERE longitude=$1 AND latitude=$2`,
+      values: [lon, lat],
+    };
+    const responseOnExists = await pool.query(checkIfExistsQuery);
+    let subleaseID;
+    if(responseOnExists.rows.length > 0){
+      console.log('Address already exists');
+      subleaseID = responseOnExists.rows[0].subleaseid;
+      console.log("subleaseID", subleaseID);
+    }else{
+      subleaseID = uuidv4();
+    }
     console.log(listerID);
     const insertQuery = {
       text: `INSERT INTO sublease(
@@ -87,14 +103,12 @@ const createSubleaseController = async (req, res) => {
     };
     const response = await pool.query(insertQuery);
     console.log(response);
-    return res
-      .status(200)
-      .json({
-        subleaseid: subleaseID,
-        longitude: lon,
-        latitude: lat,
-        listerid: listerID,
-      });
+    return res.status(200).json({
+      subleaseid: subleaseID,
+      longitude: lon,
+      latitude: lat,
+      listerid: listerID,
+    });
   } catch (err) {
     return res.status(500).json({ message: err });
   }
@@ -103,7 +117,7 @@ const createSubleaseController = async (req, res) => {
 const getSubleasesController = async (req, res) => {
   console.log("Hello");
   const query =
-    "SELECT subleaseID, listerID, latitude, longitude FROM sublease";
+    "SELECT subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code FROM sublease";
   const response = await pool.query(query);
 
   return res.status(200).json(response.rows);
@@ -126,7 +140,7 @@ const getSubleaseInfoController = async (req, res) => {
   try {
     const response = await pool.query(query);
     console.log(response);
-    return res.status(200).json(response.rows[0]);
+    return res.status(200).json(response.rows);
   } catch (err) {
     console.log(`Error trying to fetch sublease data: ${err}`);
   }

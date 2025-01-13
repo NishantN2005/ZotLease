@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-neutral-900 w-[4%] h-screen flex flex-col justify-between text-stone-300 py-4">
+  <div
+    class="bg-neutral-900 w-[4%] h-screen flex flex-col justify-between text-stone-300 py-4 relative"
+  >
     <!-- Top Section: Profile Picture -->
     <div class="flex flex-col items-center space-y-6">
       <button
@@ -19,24 +21,33 @@
         </button>
         <button
           @click="toggleFilterModals"
+          :class="showFilterModal ? 'bg-stone-500' : ''"
           class="hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
         >
           <i class="fas fa-filter"></i>
         </button>
         <button
+          :class="messagesOpen ? 'bg-stone-500' : ''"
           class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
           @click="toggleMessages"
         >
           <i class="fas fa-comments"></i>
         </button>
+        <button
+          :class="mapView ? 'bg-stone-500' : ''"
+          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
+          @click="toggleView()"
+        >
+          <i class="fas fa-map-location-dot"></i>
+        </button>
+        <button
+          :class="!mapView ? 'bg-stone-500' : ''"
+          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
+          @click="toggleView(false)"
+        >
+          <i class="fas fa-list"></i>
+        </button>
       </div>
-      <Messages
-        ref="messageRef"
-        v-if="messagesOpen"
-        :chatStore="chatStore"
-        :router="router"
-        :userStore="userStore"
-      />
     </div>
 
     <!-- Bottom Section: Logout Button -->
@@ -76,6 +87,30 @@ export default {
       type: Object,
       required: true,
     },
+    mapView: {
+      type: Boolean,
+      required: true,
+    },
+    toggleView: {
+      type: Function,
+      required: true,
+    },
+    toggleCheckMessage: {
+      type: Function,
+      required: true,
+    },
+    toggleMessages: {
+      type: Function,
+      required: true,
+    },
+    showFilterModal: {
+      type: Boolean,
+      required: true,
+    },
+    messagesOpen:{
+      type: Boolean,
+      required: true,
+    }
   },
   components: {
     Messages,
@@ -99,42 +134,13 @@ export default {
       }
       this.toggleFilterModal()
     },
-    toggleMessages() {
-      this.messagesOpen = !this.messagesOpen
-      if (this.messagesOpen && this.filterOpen) {
-        this.toggleFilterModal()
-        this.filterOpen = false
-      } else {
-        this.chatStore.setChatRoomID(null)
-        this.chatStore.setActiveChatID(null)
-      }
-    },
-
-    toggleDashMessage(chatroomID, partnerName, partnerID) {
-      this.messagesOpen = true
-
-      if (this.messagesOpen && this.filterOpen) {
-        this.toggleFilterModal()
-        this.filterOpen = false
-      }
-
-      this.$nextTick(() => {
-        if (this.messageRef) {
-          this.messageRef.selectChat(chatroomID, partnerName, partnerID)
-          this.messageRef.updateUnreadCount(chatroomID)
-        }
-      })
-    },
   },
 
   setup(props) {
     const chatStore = useChatStore()
     const userStore = useUserStore()
-    const messagesOpen = ref(false)
-    const filterOpen = ref(false)
-    const messageRef = ref(null)
 
-    return { messagesOpen, filterOpen, chatStore, userStore, messageRef }
+    return {chatStore, userStore}
   },
 }
 </script>

@@ -50,26 +50,13 @@
         :turnOnModal="turnOnModal"
         :toggleFilterModal="toggleFilterModal"
         :router="router"
+        :mapView="mapView"
+        :toggleView="toggleDashView"
+        :toggleCheckMessage="toggleCheckMessage"
+        :toggleMessages="toggleMessages"
+        :showFilterModal="showFilterModal"
+        :messagesOpen="messagesOpen"
       />
-      <!-- The Leaflet map -->
-      <LeafletMap
-        class="z-0 w-full h-full"
-        :userToken="userStore.userToken"
-        :routerPass="router"
-        :userID="userStore.userID"
-        :turnOnSubleaseModal="turnOnSubleaseModal"
-        :filterForm="filterForm"
-      />
-
-      <!-- Selected Sublease modal-->
-      <SelectedSubleaseModal
-        :showSelectedSubleaseModal="showSelectedSubleaseModal"
-        :selectedSubleaseStore="selectedSubleaseStore"
-        :turnOffSubleaseModal="turnOffSubleaseModal"
-        :createChatRoom="createChatRoom"
-        :router="router"
-      />
-
       <!-- Filter Modal-->
       <FilterModal
         :filterform="filterForm"
@@ -79,6 +66,39 @@
         :toggleFilterModal="toggleFilterModal"
         :resetFilters="resetFilters"
       />
+      <!-- Messages Modal -->
+      <Messages
+        ref="messageRef"
+        :messagesOpen="messagesOpen"
+        :chatStore="chatStore"
+        :router="router"
+        :userStore="userStore"
+      />
+      
+
+      <!-- The Leaflet map -->
+      <LeafletMap
+        v-show="mapView"
+        class="z-0 w-full h-full"
+        :userToken="userStore.userToken"
+        :routerPass="router"
+        :userID="userStore.userID"
+        :turnOnSubleaseModal="turnOnSubleaseModal"
+        :filterForm="filterForm"
+      />
+
+      <LeaseList
+        v-show="listView"
+        :allLocations="allLocationsStore"
+      />
+
+      <!-- Selected Sublease modal-->
+      <SelectedSubleaseModal
+        :showSelectedSubleaseModal="showSelectedSubleaseModal"
+        :turnOffSubleaseModal="turnOffSubleaseModal"
+        :createChatRoom="createChatRoom"
+        :router="router"
+      />
     </div>
   </div>
 </template>
@@ -86,13 +106,14 @@
 <script>
 import { useRouter } from 'vue-router'
 import LeafletMap from '../components/LeafletMap.vue'
+import LeaseList from '@/components/LeaseList.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useChatStore } from '@/stores/chatStore'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import SocketConnection from '@/components/SocketConnection.vue'
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { API_URL } from '../../constants.js'
 import FilterModal from '@/components/FilterModal.vue'
 import { useFilterStore } from '@/stores/filterStore'
@@ -100,6 +121,7 @@ import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import { uploadPhotos } from '../s3client.js'
 import Sidebar from '@/components/Sidebar.vue'
+import Messages from '../components/Messages.vue';
 
 export default {
   name: 'DashboardView',
@@ -110,6 +132,10 @@ export default {
     FilterModal,
     SelectedSubleaseModal,
     Sidebar,
+    LeaseList,
+    Messages
+  },
+  methods:{
   },
   setup() {
     onMounted(() => {
@@ -136,6 +162,8 @@ export default {
 
     const showSelectedSubleaseModal = ref(false)
     const showFilterModal = ref(false)
+    const messagesOpen = ref(false);
+    const messageRef = ref(null)
     const filterForm = ref({
       gender: '',
       minPrice: null,
@@ -166,8 +194,42 @@ export default {
     const createSubleaseModal = ref(false)
 
     const messageBar = ref(false)
-    const filterOpen = ref(false)
+    const checkMessage = ref(false)
     const sidebarRef = ref(null)
+    const mapView = ref(true)
+    const listView = ref(false)
+
+
+    const toggleMessages = () =>{
+      //if filter is open, close it
+      if(showFilterModal.value){
+        toggleFilterModal();
+      }
+      messagesOpen.value = !messagesOpen.value
+      toggleCheckMessage()
+      chatStore.setChatRoomID(null)
+      chatStore.setActiveChatID(null)
+    }
+
+    const widthStyle = computed(() => {
+      let leftPosition = 0
+
+      if (showFilterModal.value) {
+        leftPosition = 320
+      } else if (chatStore.chatRoomID) {
+        leftPosition = 510
+      } else if (checkMessage.value) {
+        leftPosition = 220
+      }
+
+      const screenWidth = window.innerWidth
+      const remainingWidth = screenWidth - leftPosition
+
+      const minimumWidth = 300
+      const calculatedWidth = remainingWidth > minimumWidth ? remainingWidth : minimumWidth
+
+      return `${calculatedWidth}px`
+    })
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -180,6 +242,17 @@ export default {
 
     const sequencialFetch = async () => {
       await fetchChatRooms()
+    }
+    const toggleDashView = (mapOn = true) => {
+      if (mapOn) {
+        // turn off list view, turn on mapview
+        listView.value = false
+        mapView.value = true
+      } else {
+        // turn off map view turn on list view
+        mapView.value = false
+        listView.value = true
+      }
     }
 
     const fetchChatRooms = async () => {
@@ -203,11 +276,15 @@ export default {
       console.log(chatStore.chatRooms)
     }
 
+    const toggleCheckMessage = () => {
+      checkMessage.value = !checkMessage.value
+    }
+
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
-      if (!chatStore.chatRooms.some((chat) => chat.partnerID === selectedSubleaseStore.listerID)) {
+      if (!chatStore.chatRooms.some((chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid)) {
         const userID1 = userStore.userID
-        const userID2 = selectedSubleaseStore.listerID
+        const userID2 = selectedSubleaseStore.selectedSublet.listerid
         const res = await makeAuthenticatedRequest(
           `chat/createRoom`,
           { userID1, userID2 },
@@ -222,7 +299,7 @@ export default {
         sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
       } else {
         const chat = chatStore.chatRooms.find(
-          (chat) => chat.partnerID === selectedSubleaseStore.listerID,
+          (chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid,
         )
         const { chatRoomID, partnerID, partnerName } = chat
         sidebarRef.value.toggleDashMessage(chatRoomID, partnerName, partnerID)
@@ -382,28 +459,24 @@ export default {
     }
 
     const turnOffSubleaseModal = () => {
-      showSelectedSubleaseModal.value = false
+      showSelectedSubleaseModal.value = false;
+      selectedSubleaseStore.resetSelectedSublease();
+
     }
     const turnOnSubleaseModal = () => {
       showSelectedSubleaseModal.value = true
     }
     const toggleFilterModal = () => {
+      //turn of messages if modal is getting turned on
+      if(messagesOpen.value){
+        toggleMessages();
+      }
       showFilterModal.value = !showFilterModal.value
       filterForm.value = {
         gender: '',
         minPrice: null,
         maxPrice: null,
         roomCount: null,
-      }
-    }
-
-    const toggleMessages = () => {
-      messageBar.value = !messageBar.value
-      if (messageBar.value) {
-        filterOpen.value = false
-      } else {
-        chatStore.chatRoomID = null
-        chatStore.activeChatID = null
       }
     }
 
@@ -444,12 +517,10 @@ export default {
       router,
       userStore,
       chatStore,
-      selectedSubleaseStore,
       showSelectedSubleaseModal,
       turnOffSubleaseModal,
       turnOnSubleaseModal,
       toggleFilterModal,
-      toggleMessages,
       showFilterModal,
       filterForm,
       FilterModal,
@@ -461,6 +532,15 @@ export default {
       filesRef,
       findChatRooms,
       sidebarRef,
+      mapView,
+      toggleDashView,
+      listView,
+      toggleCheckMessage,
+      checkMessage,
+      widthStyle,
+      messagesOpen,
+      messageRef,
+      toggleMessages
     }
   },
 }

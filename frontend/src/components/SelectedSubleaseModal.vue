@@ -10,51 +10,69 @@
         <i class="fa-solid fa-xmark text-xl"></i>
       </button>
     </div>
+    
+    <!-- Tabs -->
+    <div class="flex space-x-4 mb-4">
+      <button
+        v-for="(subletter, index) in selectedSubleaseStore.subletters"
+        :key="subletter.listerid"
+        @click="selectSublet(index)"
+        :class="{
+          'text-blue-500 border-b-2 border-blue-500': selectedTab === index,
+          'text-gray-500': selectedTab !== index
+        }"
+        class="py-2 px-4"
+      >
+        {{ subletter.fname }} {{ subletter.lname }}
+      </button>
+    </div>
 
     <!-- Content Container -->
     <div class="space-y-4 text-gray-700">
       <!-- Title -->
       <h1 class="font-bold text-2xl text-gray-900">
-        {{ selectedSubleaseStore.fName }} {{ selectedSubleaseStore.lName }}
+        {{ selectedSubleaseStore.selectedSublet.fName }} {{ selectedSubleaseStore.selectedSublet.lName }}
       </h1>
 
       <!-- Price -->
-      <div><span class="font-semibold">Price:</span> ${{ selectedSubleaseStore.price }}</div>
+      <div><span class="font-semibold">Price:</span> ${{ selectedSubleaseStore.selectedSublet.price }}</div>
 
       <!-- Gender -->
-      <div><span class="font-semibold">Gender:</span> {{ selectedSubleaseStore.gender }}</div>
+      <div><span class="font-semibold">Gender:</span> {{ selectedSubleaseStore.selectedSublet.gender }}</div>
 
       <!-- Rooms/Bathrooms -->
       <div>
-        <span class="font-semibold">Rooms/Bathrooms:</span>
-        {{ selectedSubleaseStore.roomCount }}/{{ selectedSubleaseStore.bathroomCount }}
+        <span class="font-semibold">Rooms:</span> {{ selectedSubleaseStore.selectedSublet.roomCount }}
+      </div>
+      <div>
+        <span class="font-semibold">Bathrooms:</span> {{ selectedSubleaseStore.selectedSublet.bathroomCount }}
       </div>
 
       <!-- Address -->
       <div>
         <span class="font-semibold">Address:</span>
-        {{ selectedSubleaseStore.street_name }}, {{ selectedSubleaseStore.city }}, California,
-        {{ selectedSubleaseStore.postal_code }}
+        {{ selectedSubleaseStore.selectedSublet.street_name }}, {{ selectedSubleaseStore.selectedSublet.city }}, California,
+        {{ selectedSubleaseStore.selectedSublet.postal_code }}
       </div>
 
       <!-- Room -->
       <div>
         <span class="font-semibold">Room:</span>
-        {{ selectedSubleaseStore.room }}
+        {{ selectedSubleaseStore.selectedSublet.room }}
       </div>
 
       <!-- Start/End Term -->
       <div>
-        <span class="font-semibold">Start Term:</span> {{ selectedSubleaseStore.startTerm }}
+        <span class="font-semibold">Start Term:</span> {{ selectedSubleaseStore.selectedSublet.startterm }}
         <br />
-        <span class="font-semibold">End Term:</span> {{ selectedSubleaseStore.endTerm }}
+        <span class="font-semibold">End Term:</span> {{ selectedSubleaseStore.selectedSublet.endterm }}
       </div>
 
       <!-- Description -->
       <div>
         <span class="font-semibold">Description:</span>
         <p class="whitespace-pre-line mt-1">
-          {{ selectedSubleaseStore.description }}
+          {{ selectedSubleaseStore.selectedSublet.description }}
         </p>
       </div>
 
@@ -66,7 +84,7 @@
         Chat
       </button>
     </div>
-    <div v-if="true" class="mt-4 grid grid-cols-1 gap-4">
+    <div class="mt-4 grid grid-cols-1 gap-4">
       <img
         v-for="(photo, index) in photos"
         :key="index"
@@ -81,17 +99,13 @@
 <script>
 import { ref, watch } from 'vue'
 import { getPhotos } from '../s3client.js'
-import SocketConnection from './SocketConnection.vue'
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore';
 
 export default {
   name: 'SelectedSubleaseModal',
   props: {
     showSelectedSubleaseModal: {
       type: Boolean,
-      required: true,
-    },
-    selectedSubleaseStore: {
-      type: Object,
       required: true,
     },
     turnOffSubleaseModal: {
@@ -108,12 +122,19 @@ export default {
     },
   },
   setup(props) {
+    const selectedSubleaseStore = useSelectedSubleaseStore();
+    const selectedTab = ref(0);
     const photos = ref([])
 
-    async function fetchPhotos() {
+    const selectSublet = (index) => {
+      selectedTab.value = index;
+      selectedSubleaseStore.selectedSublet = selectedSubleaseStore.subletters[index];
+    };
+
+    async function fetchPhotos(newSublet) {
       try {
         console.log('fetching photos')
-        const key = `${props.selectedSubleaseStore.listerID}/${props.selectedSubleaseStore.subleaseID}` // Dynamic prefix
+        const key = `${newSublet.listerid}/${selectedSubleaseStore.subleaseID}` // Dynamic prefix
         console.log(key)
         const response = await getPhotos(key)
         console.log(response)
@@ -124,15 +145,33 @@ export default {
       }
     }
 
-    // Watch for modal visibility and load photos when opened
     watch(
-      () => props.selectedSubleaseStore.subleaseID,
-      () => {
-        fetchPhotos()
+      () => selectedSubleaseStore.selectedSublet,
+      (newSublet) => {
+        if (newSublet) {
+          console.log('HERE', newSublet.listerid)
+          fetchPhotos(newSublet);
+        }
       },
-    )
+      { immediate: true }
+    );
+    // Watch for changes in subletters and set the default selected sublet
+    watch(
+      () => selectedSubleaseStore.subletters,
+      (newSubletters) => {
+        if (newSubletters.length > 0) {
+          selectedSubleaseStore.selectedSublet = newSubletters[0];
+        }
+      },
+      { immediate: true }
+    );
 
-    return { photos }
+    return { 
+      selectedSubleaseStore,
+      selectedTab,
+      selectSublet,
+      photos 
+    }
   },
 }
 </script>
