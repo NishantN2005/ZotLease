@@ -2,7 +2,7 @@
   <div
     v-if="showSelectedSubleaseModal"
     id="filterModal"
-    class="absolute z-10 bg-white inset-y-2 right-2 w-1/3 rounded-lg p-4 shadow-md border border-gray-200 overflow-y-auto"
+    class="absolute z-10 bg-white inset-y-2 right-2 md:w-1/2 lg:w-1/3 rounded-lg p-4 shadow-md border border-gray-200 overflow-y-auto"
     style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
   >
     <div class="flex items-center justify-between">

@@ -10,14 +10,12 @@
             :key="chat.chatRoomID"
             :class="{ active: chat.chatRoomID === activeChatId && chatStore.activeChatID }"
             class="relative flex items-center space-x-2 my-4 bg-stone-800 hover:bg-stone-500"
+            @click="
+              (selectChat(chat.chatRoomID, chat.partnerName, chat.partnerID),
+              updateUnreadCount(chat.chatRoomID))
+            "
           >
-            <span
-              @click="
-                (selectChat(chat.chatRoomID, chat.partnerName, chat.partnerID),
-                updateUnreadCount(chat.chatRoomID))
-              "
-              class="chat-name"
-            >
+            <span class="chat-name">
               {{ chat.partnerName }}
             </span>
             <!-- Unread messages badge -->
@@ -251,8 +249,9 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 40%;
+  width: 400px;
   height: 100%;
+  overflow: auto;
   word-wrap: break-word;
 }
 
@@ -264,6 +263,7 @@ export default {
   overflow: scroll;
   box-sizing: border-box;
   scroll-behavior: smooth;
+  padding-bottom: 10px;
 }
 
 .message {
@@ -280,10 +280,15 @@ export default {
 .user-message {
   align-items: flex-end;
   word-wrap: break-word;
+  width: 80%;
+  margin-left: auto;
+  margin-right: 10px;
 }
 
 .system-message {
   align-items: flex-start;
+  width: 80%;
+  margin-left: 10px;
 }
 
 .sender {

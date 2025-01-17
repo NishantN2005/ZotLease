@@ -1,5 +1,6 @@
 <template>
   <div class="dashboard">
+    <LoadingScreen v-if="showLoadingScreen" />
     <SocketConnection :router="router" v-show="false" />
     <!-- Sublease Modal -->
     <div
@@ -95,6 +96,7 @@
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :userToken="userStore.userToken"
         :routerPass="router"
+        :turnOffLoading="turnOffLoading"
       />
 
       <!-- Selected Sublease modal-->
@@ -131,6 +133,7 @@ import { uploadPhotos } from '../s3client.js'
 import Sidebar from '@/components/Sidebar.vue'
 import Messages from '../components/Messages.vue'
 import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
+import LoadingScreen from '@/components/LoadingScreen.vue'
 
 export default {
   name: 'DashboardView',
@@ -144,11 +147,13 @@ export default {
     LeaseList,
     Messages,
     PhotoGalleryModal,
+    LoadingScreen,
   },
   methods: {},
   setup() {
     onMounted(() => {
       if (userStore.isLoggedIn) {
+        turnOnLoading()
         chatStore.onlineChats = []
         sequencialFetch()
       }
@@ -170,6 +175,7 @@ export default {
     const selectedSubleaseStore = useSelectedSubleaseStore()
     const filterStore = useFilterStore()
     const allLocationsStore = useAllLocationsStore()
+    const showLoadingScreen = ref(false)
 
     const showSelectedSubleaseModal = ref(false)
     const showPhotoGallery = ref(false)
@@ -219,6 +225,13 @@ export default {
     const turnOnModal = () => {
       console.log('modal on')
       createSubleaseModal.value = true
+    }
+
+    const turnOnLoading = () => {
+      showLoadingScreen.value = true
+    }
+    const turnOffLoading = () => {
+      showLoadingScreen.value = false
     }
 
     const sequencialFetch = async () => {
@@ -547,6 +560,8 @@ export default {
       toggleMessages,
       togglePhotoGallery,
       showPhotoGallery,
+      showLoadingScreen,
+      turnOffLoading,
     }
   },
 }

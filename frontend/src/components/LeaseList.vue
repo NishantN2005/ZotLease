@@ -78,7 +78,10 @@
     </div>
 
     <div class="w-5/6 h-full mt-4 overflow-y-auto">
-      <div v-if="listings.length > 0" class="w-full grid grid-cols-4 gap-4 rounded-lg">
+      <div
+        v-if="listings.length > 0"
+        class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-4 rounded-lg"
+      >
         <div
           v-for="listing in listings"
           :key="listing.subleaseid"
@@ -142,6 +145,10 @@ export default {
       type: Object,
       required: true,
     },
+    turnOffLoading: {
+      type: Function,
+      required: true,
+    },
   },
   setup(props) {
     console.log('allLocationsStore:', props.allLocations)
@@ -185,32 +192,39 @@ export default {
     }
 
     async function fetchPhotos() {
-      // not fetching photos for new listings
+      // Use a reactive object for storing photos
       const photos = ref({})
 
-      for (const listing of props.allLocations.allLocations) {
-        try {
-          const key = `${listing.listerid}/${listing.subleaseid}`
-          console.log('helo')
-          console.log('Fetching photo for key:', key)
+      try {
+        // Create an array of promises for all listings
+        const photoFetchPromises = props.allLocations.allLocations.map(async (listing) => {
+          try {
+            const key = `${listing.listerid}/${listing.subleaseid}`
+            console.log('Fetching photo for key:', key)
 
-          const response = await getFirstPhoto(key)
+            const response = await getFirstPhoto(key)
 
-          // Log the whole response to see what it's returning
-          console.log('Response from getFirstPhoto:', response)
-
-          if (response && response.length > 0) {
-            console.log('Pushing first photo to photos:', response)
-            photos.value[listing.subleaseid] = response
-          } else {
-            console.log('No response or empty response for key:', key)
+            if (response) {
+              console.log('Adding first photo to photos:', response)
+              photos.value[listing.subleaseid] = response
+            } else {
+              console.log('No photo found for key:', key)
+            }
+          } catch (error) {
+            console.error('Error fetching photo for listing:', listing, error)
           }
-        } catch (error) {
-          console.error('Error fetching photos for key', listing, ':', error)
-        }
+        })
+
+        // Wait for all photo-fetching promises to complete
+        await Promise.all(photoFetchPromises)
+
+        // Assign the photos to the parent object
+        props.allLocations.firstPhotos = photos
+        console.log(props.allLocations.firstPhotos)
+        props.turnOffLoading()
+      } catch (error) {
+        console.error('Error fetching photos:', error)
       }
-      props.allLocations.firstPhotos = photos
-      console.log(props.allLocations.firstPhotos)
     }
 
     function filterAddress(text) {
