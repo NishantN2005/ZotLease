@@ -1,6 +1,5 @@
 <template>
-  <div v-if="messagesOpen"
-  class="sidebar">
+  <div v-if="messagesOpen" class="sidebar">
     <div class="content relative z-20">
       <!-- Chat List -->
       <div class="chat-list">
@@ -9,7 +8,7 @@
           <li
             v-for="chat in chatStore.chatRooms"
             :key="chat.chatRoomID"
-            :class="{ active: chat.chatRoomID === activeChatId }"
+            :class="{ active: chat.chatRoomID === activeChatId && chatStore.activeChatID }"
             class="relative flex items-center space-x-2 my-4 bg-stone-800 hover:bg-stone-500"
           >
             <span
@@ -123,10 +122,10 @@ export default {
       type: Object,
       required: true,
     },
-    messagesOpen:{
+    messagesOpen: {
       type: Boolean,
       required: true,
-    }
+    },
   },
 
   components: {
@@ -135,7 +134,7 @@ export default {
 
   methods: {
     selectChat(chatId, partnerName, partnerID) {
-      console.log('in select chat')
+      console.log(chatId, partnerName, partnerID)
       this.activeChatId = chatId
       this.partnerName = partnerName
       console.log(this.partnerName)
@@ -228,7 +227,6 @@ export default {
 
 .chat-list li.active {
   background: rgb(120 113 108);
-  color: white;
 }
 
 .chat-name {
@@ -314,7 +312,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: auto; /* Push the input container to the bottom */
+  margin-top: auto;
   gap: 10px;
   padding: 10px;
 }

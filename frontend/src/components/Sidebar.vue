@@ -5,7 +5,8 @@
     <!-- Top Section: Profile Picture -->
     <div class="flex flex-col items-center space-y-6">
       <button
-        class="w-10 h-10 border border-stone-500 rounded-full flex items-center justify-center"
+        class="w-10 h-10 border border-stone-500 rounded-full flex items-center justify-center hover:cursor-pointer"
+        @click="redirectToProfile"
       >
         <!-- Font Awesome Icon for Profile Picture -->
         <i class="fas fa-user text-white text-xl"></i>
@@ -106,15 +107,22 @@ export default {
       type: Boolean,
       required: true,
     },
-    messagesOpen:{
+    messagesOpen: {
       type: Boolean,
       required: true,
-    }
+    },
+    messageRef: {
+      type: Object,
+      required: true,
+    },
   },
   components: {
     Messages,
   },
   methods: {
+    redirectToProfile(){
+      this.router.push('/profile')
+    },
     Logout() {
       this.Logout() // This calls the prop passed to the component.
     },
@@ -124,11 +132,26 @@ export default {
     toggleFilterModals() {
       this.filterOpen = !this.filterOpen
       if (this.filterOpen) {
-        this.messagesOpen = false
         this.chatStore.setChatRoomID(null)
         this.chatStore.setActiveChatID(null)
       }
       this.toggleFilterModal()
+    },
+
+    toggleDashMessage(chatroomID, partnerName, partnerID) {
+      console.log('heyyy')
+      this.toggleMessages()
+
+      if (this.messagesOpen && this.filterOpen) {
+        this.toggleFilterModal()
+      }
+
+      this.$nextTick(() => {
+        if (Object.keys(this.messageRef).length > 0) {
+          this.messageRef.selectChat(chatroomID, partnerName, partnerID)
+          this.messageRef.updateUnreadCount(chatroomID)
+        }
+      })
     },
   },
 
@@ -136,7 +159,7 @@ export default {
     const chatStore = useChatStore()
     const userStore = useUserStore()
 
-    return {chatStore, userStore}
+    return { chatStore, userStore }
   },
 }
 </script>
