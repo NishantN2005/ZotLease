@@ -94,6 +94,7 @@ jobs:
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
         echo "MAPBOX_KEY=$secret" >> $GITHUB_ENV
+
     - name: Retrieve Latest Amazon Linux 2 AMI ID
       id: get_ami_id
       run: |
@@ -113,8 +114,10 @@ jobs:
     - name: Launch EC2 Instance (if not running)
       if: ${{ steps.check_ec2.outputs.INSTANCE_ID }} == 'None'
       id: launch_ec2
+      env: 
+        AMI_ID: ${{ env.AMI_ID }}
       run: |
-        instance_id=$(aws ec2 run-instances --image-id ${{ steps.get_ami_id.outputs.AMI_ID }} --instance-type t2.micro --key-name your-key-pair --security-group-ids your-security-group-id --subnet-id your-subnet-id --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zotlease-frontend}]' --query 'Instances[0].InstanceId' --output text)
+        instance_id=$(aws ec2 run-instances --image-id ${{env.AMI_ID}} --instance-type t2.micro --key-name your-key-pair --security-group-ids your-security-group-id --subnet-id your-subnet-id --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zotlease-frontend}]' --query 'Instances[0].InstanceId' --output text)
         echo "INSTANCE_ID=$instance_id" >> $GITHUB_ENV
     - name: Wait for EC2 Instance to be Running
       if: ${{ steps.launch_ec2.outputs.INSTANCE_ID }} != ''
