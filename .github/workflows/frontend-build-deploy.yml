@@ -99,7 +99,7 @@ jobs:
       run: |
         ami_id=$(aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-2.0.*-x86_64-gp2" --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
         echo "AMI_ID=$ami_id" >> $GITHUB_ENV
-        echo "AMI_ID"
+        echo "$ami_id"
 
     - name: Check for Existing EC2 Instance
       id: check_ec2
