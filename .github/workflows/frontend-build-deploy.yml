@@ -117,7 +117,7 @@ jobs:
       env: 
         AMI_ID: ${{ env.AMI_ID }}
       run: |
-        instance_id=$(aws ec2 run-instances --image-id ${{env.AMI_ID}} --instance-type t2.micro --key-name your-key-pair --security-group-ids your-security-group-id --subnet-id your-subnet-id --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zotlease-frontend}]' --query 'Instances[0].InstanceId' --output text)
+        instance_id=$(aws ec2 run-instances --image-id ${{env.AMI_ID}} --instance-type t2.micro --key-name your-key-pair --security-group-ids sg-0cd83831dc78ca161  --subnet-id subnet-087a8d89a0e6b8c46 --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zotlease-frontend}]' --query 'Instances[0].InstanceId' --output text)
         echo "INSTANCE_ID=$instance_id" >> $GITHUB_ENV
     - name: Wait for EC2 Instance to be Running
       if: ${{ steps.launch_ec2.outputs.INSTANCE_ID }} != ''
