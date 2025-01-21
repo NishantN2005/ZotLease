@@ -20,6 +20,7 @@ export default defineConfig({
   server:{
     port:5173,
     host: true, // This makes the server accessible externally
+    allowedHosts: ['www.zotlease.org'],
   },
   build: {
     outDir: 'dist', // Ensure the output directory is set correctly
