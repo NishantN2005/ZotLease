@@ -112,7 +112,7 @@ jobs:
         MY_SECRET: ${{ env.MY_SECRET }}
         MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
         ENV: ${{github.event.inputs.environ}}
-        ORIGIN: ${{ env.FRONTEND_URL }}
+        ORIGIN: https://www.zotlease.org/
         SSL_PATH: /app/rds-combined-ca-bundle.pem
       run: |
         aws lightsail create-container-service-deployment \

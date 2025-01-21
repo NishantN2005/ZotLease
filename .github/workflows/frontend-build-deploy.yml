@@ -94,49 +94,31 @@ jobs:
       run: |
         secret=$(aws secretsmanager get-secret-value --secret-id MAPBOX_KEY --query SecretString --output text)
         echo "MAPBOX_KEY=$secret" >> $GITHUB_ENV
+        
+    - name: Create Lightsail Container Service if not exists
+      run: |
+        aws lightsail create-container-service \
+        --service-name zotlease-frontend \
+        --power nano \
+        --scale 1 || true
+    
+    - name: Deploy to AWS Lightsail
+      env:
+        VITE_AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        VITE_AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        VITE_AWS_REGION: us-east-1
+        IMAGE_TAG: ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: zotlease/frontend
+        MY_SECRET: ${{ env.MY_SECRET }}
+        VITE_MAPBOX_TOKEN: ${{ env.MAPBOX_KEY }}
+        VITE_ENV: beta
+        VITE_API_URL: ${{ env.API_URL }}
 
-    - name: Retrieve Latest Amazon Linux 2 AMI ID
-      id: get_ami_id
-      run: |
-        ami_id=$(aws ec2 describe-images --owners amazon --filters "Name=name,Values=amzn2-ami-hvm-2.0.*-x86_64-gp2" --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
-        echo "AMI_ID=$ami_id" >> $GITHUB_ENV
-        echo "$ami_id"
 
-    - name: Check for Existing EC2 Instance
-      id: check_ec2
       run: |
-        instance_id=$(aws ec2 describe-instances --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=zotlease-frontend" --query 'Reservations[0].Instances[0].InstanceId' --output text)
-        if [ "$instance_id" != "None" ]; then
-          echo "INSTANCE_ID=$instance_id" >> $GITHUB_ENV
-          instance_ip=$(aws ec2 describe-instances --instance-ids $instance_id --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
-          echo "INSTANCE_IP=$instance_ip" >> $GITHUB_ENV
-        fi
-    - name: Launch EC2 Instance (if not running)
-      if: ${{ steps.check_ec2.outputs.INSTANCE_ID }} == 'None'
-      id: launch_ec2
-      env: 
-        AMI_ID: ${{ env.AMI_ID }}
-      run: |
-        instance_id=$(aws ec2 run-instances --image-id ${{env.AMI_ID}} --instance-type t2.micro --key-name your-key-pair --security-group-ids sg-0cd83831dc78ca161  --subnet-id subnet-087a8d89a0e6b8c46 --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=zotlease-frontend}]' --query 'Instances[0].InstanceId' --output text)
-        echo "INSTANCE_ID=$instance_id" >> $GITHUB_ENV
-    - name: Wait for EC2 Instance to be Running
-      if: ${{ steps.launch_ec2.outputs.INSTANCE_ID }} != ''
-      run: |
-        aws ec2 wait instance-running --instance-ids ${{ steps.launch_ec2.outputs.INSTANCE_ID }}
+        aws lightsail create-container-service-deployment \
+        --service-name zotlease-frontend \
+        --containers "frontend={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5173=HTTP},environment={VITE_API_URL=\"$VITE_API_URL\",VITE_AWS_REGION=\"$VITE_AWS_REGION\",VITE_AWS_ACCESS_KEY_ID=\"$VITE_AWS_ACCESS_KEY_ID\",VITE_AWS_SECRET_ACCESS_KEY=\"$VITE_AWS_SECRET_ACCESS_KEY\",VITE_ENV=\"$VITE_ENV\",VITE_MAPBOX_TOKEN=\"$VITE_MAPBOX_TOKEN\"}}" \
+        --public-endpoint "containerName=frontend,containerPort=5173" \
 
-    - name: Get EC2 Instance Public IP (if new instance)
-      if: ${{ steps.check_ec2.outputs.INSTANCE_IP }} == ''
-      id: get_ec2_ip
-      run: |
-        instance_ip=$(aws ec2 describe-instances --instance-ids ${{ steps.launch_ec2.outputs.INSTANCE_ID }} --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
-        echo "INSTANCE_IP=$instance_ip" >> $GITHUB_ENV
-    - name: Deploy Frontend to EC2
-      run: |
-        scp -o StrictHostKeyChecking=no -i your-key-pair.pem -r frontend/build ec2-user@${{ steps.get_ec2_ip.outputs.INSTANCE_IP }}:/var/www/html
-
-    - name: Start Frontend Server on EC2
-      run: |
-        ssh -o StrictHostKeyChecking=no -i your-key-pair.pem ec2-user@${{ steps.get_ec2_ip.outputs.INSTANCE_IP }} 'sudo systemctl restart nginx'
-
-    - name: Output EC2 Instance Public IP
-      run: echo "Frontend deployed to http://${{ steps.get_ec2_ip.outputs.INSTANCE_IP }}"
