@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-neutral-900 w-[4%] h-screen flex flex-col justify-between text-stone-300 py-4 relative"
+    class="bg-neutral-900 lg:w-[4%] h-screen flex flex-col justify-between text-stone-300 py-4 relative"
   >
     <!-- Top Section: Profile Picture -->
     <div class="flex flex-col items-center space-y-6">
