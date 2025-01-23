@@ -151,7 +151,7 @@ const getSubleaseInfoController = async (req, res) => {
 };
 
 const getSubleaseFilterController = async (req, res) => {
-  let { gender, minPrice, maxPrice, roomCount } = req.body;
+  let { gender, minPrice, maxPrice, roomCount, startdate, enddate } = req.body;
   if (minPrice == null) {
     minPrice = 0;
   }
@@ -161,6 +161,26 @@ const getSubleaseFilterController = async (req, res) => {
   if (roomCount == "") {
     roomCount = null;
   }
+  if(startdate==null){
+    startdate = '2020-5-1'; //just put a date from long ago so it include every start date
+  }
+  if(enddate == null){
+    enddate = '2100-12-31'; //put end date for super far in future if not defined
+  }
+  var query = {
+    text: "SELECT subleaseid FROM sublease WHERE price BETWEEN $1 AND $2 AND TO_DATE(startterm, 'YYYY-MM-DD') >= $3::date AND TO_DATE(endterm, 'YYYY-MM-DD') <= $4::date",
+    values:[minPrice, maxPrice, startdate, enddate]
+  }
+  if(gender!=""){
+    query.text+=` AND gender=$${query.values.length+1}`;
+    query.values.push(gender);
+  }
+  if(roomCount !== null){
+    query.text+=` AND roomcount = $${query.values.length+1}`;
+    query.values.push(roomCount);
+  }
+  console.log('FILTER QUERY IS HERE')
+  console.log(query)
   //if both gender and roomcount were selected
   let filterQuery;
   if (gender !== "" && roomCount !== null) {
@@ -187,7 +207,8 @@ const getSubleaseFilterController = async (req, res) => {
     };
   }
   console.log("filter query here", filterQuery);
-  const response = await pool.query(filterQuery);
+
+  const response = await pool.query(query);
 
   console.log(response);
   let acceptedSubleases = [];
