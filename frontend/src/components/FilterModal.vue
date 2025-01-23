@@ -62,6 +62,30 @@
         />
       </div>
 
+      <!-- Start Date-->
+      <div class = "text-black">
+        <label for="filterStartDate" class="block mb-1 font-semibold text-white"> Start Date:</label>
+        <input
+          type="date"
+          id="filterStartDate"
+          placeholder="4"
+          v-model="filterform.startdate"
+          class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <!-- End Date-->
+      <div class = "text-black">
+        <label for="filterEndDate" class="block mb-1 font-semibold text-white"> End Date:</label>
+        <input
+          type="date"
+          id="filterEndDate"
+          placeholder="4"
+          v-model="filterform.enddate"
+          class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
       <!-- Submit Button -->
       <button
         type="submit"

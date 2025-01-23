@@ -483,6 +483,8 @@ export default {
         minPrice: null,
         maxPrice: null,
         roomCount: null,
+        startsate: null,
+        enddate: null
       }
     }
 
