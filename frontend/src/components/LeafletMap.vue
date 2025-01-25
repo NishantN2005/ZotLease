@@ -71,8 +71,19 @@ export default {
       return L.divIcon({
         className: 'custom-icon',
         html: `
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41" fill="none">
-            <path fill="${hexColor}" stroke="#000" stroke-width="1" d="M12.5 0C5.596 0 0 5.596 0 12.5 0 22.368 12.5 41 12.5 41S25 22.368 25 12.5C25 5.596 19.404 0 12.5 0Z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 24 24" fill="none">
+            <!-- Outer Pin Shape -->
+            <path 
+              d="M12 0C7.03 0 3 4.03 3 9C3 15 12 24 12 24S21 15 21 9C21 4.03 16.97 0 12 0Z" 
+              fill=${hexColor} 
+            />
+            <!-- Inner Circle -->
+            <circle 
+              cx="12" 
+              cy="9" 
+              r="3" 
+              fill="#FFFFFF" 
+            />
           </svg>
         `,
         iconSize: [25, 41],
