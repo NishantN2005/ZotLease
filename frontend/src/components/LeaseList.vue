@@ -3,78 +3,29 @@
     <div class="relative w-5/6 flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
       <!-- Input box with search icon inside -->
       <div class="flex-grow relative">
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Address, city, ZIP"
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
-          @keyup.enter="filterAddress($event.target.value)"
-        />
-        <i
-          class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-        ></i>
-      </div>
-
-      <!-- Dropdown Filters
-      <div class="flex flex-wrap gap-4">
-        <div class="w-32">
-          <select
-            class="w-full pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-stone-500 bg-white"
-            v-model="filters.gender"
-          >
-            <option value="">Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="any">Any</option>
-          </select>
-        </div>
-
-        <div class="w-30">
-          <select
-            class="w-full pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-stone-500 bg-white"
-            v-model="filters.beds"
-          >
-            <option value="">Beds</option>
-            <option v-for="n in 4" :key="n" :value="n">{{ n }} Beds</option>
-            <option value="5">5+ Beds</option>
-          </select>
-        </div>
-
-  
-        <div class="w-30">
-          <select
-            class="w-full pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-stone-500 bg-white"
-            v-model="filters.baths"
-          >
-            <option value="">Baths</option>
-            <option v-for="n in 4" :key="n" :value="n">{{ n }} Baths</option>
-            <option value="5">5+ Baths</option>
-          </select>
-        </div>
-
-        <div class="w-40">
-          <select
-            class="w-full pl-4 pr-8 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-stone-500 bg-white"
-            v-model="filters.priceRange"
-          >
-            <option value="">Price</option>
-            <option value="0-500">$0 - $500</option>
-            <option value="500-1000">$500 - $1,000</option>
-            <option value="1000-1500">$1,000 - $1,500</option>
-            <option value="1500-2000">$1,500 - $2,000</option>
-            <option value="2000+">$2,000+</option>
-          </select>
-        </div> 
-      </div> -->
-
-      <!-- Clear Filter button -->
-      <button
-        v-if="filterActive || filterStore.isFiltered"
-        class="w-1/5 ml-2 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none"
-        @click="clearInput"
+        <mapbox-address-autofill
+        :accessToken="MAPBOX_ACCESS_TOKEN"
+        :options="{ countries: ['us'] }"
+        confirm-on-blur
+        confirm-on-browser-autofill
+        @retrieve="onRetrieve"
       >
-        Clear Filter
-      </button>
+        <!-- Input box with search icon inside -->
+        <div class="flex-grow relative">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Address, city, ZIP"
+            autocomplete="address-line1"
+            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
+            @input="filterAddress($event.target.value)"
+          />
+          <i
+            class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+          ></i>
+        </div>
+      </mapbox-address-autofill>
+      </div>
     </div>
 
     <div class="w-5/6 h-full mt-4 overflow-y-auto">
@@ -121,6 +72,7 @@ import { ref, watch } from 'vue'
 import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { makeAuthenticatedRequest } from '../services/authService.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
+import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 
 export default {
   name: 'leaseList',
@@ -228,14 +180,23 @@ export default {
     }
 
     function filterAddress(text) {
-      const query = String(text || '').toLowerCase()
-      console.log(query)
-      listings.value = listings.value.filter((listing) =>
-        [listing.street_name, listing.city].join(', ').toLowerCase().includes(query),
-      )
-      console.log(props.allLocations.activeLocations)
-      filterActive.value = true
-    }
+      const query = String(text || '').toLowerCase();
+
+      if (!query) {
+        // Reset listings when input is cleared
+        listings.value = props.allLocations.allLocations;
+        props.filterStore.resetFilter()
+        filterActive.value = false;
+        return;
+      }
+
+      listings.value = props.allLocations.allLocations.filter((listing) =>
+        [listing.street_name, listing.city].join(', ').toLowerCase().includes(query)
+      );
+
+      filterActive.value = true;
+}
+
 
     function clearInput() {
       const input = document.getElementById('searchInput')
@@ -317,8 +278,16 @@ export default {
       clearInput,
       filterActive,
       activateSubleaseModal,
+      MAPBOX_ACCESS_TOKEN
       // filters,
     }
   },
+  methods:{
+    onRetrieve(result){
+      const res_value = result.detail.features[0].properties.matching_name
+      const input = document.getElementById('searchInput')
+      input.value= res_value;
+    }
+  }
 }
 </script>

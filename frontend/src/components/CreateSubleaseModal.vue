@@ -1,45 +1,58 @@
 <template>
   <form class="space-y-4 p-2">
-    <div>
-      <label>Address:</label>
-      <br />
-      <input
-        v-model="formData.street_name"
-        type="text"
-        name="address"
-        id="address"
-        placeholder="Street Address"
-        class="mr-5 mt-1 border border-uciblue rounded-lg p-1 w-[70%]"
-      />
-      <input
-        v-model="formData.room"
-        type="text"
-        name="room"
-        id="room"
-        placeholder="Room/Unit"
-        class="mr-5 border border-uciblue rounded-lg p-1 w-[20%]"
-      />
+    <!-- Wrap your address inputs in <mapbox-address-autofill> -->
+    <mapbox-address-autofill
+      :accessToken= "MAPBOX_ACCESS_TOKEN"
+      :options="{countries: ['us']}" 
+      confirm-on-blur
+      confirm-on-browser-autofill
+      @retrieve="onRetrieve"
+    >
+      <div>
+        <label>Address:</label>
+        <br />
+        <input
+          v-model="formData.street_name"
+          type="text"
+          name="address-line1"
+          id="address-input"
+          placeholder="Street Address"
+          autocomplete="address-line1"
+          class="mr-5 mt-1 border border-uciblue rounded-lg p-1 w-[70%]"
+        />
+        <input
+          v-model="formData.room"
+          type="text"
+          name="address-line2"
+          id="room"
+          placeholder="Room/Unit"
+          autocomplete="address-line2"
+          class="mr-5 border border-uciblue rounded-lg p-1 w-[20%]"
+        />
 
-      <br />
+        <br />
 
-      <input
-        v-model="formData.city"
-        type="text"
-        name="city"
-        id="city"
-        placeholder="City"
-        class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
-      />
+        <input
+          v-model="formData.city"
+          type="text"
+          name="address-level2"
+          id="city"
+          placeholder="City"
+          autocomplete="address-level2"
+          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
+        />
 
-      <input
-        v-model="formData.postal_code"
-        type="text"
-        name="postal"
-        id="postal"
-        placeholder="Postal / Zip Code"
-        class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
-      />
-    </div>
+        <input
+          v-model="formData.postal_code"
+          type="text"
+          name="postal-code"
+          id="postal"
+          placeholder="Postal / Zip Code"
+          autocomplete="postal-code"
+          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
+        />
+      </div>
+    </mapbox-address-autofill>
 
     <div>
       <label>Gender:</label>
@@ -101,8 +114,6 @@
       </div>
     </div>
 
-    <div></div>
-
     <div class="flex flex-col space-y-2 w-[93%]">
       <!-- Start Term -->
       <div class="flex items-center space-x-4">
@@ -154,10 +165,10 @@
         class="block w-full text-sm text-gray-900 rounded cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
       />
       <p class="mt-1 text-sm text-gray-600">Only PNG files are accepted.</p>
-      <!-- List of Uploaded Files -->
     </div>
   </form>
 
+  <!-- List of Uploaded Files -->
   <ul class="mt-4 space-y-2 border">
     <li
       v-for="(file, index) in filesRef"
@@ -168,19 +179,22 @@
       <span class="text-sm text-gray-700">
         {{ file.name }}
       </span>
-
-      <!-- Remove Button -->
+      <!-- Remove Button (uncomment if needed) -->
       <!-- <button
-            @click="removeFile(index)"
-            class="text-red-500 hover:text-red-700 text-sm font-semibold"
-        >
-            Remove
-        </button> -->
+          @click="removeFile(index)"
+          class="text-red-500 hover:text-red-700 text-sm font-semibold"
+      >
+          Remove
+      </button> -->
     </li>
   </ul>
 </template>
 
 <script>
+import {
+  MapboxAddressAutofill
+} from '@mapbox/search-js-web';
+import { MAPBOX_ACCESS_TOKEN } from '../../constants';
 export default {
   name: 'CreateSubleaseModal',
   props: {
@@ -197,5 +211,13 @@ export default {
       required: true,
     },
   },
-}
+  setup() {
+    console.log(MAPBOX_ACCESS_TOKEN)
+    return {MAPBOX_ACCESS_TOKEN};
+  },
+  methods: {
+    onRetrieve(result) {
+    }
+  },
+};
 </script>
