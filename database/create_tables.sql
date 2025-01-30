@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS public.sublease
     price double precision NOT NULL,
     gender text COLLATE pg_catalog."default" NOT NULL,
     roomcount integer NOT NULL,
-    bathroomcount integer NOT NULL,
+    bathroomcount NUMERIC(3,1) NOT NULL,
     street_name text COLLATE pg_catalog."default" NOT NULL,
     city text COLLATE pg_catalog."default" NOT NULL,
     room text COLLATE pg_catalog."default",

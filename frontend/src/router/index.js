@@ -3,7 +3,7 @@ import SignupView from '@/views/SignupView.vue'
 import LoginView from '@/views/LoginView.vue'
 import LandingView from '@/views/LandingView.vue'
 import DashboardView from '@/views/DashboardView.vue'
-import ProfilePage from '@/components/ProfilePage.vue'
+import ProfilePage from '@/views/ProfilePage.vue'
 import {useUserStore} from '../stores/userStore.js';
 
 const router = createRouter({
