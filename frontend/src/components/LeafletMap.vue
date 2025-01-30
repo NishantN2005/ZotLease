@@ -11,6 +11,8 @@ import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js';
 import {useFilterStore} from '@/stores/filterStore';
 import {useAllLocationsStore} from '@/stores/AllLocationsStore';
 import {MAPBOX_ACCESS_TOKEN} from '../../constants.js';
+import 'leaflet-arrowheads';
+
 export default {
   name: 'LeafletMap',
   props: {
@@ -547,11 +549,31 @@ export default {
         [33.654974,-117.844851]
       ]
       // Add polylines to the map
-      L.polyline(mLine, { color: 'green', opacity: 0.5}).addTo(map);
-      L.polyline(eLine, { color: 'purple', opacity: 0.5}).addTo(map);
-      L.polyline(aLine, { color: 'yellow', opacity: 0.6}).addTo(map);
-      L.polyline(nLine, {color: 'red', opacity: 0.5}).addTo(map);
-      L.polyline(hLine, {color: 'blue', opacity: 0.4}).addTo(map);
+      // Add polylines to the map with increased weight
+      const polylines = [
+        L.polyline(mLine, { color: 'green', opacity: 0.5, weight: 4 }).arrowheads({ size: '6px', frequency: '400m' }).addTo(map),
+        L.polyline(eLine, { color: 'purple', opacity: 0.5, weight: 4 }).arrowheads({ size: '6px', frequency: '400m' }).addTo(map),
+        L.polyline(aLine, { color: 'yellow', opacity: 0.6, weight: 4 }).arrowheads({ size: '6px', frequency: '400m' }).addTo(map),
+        L.polyline(nLine, { color: 'red', opacity: 0.5, weight: 4 }).arrowheads({ size: '6px', frequency: '400m' }).addTo(map),
+        L.polyline(hLine, { color: 'blue', opacity: 0.4, weight: 4 }).arrowheads({ size: '6px', frequency: '400m' }).addTo(map)
+      ];
+
+       // Add hover effect to polylines
+       polylines.forEach((polyline, index) => {
+        polyline.on('mouseover', () => {
+          polylines.forEach((p, i) => {
+            if (i !== index) {
+              p.setStyle({ opacity: 0 });
+            }
+          });
+          polyline.setStyle({ opacity: 1 });
+        });
+
+        polyline.on('mouseout', () => {
+          polylines.forEach(p => p.setStyle({ opacity: 0.5 }));
+        });
+      });
+
       /*Legend specific*/
       var legend = L.control({ position: "topright" });
 
