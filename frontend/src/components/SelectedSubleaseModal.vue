@@ -180,7 +180,6 @@ export default {
         const response = await getPhotos(key)
         console.log(response)
         selectedSubleaseStore.setPhotos(response)
-        console.log(props.selectedSubleaseStore?.photos?.length)
       } catch (error) {
         console.error('Error fetching photos:', error)
       }

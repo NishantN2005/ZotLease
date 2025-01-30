@@ -16,7 +16,6 @@
             type="text"
             id="searchInput"
             placeholder="Address, city, ZIP"
-            autocomplete="address-line1"
             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
             @input="filterAddress($event.target.value)"
           />

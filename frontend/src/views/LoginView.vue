@@ -39,9 +39,12 @@ function handleLogin() {
       })
       .then((data) => {
         console.log('Login successful:', data)
-        userStore.setUserToken(data.accessToken)
-        userStore.setUserID(data.id)
-        userStore.setIsLoggedIn(true)
+        userStore.setUserToken(data.accessToken);
+        userStore.setUserID(data.id);
+        userStore.setFirstname(data.fname);
+        userStore.setLastname(data.lname);
+        userStore.setEmail(data.email)
+        userStore.setIsLoggedIn(true);
         router.push('/dashboard')
       })
       .catch((err) => {

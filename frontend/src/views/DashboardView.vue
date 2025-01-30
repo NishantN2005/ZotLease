@@ -114,26 +114,25 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router'
-import LeafletMap from '../components/LeafletMap.vue'
-import LeaseList from '@/components/LeaseList.vue'
-import { useUserStore } from '@/stores/userStore'
-import { useChatStore } from '@/stores/chatStore'
-import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
-import SocketConnection from '@/components/SocketConnection.vue'
-import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
-import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { API_URL } from '../../constants.js'
-import FilterModal from '@/components/FilterModal.vue'
-import { useFilterStore } from '@/stores/filterStore'
-import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
-import { useAllLocationsStore } from '@/stores/AllLocationsStore'
-import { uploadPhotos } from '../s3client.js'
-import Sidebar from '@/components/Sidebar.vue'
-import Messages from '../components/Messages.vue'
-import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
-import LoadingScreen from '@/components/LoadingScreen.vue'
+import { useRouter } from 'vue-router';
+import LeafletMap from '../components/LeafletMap.vue';
+import LeaseList from '@/components/LeaseList.vue';
+import { useUserStore } from '@/stores/userStore';
+import { useChatStore } from '@/stores/chatStore';
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore';
+import SocketConnection from '@/components/SocketConnection.vue';
+import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue';
+import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService';
+import { ref, onMounted, onUnmounted} from 'vue';
+import FilterModal from '@/components/FilterModal.vue';
+import { useFilterStore } from '@/stores/filterStore';
+import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue';
+import { useAllLocationsStore } from '@/stores/AllLocationsStore';
+import { uploadPhotos } from '../s3client.js';
+import Sidebar from '@/components/Sidebar.vue';
+import Messages from '../components/Messages.vue';
+import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue';
+import LoadingScreen from '@/components/LoadingScreen.vue';
 
 export default {
   name: 'DashboardView',

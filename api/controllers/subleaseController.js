@@ -101,6 +101,8 @@ const createSubleaseController = async (req, res) => {
         lon,
       ],
     };
+    console.log('about to make query')
+    console.log(insertQuery)
     const response = await pool.query(insertQuery);
     console.log(response);
     return res.status(200).json({
@@ -121,7 +123,7 @@ const createSubleaseController = async (req, res) => {
 const getSubleasesController = async (req, res) => {
   console.log("Hello");
   const query =
-    "SELECT subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount FROM sublease";
+    "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount FROM sublease";
   const response = await pool.query(query);
 
   return res.status(200).json(response.rows);
@@ -218,9 +220,22 @@ const getSubleaseFilterController = async (req, res) => {
   console.log(acceptedSubleases);
   res.status(200).json({ parsedSubleases: acceptedSubleases });
 };
+
+const deleteSubleaseController = async (req, res) => {
+  const { id, } = req.body;
+  const query = {
+    text: `DELETE FROM sublease WHERE id = $1`,
+    values: [id],
+  };
+  const response = await pool.query(query);
+  console.log(response);
+  res.status(200).json({ message: "Sublease deleted" });
+};
+
 module.exports = {
   createSubleaseController,
   getSubleasesController,
   getSubleaseInfoController,
   getSubleaseFilterController,
+  deleteSubleaseController
 };
