@@ -49,7 +49,7 @@ const loginController = async (req, res) => {
 
   // creates json web token that allows access to api
   const accessToken = jwt.sign(user, process.env.MY_SECRET, {
-    expiresIn: "5m",
+    expiresIn: "1h",
   });
 
   const refreshToken = jwt.sign(
@@ -98,7 +98,7 @@ const refreshController = async (req, res) => {
         { id: decoded.userID },
         process.env.MY_SECRET,
         {
-          expiresIn: "10m",
+          expiresIn: "1h",
         }
       );
 
@@ -145,7 +145,7 @@ const signupController = async (req, res) => {
 
     // creates json web token that allows access to api
     const accessToken = jwt.sign(user, process.env.MY_SECRET, {
-      expiresIn: "5m",
+      expiresIn: "1h",
     });
 
     // creates json web token that expires in 1 hr
