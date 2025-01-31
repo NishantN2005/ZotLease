@@ -40,8 +40,8 @@ app.use("/sublease", subleaseRoutes);
 app.use("/chat", chatRoutes);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'UP' });
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "UP" });
 });
 
 // Schedule the cleanup task to run once a day at midnight

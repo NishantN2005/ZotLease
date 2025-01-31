@@ -50,18 +50,18 @@ const createSubleaseController = async (req, res) => {
     coordinates = val.features[0].geometry.coordinates;
     const lat = coordinates[1];
     const lon = coordinates[0];
-    
+
     const checkIfExistsQuery = {
       text: `SELECT * FROM sublease WHERE longitude=$1 AND latitude=$2`,
       values: [lon, lat],
     };
     const responseOnExists = await pool.query(checkIfExistsQuery);
     let subleaseID;
-    if(responseOnExists.rows.length > 0){
-      console.log('Address already exists');
+    if (responseOnExists.rows.length > 0) {
+      console.log("Address already exists");
       subleaseID = responseOnExists.rows[0].subleaseid;
       console.log("subleaseID", subleaseID);
-    }else{
+    } else {
       subleaseID = uuidv4();
     }
     console.log(listerID);
@@ -101,8 +101,8 @@ const createSubleaseController = async (req, res) => {
         lon,
       ],
     };
-    console.log('about to make query')
-    console.log(insertQuery)
+    console.log("about to make query");
+    console.log(insertQuery);
     const response = await pool.query(insertQuery);
     console.log(response);
     return res.status(200).json({
@@ -130,7 +130,8 @@ const getSubleasesController = async (req, res) => {
 };
 
 const getSubleaseInfoController = async (req, res) => {
-  const { subleaseID } = req.body;
+  const { subleaseID, uniqueid, userid } = req.body;
+  // user id is the id of the person who clicked it
 
   const query = {
     text: `SELECT 
@@ -146,6 +147,16 @@ const getSubleaseInfoController = async (req, res) => {
   try {
     const response = await pool.query(query);
     console.log(response);
+
+    // we need to increment view count by 1 now that it has been view
+    const updateviewcount = {
+      text: `UPDATE sublease SET viewcount = viewcount + 1 WHERE id = $1 AND listerid <> $2;`,
+      values: [uniqueid, userid],
+    };
+    const incrementCount = await pool.query(updateviewcount);
+    console.log("Incremented viewcount");
+    console.log(incrementCount);
+
     return res.status(200).json(response.rows);
   } catch (err) {
     console.log(`Error trying to fetch sublease data: ${err}`);
@@ -163,26 +174,26 @@ const getSubleaseFilterController = async (req, res) => {
   if (roomCount == "") {
     roomCount = null;
   }
-  if(startdate==null){
-    startdate = '2020-5-1'; //just put a date from long ago so it include every start date
+  if (startdate == null) {
+    startdate = "2020-5-1"; //just put a date from long ago so it include every start date
   }
-  if(enddate == null){
-    enddate = '2100-12-31'; //put end date for super far in future if not defined
+  if (enddate == null) {
+    enddate = "2100-12-31"; //put end date for super far in future if not defined
   }
   var query = {
     text: "SELECT subleaseid FROM sublease WHERE price BETWEEN $1 AND $2 AND TO_DATE(startterm, 'YYYY-MM-DD') >= $3::date AND TO_DATE(endterm, 'YYYY-MM-DD') <= $4::date",
-    values:[minPrice, maxPrice, startdate, enddate]
-  }
-  if(gender!=""){
-    query.text+=` AND gender=$${query.values.length+1}`;
+    values: [minPrice, maxPrice, startdate, enddate],
+  };
+  if (gender != "") {
+    query.text += ` AND gender=$${query.values.length + 1}`;
     query.values.push(gender);
   }
-  if(roomCount !== null){
-    query.text+=` AND roomcount = $${query.values.length+1}`;
+  if (roomCount !== null) {
+    query.text += ` AND roomcount = $${query.values.length + 1}`;
     query.values.push(roomCount);
   }
-  console.log('FILTER QUERY IS HERE')
-  console.log(query)
+  console.log("FILTER QUERY IS HERE");
+  console.log(query);
   //if both gender and roomcount were selected
   let filterQuery;
   if (gender !== "" && roomCount !== null) {
@@ -222,7 +233,7 @@ const getSubleaseFilterController = async (req, res) => {
 };
 
 const deleteSubleaseController = async (req, res) => {
-  const { id, } = req.body;
+  const { id } = req.body;
   const query = {
     text: `DELETE FROM sublease WHERE id = $1`,
     values: [id],
@@ -237,5 +248,5 @@ module.exports = {
   getSubleasesController,
   getSubleaseInfoController,
   getSubleaseFilterController,
-  deleteSubleaseController
+  deleteSubleaseController,
 };

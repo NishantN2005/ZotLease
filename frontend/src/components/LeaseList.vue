@@ -4,26 +4,26 @@
       <!-- Input box with search icon inside -->
       <div class="flex-grow relative">
         <mapbox-address-autofill
-        :accessToken="MAPBOX_ACCESS_TOKEN"
-        :options="{ countries: ['us'] }"
-        confirm-on-blur
-        confirm-on-browser-autofill
-        @retrieve="onRetrieve"
-      >
-        <!-- Input box with search icon inside -->
-        <div class="flex-grow relative">
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="Address, city, ZIP"
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
-            @input="filterAddress($event.target.value)"
-          />
-          <i
-            class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-          ></i>
-        </div>
-      </mapbox-address-autofill>
+          :accessToken="MAPBOX_ACCESS_TOKEN"
+          :options="{ countries: ['us'] }"
+          confirm-on-blur
+          confirm-on-browser-autofill
+          @retrieve="onRetrieve"
+        >
+          <!-- Input box with search icon inside -->
+          <div class="flex-grow relative">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Address, city, ZIP"
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
+              @input="filterAddress($event.target.value)"
+            />
+            <i
+              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
+          </div>
+        </mapbox-address-autofill>
       </div>
     </div>
 
@@ -36,7 +36,7 @@
           v-for="listing in listings"
           :key="listing.subleaseid"
           class="listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer"
-          @click="() => activateSubleaseModal(listing.subleaseid)"
+          @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
         >
           <img
             :src="
@@ -72,6 +72,7 @@ import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { makeAuthenticatedRequest } from '../services/authService.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
 import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
+import { useUserStore } from '@/stores/userStore.js'
 
 export default {
   name: 'leaseList',
@@ -109,6 +110,7 @@ export default {
     let listings = ref([...props.allLocations.allLocations])
     const filterActive = ref(false)
     const selectedSubleaseStore = useSelectedSubleaseStore()
+    const userStore = useUserStore()
     // const filters = ref({
     //   gender: '',
     //   beds: '',
@@ -116,11 +118,12 @@ export default {
     //   priceRange: '',
     // })
 
-    async function activateSubleaseModal(subid) {
+    async function activateSubleaseModal(subid, uniqueid) {
+      const userID = userStore.userID
       // Make call to retrieve listing information
       let info = await makeAuthenticatedRequest(
         'sublease/selectedInfo',
-        { subleaseID: subid },
+        { subleaseID: subid, uniqueid: uniqueid, userid: userID },
         props.routerPass,
         props.userToken,
       )
@@ -179,23 +182,22 @@ export default {
     }
 
     function filterAddress(text) {
-      const query = String(text || '').toLowerCase();
+      const query = String(text || '').toLowerCase()
 
       if (!query) {
         // Reset listings when input is cleared
-        listings.value = props.allLocations.allLocations;
+        listings.value = props.allLocations.allLocations
         props.filterStore.resetFilter()
-        filterActive.value = false;
-        return;
+        filterActive.value = false
+        return
       }
 
       listings.value = props.allLocations.allLocations.filter((listing) =>
-        [listing.street_name, listing.city].join(', ').toLowerCase().includes(query)
-      );
+        [listing.street_name, listing.city].join(', ').toLowerCase().includes(query),
+      )
 
-      filterActive.value = true;
-}
-
+      filterActive.value = true
+    }
 
     function clearInput() {
       const input = document.getElementById('searchInput')
@@ -277,16 +279,16 @@ export default {
       clearInput,
       filterActive,
       activateSubleaseModal,
-      MAPBOX_ACCESS_TOKEN
+      MAPBOX_ACCESS_TOKEN,
       // filters,
     }
   },
-  methods:{
-    onRetrieve(result){
+  methods: {
+    onRetrieve(result) {
       const res_value = result.detail.features[0].properties.matching_name
       const input = document.getElementById('searchInput')
-      input.value= res_value;
-    }
-  }
+      input.value = res_value
+    },
+  },
 }
 </script>
