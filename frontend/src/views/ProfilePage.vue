@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import { useAllLocationsStore } from '@/stores/AllLocationsStore';
@@ -96,24 +96,32 @@ export default {
     const router = useRouter();
     const userStore = useUserStore();
     const locationsStore = useAllLocationsStore();
-
+    let activeListings = ref([]);
     // Return to dashboard
     function goBack() {
       router.push('/dashboard');
     }
 
-    // 1) Computed property for activeListings
-    const activeListings = computed(() => {
-      // if allLocationst is empty or userStore has no id, return []
-      if (!locationsStore.allLocations || !userStore.userID) return []
+    const fetchUserLocations = async () => {
+      try {
+        const response = await makeAuthenticatedRequest(
+          'sublease/fromUser',
+          {listerid: userStore.userID}, // any payload if needed
+          userStore.routerPass,
+          userStore.userToken
+        );
+        const locations = await response.json();
+        activeListings.value = locations;
+      } catch (error) {
+        console.error('Error fetching all locations:', error);
+      }
+    };
 
-      // Filter by matching listerid
-      return locationsStore.allLocations.filter(
-        listing => listing.listerid === userStore.userID
-      );
+    onMounted(() => {
+      fetchUserLocations();
     });
 
-    console.log(activeListings)
+    console.log(activeListings.value)
 
     return {
       goBack,
