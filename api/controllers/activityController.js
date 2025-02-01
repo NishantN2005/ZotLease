@@ -11,15 +11,21 @@ const addActivityController = async (req, res) => {
     }
 
     // Format the current date as yyyy-mm-dd
-    const currentDate = new Date().toISOString().split('T')[0];
-
+    const currentDate = new Date().toLocaleString("en-US", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    });
+    const id = uuidv4();
     const addActivityQuery = {
       text: `INSERT INTO activity (id, activity, listerid, date) VALUES ($1, $2, $3, $4)`,
-      values: [uuidv4(), activity, listerid, currentDate],
+      values: [id, activity, listerid, currentDate],
     };
     const response = await pool.query(addActivityQuery);
+    console.log(response);
     if (response.rowCount === 1) {
-      return res.status(200).json({ message: "Activity added" });
+      return res.status(200).json({ message: "Activity added", id: id, date: currentDate });
     } else {
       return res.status(400).json({ message: "Failed to add activity" });
     }
@@ -36,7 +42,7 @@ const getActivityController = async(req, res) => {
       return res.status(400).json({ message: "Params are incomplete" });
     }
     const query = {
-        text: `SELECT * FROM activity WHERE listerid = $1`,
+        text: `SELECT * FROM activity WHERE listerid = $1 ORDER BY date DESC`,
         values: [listerid]
     }
     const response = await pool.query(query);
