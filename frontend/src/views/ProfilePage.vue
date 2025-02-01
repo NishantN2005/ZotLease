@@ -48,7 +48,7 @@
               </button>
               <button
                 class="mt-4 text-sm text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
-                @click="removeListing(listing.id)"
+                @click="removeListing(listing)"
               >
                 Remove Listing
               </button>
@@ -63,20 +63,14 @@
       <h2 class="text-xl font-semibold text-blue-800">Leasing Activity</h2>
       <ul class="mt-4 bg-white rounded-lg shadow-md divide-y divide-blue-200">
         <li
-          v-for="activity in user.leasingActivity"
+          v-for="activity in leaseActivity"
           :key="activity.id"
           class="p-4 flex justify-between items-center"
         >
           <div>
-            <p class="text-blue-800">{{ activity.description }}</p>
-            <p class="text-sm text-blue-600">{{ activity.date }}</p>
+            <p class="text-blue-800">{{ activity.activity }}</p>
+            <p class="text-sm text-blue-600">{{ formatDate(activity.date) }}</p>
           </div>
-          <button
-            class="text-sm text-blue-600 hover:text-blue-700 hover:underline"
-            @click="viewActivityDetails(activity.id)"
-          >
-            View Details
-          </button>
         </li>
       </ul>
     </div>
@@ -97,6 +91,8 @@ export default {
     const userStore = useUserStore();
     const locationsStore = useAllLocationsStore();
     let activeListings = ref([]);
+
+    let leaseActivity = ref([]);
     // Return to dashboard
     function goBack() {
       router.push('/dashboard');
@@ -117,42 +113,46 @@ export default {
       }
     };
 
+    const fetchUserActivity = async () => {
+      // Fetch user activity
+      try{
+        const resp = await makeAuthenticatedRequest(
+          'activity/getActivity',
+          {listerid: userStore.userID},
+          userStore.routerPass,
+          userStore.userToken
+        );
+        const activity = await resp.json();
+        console.log(activity);
+        leaseActivity.value = activity;
+      }catch(error){
+        console.error('Error fetching user activity:', error);
+      }
+    };  
+
+    const formatDate = (dateString) => {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     onMounted(() => {
       fetchUserLocations();
+
+      fetchUserActivity();
     });
 
     console.log(activeListings.value)
 
     return {
       goBack,
+      formatDate,
       userStore,
-      activeListings, // <-- expose to template
+      activeListings,
+      leaseActivity // <-- expose to template
     }
-  },
-  data() {
-    return {
-      user: {
-        email: 'YoBama@gmail.com',
-        // Or remove these placeholders if you want 
-        leasingActivity: [
-          {
-            id: 1,
-            description: 'Lease signed for 789 College Ave',
-            date: 'December 25, 2024',
-          },
-          {
-            id: 2,
-            description: 'New lease posted for 123 Campus Rd',
-            date: 'December 20, 2024',
-          },
-          {
-            id: 3,
-            description: '7 people recently viewed your listing on 123 Campus Rd',
-            date: 'January 5, 2024',
-          },
-        ],
-      },
-    };
   },
   methods: {
     viewListingDetails(listingId) {
@@ -161,18 +161,26 @@ export default {
     viewActivityDetails(activityId) {
       console.log(`Viewing details for activity ID: ${activityId}`);
     },
-    async removeListing(id) {
+    async removeListing(listingToDelete) {
       // If you want to remove from the store, do it there
       // For example:
       const store = useAllLocationsStore();
       console.log(store.allLocations)
       store.allLocations = store.allLocations.filter(
-        listing => listing.id !== id
+        listing => listing.id !== listingToDelete.id
       );
 
-      const response = await makeAuthenticatedRequest('sublease/delete', {id:id}, this.$router, this.userStore.userToken);
+      console.log(this.activeListings)
+      this.activeListings = this.activeListings.filter(
+        listing => listing.id !== listingToDelete.id
+      );
+
+      const response = await makeAuthenticatedRequest('sublease/delete', {id:listingToDelete.id}, this.$router, this.userStore.userToken);
       console.log(response);
 
+
+      const responseForActivity = await makeAuthenticatedRequest('activity/addActivity', {activity: `You took down your listing @ ${listingToDelete.street_name}`, listerid:listingToDelete.listerid}, this.$router, this.userStore.userToken);
+      console.log(responseForActivity);
     },
   },
 };

@@ -8,6 +8,7 @@ const authRoutes = require("../routes/authRoutes.js");
 const { disconnect } = require("process");
 const { Server } = require("socket.io");
 const subleaseRoutes = require("../routes/subleaseRoutes.js");
+const activityRoutes = require("../routes/activityRoutes.js");
 const chatRoutes = require("../routes/chatRoutes.js");
 const pool = require("./db.js");
 const cron = require("node-cron");
@@ -37,6 +38,7 @@ app.use(cookieParser());
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/sublease", subleaseRoutes);
+app.use("/activity", activityRoutes);
 app.use("/chat", chatRoutes);
 
 // Health check endpoint
@@ -53,6 +55,11 @@ cron.schedule(
 WHERE expiry < NOW();`;
     const resp = await pool.query(cleanBlacklist);
     console.log(`Cleaned blacklist db ${resp.rowCount} row affected`);
+
+    // Clean up sublease table
+    const cleanSublease = `DELETE FROM sublease WHERE TO_DATE(endterm, 'YYYY-MM-DD') < CURRENT_DATE;`;
+    const respSublease = await pool.query(cleanSublease);
+    console.log(`Cleaned sublease db ${respSublease.rowCount} row(s) affected`);
   },
   {
     scheduled: true,
