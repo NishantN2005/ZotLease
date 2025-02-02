@@ -500,6 +500,7 @@ export default {
         startsate: null,
         enddate: null,
       }
+      filesRef.value = []
     }
 
     const toggleMessages = () => {
@@ -521,12 +522,9 @@ export default {
     const handleFileChange = (event) => {
       const selectedFiles = Array.from(event.target.files || [])
 
-      // (Optional) Filter out only PDFs
-      const pdfFiles = selectedFiles.filter((file) => file.type === 'image/png')
-
       // Append new files, avoiding duplicates (by name)
       const existingFileNames = filesRef.value.map((file) => file.name)
-      pdfFiles.forEach((file) => {
+      selectedFiles.forEach((file) => {
         if (!existingFileNames.includes(file.name)) {
           filesRef.value.push(file)
         }
