@@ -63,6 +63,13 @@
               >
                 Remove Listing
               </button>
+              <p
+                v-if="listing.viewcount > 0"
+                class="text-white font-medium flex items-center gap-1"
+              >
+                🔥 <span>{{ listing.viewcount }}</span>
+                {{ listing.viewcount === 1 ? 'view' : 'views' }}
+              </p>
             </div>
           </div>
         </div>
@@ -92,23 +99,23 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
-import { makeAuthenticatedRequest } from '@/services/authService';
-import { useAllLocationsStore } from '@/stores/AllLocationsStore';
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
+import { makeAuthenticatedRequest } from '@/services/authService'
+import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 
 export default {
   name: 'ProfilePage',
   setup() {
-    const router = useRouter();
-    const userStore = useUserStore();
-    const activeListings = ref([]);
-    const leaseActivity = ref([]);
+    const router = useRouter()
+    const userStore = useUserStore()
+    const activeListings = ref([])
+    const leaseActivity = ref([])
 
     // Return to dashboard
     function goBack() {
-      router.push('/dashboard');
+      router.push('/dashboard')
     }
 
     const fetchUserLocations = async () => {
@@ -117,20 +124,20 @@ export default {
           'sublease/fromUser',
           { listerid: userStore.userID },
           userStore.routerPass,
-          userStore.userToken
-        );
-        const locations = await response.json();
+          userStore.userToken,
+        )
+        const locations = await response.json()
         if (Array.isArray(locations)) {
           activeListings.value = locations.filter(
-            listing => listing.listerid === userStore.userID
-          );
+            (listing) => listing.listerid === userStore.userID,
+          )
         } else {
-          console.error('Expected an array but got:', locations);
+          console.error('Expected an array but got:', locations)
         }
       } catch (error) {
-        console.error('Error fetching all locations:', error);
+        console.error('Error fetching all locations:', error)
       }
-    };
+    }
 
     const fetchUserActivity = async () => {
       try {
@@ -138,29 +145,29 @@ export default {
           'activity/getActivity',
           { listerid: userStore.userID },
           userStore.routerPass,
-          userStore.userToken
-        );
-        const activity = await resp.json();
-        console.log(activity);
-        leaseActivity.value = activity;
+          userStore.userToken,
+        )
+        const activity = await resp.json()
+        console.log(activity)
+        leaseActivity.value = activity
       } catch (error) {
-        console.error('Error fetching user activity:', error);
+        console.error('Error fetching user activity:', error)
       }
-    };
+    }
 
     const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
+      const date = new Date(dateString)
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
 
     onMounted(() => {
-      fetchUserLocations();
+      fetchUserLocations()
 
-      fetchUserActivity();
-    });
+      fetchUserActivity()
+    })
 
     console.log(activeListings.value)
 
@@ -169,34 +176,48 @@ export default {
       formatDate,
       userStore,
       activeListings,
-      leaseActivity // <-- expose to template
+      leaseActivity, // <-- expose to template
     }
   },
   methods: {
     async removeListing(listingToDelete) {
       // If you want to remove from the store, do it there
       // For example:
-      const store = useAllLocationsStore();
+      const store = useAllLocationsStore()
       console.log(store.allLocations)
-      store.allLocations = store.allLocations.filter(
-        listing => listing.id !== listingToDelete.id
-      );
+      store.allLocations = store.allLocations.filter((listing) => listing.id !== listingToDelete.id)
 
       console.log(this.activeListings)
       this.activeListings = this.activeListings.filter(
-        listing => listing.id !== listingToDelete.id
-      );
+        (listing) => listing.id !== listingToDelete.id,
+      )
 
-      const response = await makeAuthenticatedRequest('sublease/delete', {id:listingToDelete.id}, this.$router, this.userStore.userToken);
-      console.log(response);
-
+      const response = await makeAuthenticatedRequest(
+        'sublease/delete',
+        { id: listingToDelete.id },
+        this.$router,
+        this.userStore.userToken,
+      )
+      console.log(response)
 
       // Add activity
-      const responseForActivity = await makeAuthenticatedRequest('activity/addActivity', {activity: `🏡 You took down your listing @ ${listingToDelete.street_name}`, listerid: listingToDelete.listerid}, this.$router, this.userStore.userToken);
-      const activity = await responseForActivity.json();
-      this.leaseActivity.push({activity: `🏡 You took down your listing @ ${listingToDelete.street_name}`, date: activity.date, id: activity.id});
-      console.log(responseForActivity);
+      const responseForActivity = await makeAuthenticatedRequest(
+        'activity/addActivity',
+        {
+          activity: `🏡 You took down your listing @ ${listingToDelete.street_name}`,
+          listerid: listingToDelete.listerid,
+        },
+        this.$router,
+        this.userStore.userToken,
+      )
+      const activity = await responseForActivity.json()
+      this.leaseActivity.push({
+        activity: `🏡 You took down your listing @ ${listingToDelete.street_name}`,
+        date: activity.date,
+        id: activity.id,
+      })
+      console.log(responseForActivity)
     },
   },
-};
+}
 </script>

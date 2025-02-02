@@ -39,6 +39,8 @@ const loginController = async (req, res) => {
 
   const user = queryRes.rows[0];
 
+  if (!user) return res.status(400).send({ message: "user not found" });
+
   // check password match
   if (!verifyPassword(password, user.password)) {
     console.log("Invalid password");
@@ -68,7 +70,13 @@ const loginController = async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return res.json({ accessToken, id: user.userid, fname: user.fname, lname:user.lname, email: user.email});
+  return res.json({
+    accessToken,
+    id: user.userid,
+    fname: user.fname,
+    lname: user.lname,
+    email: user.email,
+  });
 };
 
 const refreshController = async (req, res) => {

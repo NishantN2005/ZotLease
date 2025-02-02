@@ -31,7 +31,8 @@ endTerm TEXT NOT NULL,
 description TEXT,
 subleaseID TEXT NOT NULL,
 latitude DOUBLE PRECISION CHECK (latitude BETWEEN -90 AND 90),
-longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180)
+longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180),
+viewcount INTEGER DEFAULT 0
 );
 
 CREATE TABLE chatRooms (
