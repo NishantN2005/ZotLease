@@ -1,12 +1,12 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router';
-import { ref } from 'vue';
-import { useUserStore } from '@/stores/userStore';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faUser, faLock, faArrowCircleLeft} from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {API_URL} from '../../constants.js';
-library.add(faUser, faLock,faArrowCircleLeft)
+import { RouterLink, useRouter } from 'vue-router'
+import { ref } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faUser, faLock, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { API_URL } from '../../constants.js'
+library.add(faUser, faLock, faArrowCircleLeft)
 
 const formData = ref({
   email: '',
@@ -15,9 +15,10 @@ const formData = ref({
 
 const router = useRouter()
 const userStore = useUserStore()
+const isWrongPass = ref(false)
 
-function backToLogin(){
-  router.push('/');
+function backToLogin() {
+  router.push('/')
 }
 function handleLogin() {
   try {
@@ -32,6 +33,11 @@ function handleLogin() {
       credentials: 'include',
     })
       .then((res) => {
+        console.log('stats', res.status)
+        if (res.status === 400) {
+          isWrongPass.value = true
+          formData.value.password = ''
+        }
         if (!res.ok) {
           throw new Error(`Login failed: ${res.statusText}`)
         }
@@ -39,12 +45,12 @@ function handleLogin() {
       })
       .then((data) => {
         console.log('Login successful:', data)
-        userStore.setUserToken(data.accessToken);
-        userStore.setUserID(data.id);
-        userStore.setFirstname(data.fname);
-        userStore.setLastname(data.lname);
+        userStore.setUserToken(data.accessToken)
+        userStore.setUserID(data.id)
+        userStore.setFirstname(data.fname)
+        userStore.setLastname(data.lname)
         userStore.setEmail(data.email)
-        userStore.setIsLoggedIn(true);
+        userStore.setIsLoggedIn(true)
         router.push('/dashboard')
       })
       .catch((err) => {
@@ -54,8 +60,6 @@ function handleLogin() {
     console.log(err.message)
   }
 }
-
-
 </script>
 
 <template>
@@ -68,11 +72,15 @@ function handleLogin() {
         class="flex items-center mb-6 text-2xl font-semibold text-red-600 dark:text-white"
       >
       </a>
-      
+
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
-      <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
+        <font-awesome-icon
+          @click="backToLogin"
+          icon="circle-arrow-left"
+          class="text-xl text-uciblue hover:cursor-pointer"
+        />
         <div class="w-full h-full">
           <video autoplay muted playsinline class="rounded-xl">
             <source src="@/assets/ZotLease2.mp4" type="video/mp4" />
@@ -85,14 +93,17 @@ function handleLogin() {
             Sign In
           </h1>
           <form class="" @submit.prevent="handleLogin">
+            <div v-if="isWrongPass">
+              <div>
+                <div class="flex items-center mt-4">
+                  <h2 class="bg-red-200 text-black block w-full p-2.5 outline-none rounded-md">
+                    Invalid email or password. Please try again.
+                  </h2>
+                </div>
+              </div>
+            </div>
             <div>
-              <label
-                for="email"
-                class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
-              >
-                Email
-              </label>
-              <div class="flex items-center border-b border-gray-400">
+              <div class="flex items-center border-b border-gray-400 mt-7">
                 <font-awesome-icon icon="user" class="mr-2" />
                 <input
                   v-model="formData.email"
@@ -105,13 +116,7 @@ function handleLogin() {
                 />
               </div>
             </div>
-            <div class="mb-4 md:mb-10 lg:mb-12">
-              <label
-                for="password"
-                class="block mb-2 text-sm font-medium text-gray-300 dark:text-white"
-              >
-                Password
-              </label>
+            <div class="mb-4 md:mb-10 lg:mb-12 mt-7">
               <div class="flex items-center border-b border-gray-400">
                 <font-awesome-icon icon="lock" class="mr-2" />
                 <input

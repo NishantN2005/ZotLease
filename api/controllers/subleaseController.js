@@ -82,7 +82,7 @@ const createSubleaseController = async (req, res) => {
         subleaseID,
         latitude,
         longitude
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14, $15)`,
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
       values: [
         listerID,
         price,
@@ -123,7 +123,7 @@ const createSubleaseController = async (req, res) => {
 const getSubleasesController = async (req, res) => {
   console.log("Hello");
   const query =
-    "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount FROM sublease";
+    "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount FROM sublease";
   const response = await pool.query(query);
 
   return res.status(200).json(response.rows);
@@ -148,6 +148,7 @@ const getSubleaseInfoController = async (req, res) => {
     const response = await pool.query(query);
     console.log(response);
 
+    console.log(userid, uniqueid);
     // we need to increment view count by 1 now that it has been view
     const updateviewcount = {
       text: `UPDATE sublease SET viewcount = viewcount + 1 WHERE id = $1 AND listerid <> $2;`,

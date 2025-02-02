@@ -125,7 +125,7 @@ export default {
           marker.on('click', async () => {
             const subid = marker.subleaseID
             const uniqueid = marker.id
-            const userid = useUserStore.userID
+            const userid = userStore.userID
             console.log('Clicked sublease ID:', subid)
             console.log('Clicked unique id: ', uniqueid)
 
