@@ -1,6 +1,8 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {PHOTO_BUCKET} from '../constants';
+import imageCompression from 'browser-image-compression';
+import { max } from 'lodash';
 
 // Configure S3 client
 const s3Client = new S3Client({
@@ -10,31 +12,43 @@ const s3Client = new S3Client({
       secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY,
     },
   });
+export async function uploadPhotos(path, filesRef){
+  const uploadPromises = Array.from(filesRef).map(async (file) => {
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      useWebWorker: true,
+      fileType: 'image/webp'
+    }
 
-export async function uploadPhotos(path, filesRef) {
-    try {
-      // Upload each file to S3
-      const uploadPromises = filesRef.map(async (file) => {
-        console.log(PHOTO_BUCKET, `${path}/${file.name}`, file.name)
-        const params = {
-          Bucket: PHOTO_BUCKET,
-          Key: `${path}/${file.name}`, // Unique key for the file
-          Body: file, // Use the File object directly
-          ContentType: file.type, // File type from the File object
-        };
-  
-        const command = new PutObjectCommand(params);
-        await s3Client.send(command);
-        return `https://${PHOTO_BUCKET}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com/${params.Key}`;
-      });
-  
-      // Wait for all uploads to complete
-      const fileUrls = await Promise.all(uploadPromises);
-      return fileUrls;
-    } catch (error) {
+    try{
+      const compressedFile = await imageCompression(file, options);
+
+      const dotIndex = file.name.lastIndexOf('.');
+      let newName;
+      if(dotIndex !== -1){
+        newName = file.name.substring(0, dotIndex);
+      }else{
+        newName = file.name;
+      }
+      const webpFile = new File([compressedFile], `${newName}.webp`, {type: 'image/webp'});
+
+      console.log('PATHS ARE HERE: ', `${path}/${webpFile.name}`)
+      const params = {
+        Bucket: PHOTO_BUCKET,
+        Key: `${path}/${webpFile.name}`,
+        Body: webpFile,
+        ContentType: webpFile.type
+      };
+
+      return s3Client.send(new PutObjectCommand(params));
+    }catch(error){
       console.error('Error uploading files to S3:', error);
       return false;
-    }
+    };
+  });
+  console.log(uploadPromises);
+  return Promise.all(uploadPromises);
 }
 
 /**
