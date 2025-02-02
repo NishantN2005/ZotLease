@@ -23,6 +23,7 @@
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@mapbox/search-js-web": "^1.0.0-beta.25",
     "aws-sdk": "^2.1692.0",
+    "browser-image-compression": "^2.0.2",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
