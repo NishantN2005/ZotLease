@@ -1,12 +1,12 @@
 <script setup>
-import { ref } from 'vue';
-import { useUserStore } from '../stores/userStore.js';
-import { RouterLink, useRouter } from 'vue-router';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import {faArrowCircleLeft} from '@fortawesome/free-solid-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {API_URL} from '../../constants.js';
-library.add(faArrowCircleLeft);
+import { ref } from 'vue'
+import { useUserStore } from '../stores/userStore.js'
+import { RouterLink, useRouter } from 'vue-router'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { API_URL } from '../../constants.js'
+library.add(faArrowCircleLeft)
 
 const router = useRouter()
 
@@ -19,8 +19,8 @@ const formData = ref({
   password: '',
 })
 
-function backToLogin(){
-  router.push('/');
+function backToLogin() {
+  router.push('/')
 }
 
 function handleSignup() {
@@ -78,12 +78,13 @@ function handleSignup() {
       <div
         class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
       >
-      <font-awesome-icon @click ='backToLogin' icon="circle-arrow-left" class="text-xl text-uciblue hover:cursor-pointer"/>
+        <font-awesome-icon
+          @click="backToLogin"
+          icon="circle-arrow-left"
+          class="text-xl text-uciblue hover:cursor-pointer"
+        />
         <div class="w-full min-h-full flex items-center justify-center">
-          <video autoplay muted playsinline class="rounded-xl">
-            <source src="@/assets/ZotLease2.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <img src="/favicon.png" class="w-[620px] h-92 pr-10" alt="Petr" />
         </div>
         <div class="border-b border-uciblue md:border-l md:border-uciblue mr-4"></div>
         <div class="w-full h-full py-8 px-5 rounded-xl">
