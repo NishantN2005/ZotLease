@@ -42,7 +42,7 @@ const getActivityController = async(req, res) => {
       return res.status(400).json({ message: "Params are incomplete" });
     }
     const query = {
-        text: `SELECT * FROM activity WHERE listerid = $1 ORDER BY date DESC`,
+        text: `SELECT * FROM activity WHERE listerid = $1 ORDER BY date DESC LIMIT 10`,
         values: [listerid]
     }
     const response = await pool.query(query);

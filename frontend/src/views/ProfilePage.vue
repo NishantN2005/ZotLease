@@ -229,7 +229,7 @@ export default {
         this.userStore.userToken,
       )
       const activity = await responseForActivity.json()
-      this.leaseActivity.push({
+      this.leaseActivity.unshift({
         activity: `🏡 You took down your listing @ ${listingToDelete.street_name}`,
         date: activity.date,
         id: activity.id,
