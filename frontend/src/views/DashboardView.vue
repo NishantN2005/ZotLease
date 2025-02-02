@@ -7,7 +7,7 @@
       v-if="createSubleaseModal"
       class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
     >
-      <div class="bg-white p-4 shadow-lg rounded-lg max-h-[95vh] flex flex-col w-2/5">
+      <div class="bg-white p-4 shadow-lg rounded-lg max-h-[95vh] flex flex-col md:w-2/5 sm:w-3/4">
         <!-- Title -->
         <h1 class="font-bold flex justify-center items-center text-xl mb-5">
           Enter Sublease Information
@@ -80,7 +80,7 @@
 
       <!-- The Leaflet map -->
       <LeafletMap
-        v-show="mapView"
+        v-show="mapView && (!chatStore.chatRoomID || !isSmallScreen)"
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"
         :routerPass="router"
@@ -114,25 +114,26 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
-import LeafletMap from '../components/LeafletMap.vue';
-import LeaseList from '@/components/LeaseList.vue';
-import { useUserStore } from '@/stores/userStore';
-import { useChatStore } from '@/stores/chatStore';
-import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore';
-import SocketConnection from '@/components/SocketConnection.vue';
-import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue';
-import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService';
-import { ref, onMounted, onUnmounted} from 'vue';
-import FilterModal from '@/components/FilterModal.vue';
-import { useFilterStore } from '@/stores/filterStore';
-import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue';
-import { useAllLocationsStore } from '@/stores/AllLocationsStore';
-import { uploadPhotos } from '../s3client.js';
-import Sidebar from '@/components/Sidebar.vue';
-import Messages from '../components/Messages.vue';
-import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue';
-import LoadingScreen from '@/components/LoadingScreen.vue';
+import { useRouter } from 'vue-router'
+import LeafletMap from '../components/LeafletMap.vue'
+import LeaseList from '@/components/LeaseList.vue'
+import { useUserStore } from '@/stores/userStore'
+import { useChatStore } from '@/stores/chatStore'
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
+import SocketConnection from '@/components/SocketConnection.vue'
+import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
+import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import FilterModal from '@/components/FilterModal.vue'
+import { useFilterStore } from '@/stores/filterStore'
+import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
+import { useAllLocationsStore } from '@/stores/AllLocationsStore'
+import { uploadPhotos } from '../s3client.js'
+import Sidebar from '@/components/Sidebar.vue'
+import Messages from '../components/Messages.vue'
+import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
+import LoadingScreen from '@/components/LoadingScreen.vue'
+import { useWindowSize } from '@vueuse/core'
 
 export default {
   name: 'DashboardView',
@@ -168,6 +169,8 @@ export default {
       window.removeEventListener('beforeunload', handleSessionEnd)
     })
 
+    const { width: windowWidth } = useWindowSize()
+    const isSmallScreen = computed(() => windowWidth.value <= 768)
     const router = useRouter()
     const userStore = useUserStore()
     const chatStore = useChatStore()
@@ -346,7 +349,6 @@ export default {
           //update local map render to include new location
           allLocationsStore.addNewLocation(markerInfo)
 
-
           // create activity for this
           const activityResponse = await makeAuthenticatedRequest(
             'activity/addActivity',
@@ -357,7 +359,7 @@ export default {
             router,
             userStore.userToken,
           )
-          console.log(activityResponse);
+          console.log(activityResponse)
 
           createSubleaseModal.value = false
           formData.value = {
@@ -496,7 +498,7 @@ export default {
         maxPrice: null,
         roomCount: null,
         startsate: null,
-        enddate: null
+        enddate: null,
       }
       filesRef.value = []
     }
@@ -574,6 +576,7 @@ export default {
       showPhotoGallery,
       showLoadingScreen,
       turnOffLoading,
+      isSmallScreen,
     }
   },
 }

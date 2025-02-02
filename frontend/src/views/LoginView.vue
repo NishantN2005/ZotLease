@@ -74,7 +74,7 @@ function handleLogin() {
       </a>
 
       <div
-        class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-6"
+        class="flex flex-col justify-center md:flex-row rounded-xl bg-white border border-uciblue shadow-lg shadow-uciblue/30 p-8"
       >
         <font-awesome-icon
           @click="backToLogin"
@@ -82,10 +82,7 @@ function handleLogin() {
           class="text-xl text-uciblue hover:cursor-pointer"
         />
         <div class="w-full h-full">
-          <video autoplay muted playsinline class="rounded-xl">
-            <source src="@/assets/ZotLease2.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <img src="/favicon.png" class="w-[500px] h-92 pt-5 pr-10" alt="Petr" />
         </div>
         <div class="border-b border-uciblue md:border-l md:border-uciblue mr-4"></div>
         <div class="w-full h-full py-8 px-5 rounded-xl">

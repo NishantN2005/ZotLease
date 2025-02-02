@@ -2,8 +2,8 @@
   <form class="space-y-4 p-2">
     <!-- Wrap your address inputs in <mapbox-address-autofill> -->
     <mapbox-address-autofill
-      :accessToken= "MAPBOX_ACCESS_TOKEN"
-      :options="{countries: ['us']}" 
+      :accessToken="MAPBOX_ACCESS_TOKEN"
+      :options="{ countries: ['us'] }"
       confirm-on-blur
       confirm-on-browser-autofill
       @retrieve="onRetrieve"
@@ -189,10 +189,8 @@
 </template>
 
 <script>
-import {
-  MapboxAddressAutofill
-} from '@mapbox/search-js-web';
-import { MAPBOX_ACCESS_TOKEN } from '../../constants';
+import { MapboxAddressAutofill } from '@mapbox/search-js-web'
+import { MAPBOX_ACCESS_TOKEN } from '../../constants'
 export default {
   name: 'CreateSubleaseModal',
   props: {
@@ -211,11 +209,10 @@ export default {
   },
   setup() {
     console.log(MAPBOX_ACCESS_TOKEN)
-    return {MAPBOX_ACCESS_TOKEN};
+    return { MAPBOX_ACCESS_TOKEN }
   },
   methods: {
-    onRetrieve(result) {
-    }
+    onRetrieve(result) {},
   },
-};
+}
 </script>

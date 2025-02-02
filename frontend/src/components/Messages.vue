@@ -254,7 +254,19 @@ export default {
   overflow: auto;
   word-wrap: break-word;
 }
-
+@media (max-width: 768px) {
+  .chat-box {
+    flex-grow: 1;
+    flex-direction: row;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 900px;
+    height: 100%;
+    overflow: auto;
+    word-wrap: break-word;
+  }
+}
 .messages {
   list-style: none;
   padding: 0;
