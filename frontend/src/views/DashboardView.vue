@@ -346,6 +346,19 @@ export default {
           //update local map render to include new location
           allLocationsStore.addNewLocation(markerInfo)
 
+
+          // create activity for this
+          const activityResponse = await makeAuthenticatedRequest(
+            'activity/addActivity',
+            {
+              activity: `🥳 You posted your sublease @ ${formData.value.street_name}! People will start looking at it ASAP 👀`,
+              listerid: userStore.userID,
+            },
+            router,
+            userStore.userToken,
+          )
+          console.log(activityResponse);
+
           createSubleaseModal.value = false
           formData.value = {
             street_name: '',

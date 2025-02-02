@@ -5,9 +5,10 @@ const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const userRoutes = require("../routes/userRoutes.js");
 const authRoutes = require("../routes/authRoutes.js");
-const { disconnect } = require("process");
+const { v4: uuidv4 } = require("uuid");
 const { Server } = require("socket.io");
 const subleaseRoutes = require("../routes/subleaseRoutes.js");
+const activityRoutes = require("../routes/activityRoutes.js");
 const chatRoutes = require("../routes/chatRoutes.js");
 const pool = require("./db.js");
 const cron = require("node-cron");
@@ -37,6 +38,7 @@ app.use(cookieParser());
 app.use("/user", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/sublease", subleaseRoutes);
+app.use("/activity", activityRoutes);
 app.use("/chat", chatRoutes);
 
 // Health check endpoint
@@ -49,10 +51,30 @@ cron.schedule(
   "0 0,12 * * *",
   async () => {
     console.log("Running daily database cleanup task...");
-    const cleanBlacklist = `DELETE FROM refresh_token_blacklist
-WHERE expiry < NOW();`;
-    const resp = await pool.query(cleanBlacklist);
-    console.log(`Cleaned blacklist db ${resp.rowCount} row affected`);
+
+    // Clean up refresh_token_blacklist
+    const cleanBlacklist = `DELETE FROM refresh_token_blacklist WHERE expiry < NOW();`;
+    const respBlacklist = await pool.query(cleanBlacklist);
+    console.log(`Cleaned blacklist db ${respBlacklist.rowCount} row(s) affected`);
+
+    // Get listerid of expired subleases
+    const getExpiredSubleases = `SELECT listerid FROM sublease WHERE TO_DATE(endterm, 'YYYY-MM-DD') < CURRENT_DATE;`;
+    const expiredSubleases = await pool.query(getExpiredSubleases);
+    const listerIds = expiredSubleases.rows.map(row => row.listerid);
+
+    // Delete expired subleases
+    const cleanSublease = `DELETE FROM sublease WHERE TO_DATE(endterm, 'YYYY-MM-DD') < CURRENT_DATE;`;
+    const respSublease = await pool.query(cleanSublease);
+    console.log(`Cleaned sublease db ${respSublease.rowCount} row(s) affected`);
+
+    // Create activity for each listerid
+    const createActivityQuery = `INSERT INTO activity (id, listerid, activity, date) VALUES ($1, $2, $3, NOW())`;
+    for (const listerid of listerIds) {
+      const activityId = uuidv4();
+      const activityText = '🫣 Your lease has expired';
+      await pool.query(createActivityQuery, [activityId, listerid, activityText]);
+      console.log(`Created activity for listerid ${listerid}`);
+    }
   },
   {
     scheduled: true,

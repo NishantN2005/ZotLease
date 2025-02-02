@@ -53,6 +53,7 @@ ALTER SEQUENCE public.sublease_id_seq
 
 ALTER SEQUENCE public.sublease_id_seq
     OWNER TO postgres;
+
 -- Table: public.sublease
 
 -- DROP TABLE IF EXISTS public.sublease;
@@ -85,6 +86,24 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.sublease
     OWNER to postgres;
 
+-- Table: public.activity
+
+-- DROP TABLE IF EXISTS public.activity;
+
+CREATE TABLE IF NOT EXISTS public.activity
+(
+    id UUID PRIMARY KEY,
+    listerid UUID NOT NULL,
+    activity TEXT NOT NULL,
+    date DATE NOT NULL
+)
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.activity
+    OWNER to postgres;
+
+-- Create an index on the listerid column to improve query performance
+CREATE INDEX IF NOT EXISTS idx_activity_listerid ON public.activity (listerid);
 
 -- SEQUENCE: public.chatrooms_id_seq
 
@@ -102,6 +121,7 @@ ALTER SEQUENCE public.chatrooms_id_seq
 
 ALTER SEQUENCE public.chatrooms_id_seq
     OWNER TO postgres;
+
 -- Table: public.chatrooms
 
 -- DROP TABLE IF EXISTS public.chatrooms;
@@ -159,6 +179,7 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.refresh_token_blacklist
     OWNER to postgres;
+
 -- Index: idx_expiry
 
 -- DROP INDEX IF EXISTS public.idx_expiry;

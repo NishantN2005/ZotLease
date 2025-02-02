@@ -243,10 +243,23 @@ const deleteSubleaseController = async (req, res) => {
   res.status(200).json({ message: "Sublease deleted" });
 };
 
+const getSubleaseFromController = async (req, res) => {
+  const { listerid } = req.body;
+  console.log(listerid);
+  const query = {
+    text: `SELECT * FROM sublease WHERE listerid = $1`,
+    values: [listerid],
+  };
+  const response = await pool.query(query);
+  console.log(response);
+  res.status(200).json(response.rows);
+};
+
 module.exports = {
   createSubleaseController,
   getSubleasesController,
   getSubleaseInfoController,
   getSubleaseFilterController,
   deleteSubleaseController,
+  getSubleaseFromController,
 };
