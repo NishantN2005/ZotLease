@@ -80,7 +80,7 @@
 
       <!-- The Leaflet map -->
       <LeafletMap
-        v-show="(mapView && !chatStore.chatRoomID) || !isSmallScreen"
+        v-show="mapView && (!chatStore.chatRoomID || !isSmallScreen)"
         class="z-0 w-full h-full"
         :userToken="userStore.userToken"
         :routerPass="router"
