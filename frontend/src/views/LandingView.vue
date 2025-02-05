@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-white">
+  <div class="min-h-screen flex flex-col bg-neutral-100">
 
     <!-- Navbar -->
-    <nav class="bg-white py-4 shadow-md fixed w-full z-50 font-Sriracha">
+    <nav class="bg-neutral-100 py-4 shadow-md fixed w-full z-50 font-Sriracha">
       <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
         <!-- Left spacer (empty) -->
         <div class="flex-1 flex justify-start space-x-6"></div>
@@ -30,7 +30,7 @@
           </button>
         </div>
       </div>
-      <div v-if="isMenuOpen" class="md:hidden bg-white shadow-md z-50">
+      <div v-if="isMenuOpen" class="md:hidden bg-neutral-100 shadow-md z-50">
         <a href="/login" class="block px-4 py-2 text-neutral-900 hover:text-gray-900">Login</a>
         <a href="/signup" class="block px-4 py-2 text-neutral-900 hover:text-gray-900">Sign Up</a>
       </div>
@@ -50,7 +50,7 @@
     </header>
 
     <!-- How it works Section -->
-    <section class="py-20 bg-white font-Sriracha">
+    <section class="py-20 bg-neutral-100 font-Sriracha">
       <div class="max-w-7xl mx-auto px-6 md:px-12">
         <h2 class="text-3xl md:text-4xl font-bold text-neutral-900  mb-14 text-center">
           How it works
@@ -62,7 +62,7 @@
     </section>
 
     <!-- Subleasing Rules Section -->
-    <section class="py-20 bg-white font-Sriracha">
+    <section class="py-20 bg-neutral-100 font-Sriracha">
       <div class="max-w-7xl mx-auto px-6 md:px-12">
         <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-14 text-center">
           Subleasing Rules from ACC @ UCI
@@ -88,7 +88,7 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white py-8 text-center text-white">
+    <footer class="bg-neutral-100 py-8 text-center text-neutral-900 font-Sriracha">
       <p class="text-sm md:text-base opacity-80">© 2024 ZotLease. All rights reserved.</p>
     </footer>
   </div>

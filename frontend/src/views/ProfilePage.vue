@@ -1,23 +1,23 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-gray-200 p-6">
+  <div class="min-h-screen bg-neutral-100 text-gray-200 p-6 font-Sriracha">
     <!-- Back Button -->
     <button
-      class="mb-4 px-4 py-2 bg-uciblue text-white rounded-full hover:bg-uciblue transition duration-300"
+      class="mb-4 px-4 py-2 bg-neutral-900 text-white rounded-full hover:bg-uciblue transition duration-300"
       @click="goBack"
     >
       &larr; Back to Dashboard
     </button>
 
     <!-- Profile Header -->
-    <div class="bg-gray-800 rounded-lg shadow-md p-6 flex items-center space-x-4">
-      <div class="w-24 h-24 rounded-full bg-uciblue flex items-center justify-center">
+    <div class="bg-neutral-900 rounded-lg shadow-md p-6 flex items-center space-x-4">
+      <div class="w-24 h-24 rounded-full bg-neutral-900 border flex items-center justify-center">
         <i class="fas fa-user text-white text-5xl"></i>
       </div>
       <div>
-        <h1 class="text-2xl font-semibold text-gray-100">
+        <h1 class="text-2xl font-semibold text-white">
           {{ userStore.fname }} {{ userStore.lname }}
         </h1>
-        <p class="text-gray-400">
+        <p class="text-white">
           {{ userStore.email }}
         </p>
       </div>
@@ -25,23 +25,23 @@
 
     <!-- Active Listings Section -->
     <div class="mt-8">
-      <h2 class="text-xl font-semibold text-gray-100">Active Listings</h2>
+      <h2 class="text-xl font-semibold text-neutral-900">Active Listings</h2>
       <div v-if="isLoading" class="grid grid-cols-1 gap-4 md:grid-cols-2 mt-4">
         <div
           v-for="n in 2"
           :key="'listing-skeleton-' + n"
-          class="p-4 rounded-lg bg-gray-800 animate-pulse space-y-3"
+          class="p-4 rounded-lg bg-neutral-900 animate-pulse space-y-3"
         >
-          <div class="h-4 bg-gray-600 rounded w-3/4"></div>
-          <div class="h-4 bg-gray-600 rounded w-1/2"></div>
-          <div class="h-4 bg-gray-600 rounded w-full"></div>
+          <div class="h-4 bg-neutral-900 rounded w-3/4"></div>
+          <div class="h-4 bg-neutral-900 rounded w-1/2"></div>
+          <div class="h-4 bg-neutral-900 rounded w-full"></div>
         </div>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="listing in activeListings"
           :key="listing.subleaseid"
-          class="bg-gray-800 rounded-lg shadow-md p-6 border border-gray-700"
+          class="bg-neutral-900 rounded-lg shadow-md p-6 border border-gray-700"
         >
           <div class="flex items-center justify-between mb-4">
             <div>
@@ -85,10 +85,10 @@
     <!-- Leasing Activity Section -->
     <div class="mt-8">
       <h2 class="text-xl font-semibold text-gray-100">Leasing Activity</h2>
-      <div v-if="isLoading" class="mt-4 bg-gray-800 rounded-lg p-4 animate-pulse space-y-4">
+      <div v-if="isLoading" class="mt-4 bg-neutral-900 rounded-lg p-4 animate-pulse space-y-4">
         <div v-for="m in 3" :key="'activity-skeleton-' + m" class="flex items-center space-x-4">
-          <div class="rounded-full bg-gray-600 h-10 w-10"></div>
-          <div class="h-4 bg-gray-600 rounded flex-1"></div>
+          <div class="rounded-full bg-neutral-900 h-10 w-10"></div>
+          <div class="h-4 bg-neutral-900 rounded flex-1"></div>
         </div>
       </div>
       <div v-else>
@@ -97,14 +97,17 @@
         </div>
         <ul
           v-else
-          class="mt-4 bg-gray-800 rounded-lg shadow-md divide-y divide-gray-700"
+          class="mt-4 bg-neutral-900 rounded-lg shadow-md divide-y divide-gray-700"
         >
           <li
             v-for="activity in leaseActivity"
             :key="activity.id"
-            class="p-4 text-gray-300"
+            class="text-gray-300"
           >
-            {{ activity.activity }} - {{ activity.date }}
+          <h1 class="pt-2 px-4">
+            {{ activity.activity }}
+          </h1>
+           <p class="px-4 text-neutral-400">{{ formatDate(activity.date) }}</p>
           </li>
         </ul>
       </div>
