@@ -169,7 +169,7 @@ export default {
       }
 
       // Initialize the Leaflet map
-      map = L.map(mapContainer).setView([33.644, -117.826], 15)
+      map = L.map(mapContainer, {zoomControl: false}).setView([33.644, -117.826], 15)
 
       // Add the Mapbox tile layer
       L.tileLayer(MAPBOX_TILE_URL, {
