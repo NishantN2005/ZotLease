@@ -38,6 +38,9 @@
         </div>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-if="activeListings.length==0">
+          <h1 class="text-neutral-900 font-Sriracha"> No active listings :(</h1>
+        </div>
         <div
           v-for="listing in activeListings"
           :key="listing.subleaseid"
