@@ -3,6 +3,9 @@ export default {
   content: ['./src/**/*.{vue,js,ts,jsx,tsx}', './index.html'],
   theme: {
     extend: {
+      fontFamily:{
+        'Sriracha':['Sriracha', 'serif'],
+      },
       colors:{
         'uciblue':'#255699',
         'uciyellow':'#fed302',

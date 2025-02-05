@@ -66,7 +66,7 @@ function handleSignup() {
 </script>
 
 <template>
-  <section class="bg-cover bg-center bg-[url('yellowuci.jpg')] min-h-screen overflow-hidden">
+  <section class="bg-neutral-900 min-h-screen overflow-hidden">
     <div
       class="flex flex-col md:flex-row items-center justify-center min-h-full px-6 py-8 mx-auto md:h-screen lg:py-0 w-full max-w-full"
     >

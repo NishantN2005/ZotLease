@@ -1,217 +1,193 @@
 <template>
   <div class="min-h-screen flex flex-col bg-white">
-    <!-- Hero Section -->
-    <header
-      class="relative flex flex-col items-center justify-center h-screen text-center text-white overflow-hidden"
-    >
-      <!-- Background Image with Overlay -->
-      <div class="absolute inset-0 w-full h-full">
-        <img
-          src="/newback.jpg"
-          alt="Modern Architecture"
-          class="w-full h-full object-cover transform scale-105 animate-fadeIn"
-        />
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-[#003f7d] via-[#003f7d]/40 to-transparent"
-        ></div>
-      </div>
 
-      <!-- Hero Content -->
-      <div class="relative z-10 max-w-4xl px-4 md:px-8 animate-slideInUp">
-        <h1 class="text-5xl md:text-6xl font-extrabold mb-6 text-white font-[Inter] tracking-tight">
-          Redefine Urban Living
-        </h1>
+    <!-- Navbar -->
+    <nav class="bg-white py-4 shadow-md fixed w-full z-50 font-Sriracha">
+      <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+        <!-- Left spacer (empty) -->
+        <div class="flex-1 flex justify-start space-x-6"></div>
 
-        <p
-          class="text-xl md:text-2xl text-white/90 leading-relaxed mb-8 max-w-2xl mx-auto font-[Inter]"
-        >
-          Discover meticulously selected spaces in iconic modern buildings
-        </p>
-
-        <router-link to="/login">
-          <button
-            class="px-8 py-3.5 bg-white text-[#003f7d] text-lg font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:bg-opacity-95 flex items-center gap-2 mx-auto"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM6.75 9.25a.75.75 0 000 1.5h4.59l-2.1 1.95a.75.75 0 001.02 1.1l3.5-3.25a.75.75 0 000-1.1l-3.5-3.25a.75.75 0 10-1.02 1.1l2.1 1.95H6.75z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            Explore Listings
-          </button>
-        </router-link>
-      </div>
-
-      <!-- Scrolling Indicator -->
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div
-          class="w-8 h-14 rounded-3xl border-2 border-white/40 flex items-start justify-center p-1"
-        >
-          <div class="w-2 h-2 bg-white/80 rounded-full animate-scrollIndicator"></div>
+        <!-- Brand name in center with logo -->
+        <div class="flex-1 text-center">
+          <div class="flex items-center justify-center">
+            <img
+              src="/favicon.png"
+              alt="ZotLease Icon"
+              class="h-12 w-auto mr-2"
+            />
+            <span class="text-3xl font-bold text-neutral-900">ZotLease</span>
+          </div>
         </div>
+
+        <!-- Right links -->
+        <div class="flex-1 flex justify-end space-x-6">
+          <a href="/login" class="text-neutral-900 hover:text-gray-300 text-xl hidden md:inline">Login</a>
+          <a href="/signup" class="text-neutral-900 hover:text-gray-300 text-xl hidden md:inline">Sign Up</a>
+          <button class="md:hidden text-neutral-900 hover:text-gray-300 text-xl" @click="toggleMenu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div v-if="isMenuOpen" class="md:hidden bg-white shadow-md z-50">
+        <a href="/login" class="block px-4 py-2 text-neutral-900 hover:text-gray-900">Login</a>
+        <a href="/signup" class="block px-4 py-2 text-neutral-900 hover:text-gray-900">Sign Up</a>
+      </div>
+    </nav>
+
+    <!-- Hero Section - Leaflet Map -->
+    <header class=" z-10 relative flex flex-col items-center justify-center text-center text-neutral-900 overflow-hidden pt-16 bg-black h-[100vh] md:h-[80vh]">
+      <div id="map" class="w-full h-full blur-sm"></div>
+      <div class=" z-50 absolute top-1/4 right-8 text-right">
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4">
+          <vue-typewriter-effect 
+          class="text-4xl font-extrabold text-neutral-900 font-Sriracha"
+          :strings="['Need a place this summer?', 'Want to save money?']" />
+        </h1>
+        <p class="text-6xl mt-4 text-neutral-900 font-Sriracha font-64">We make it easy.</p>
       </div>
     </header>
 
-    <!-- Features Section -->
-    <section class="py-20 bg-white">
+    <!-- How it works Section -->
+    <section class="py-20 bg-white font-Sriracha">
       <div class="max-w-7xl mx-auto px-6 md:px-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-[#003f7d] mb-14 text-center">
-          Why ZotLease?
+        <h2 class="text-3xl md:text-4xl font-bold text-neutral-900  mb-14 text-center">
+          How it works
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div
-            class="p-6 bg-white rounded-xl border border-gray-100 hover:border-[#003f7d]/20 transition-all duration-300 group"
-          >
-            <div class="w-12 h-12 bg-[#003f7d]/10 rounded-lg mb-6 flex items-center justify-center">
-              <svg
-                class="w-6 h-6 text-[#003f7d]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-3 text-gray-900">Smart Matching</h3>
-            <p class="text-gray-600 leading-relaxed">
-              AI-powered recommendations tailored to your lifestyle and preferences
-            </p>
-          </div>
+        <h1 class="flex items-center justify-center w-full text-neutral-900">
+          THIS IS WHERE THE DEMO VIDEO SHOULD GO
+        </h1>
+      </div>
+    </section>
 
-          <div
-            class="p-6 bg-white rounded-xl border border-gray-100 hover:border-[#003f7d]/20 transition-all duration-300 group"
-          >
-            <div class="w-12 h-12 bg-[#003f7d]/10 rounded-lg mb-6 flex items-center justify-center">
-              <svg
-                class="w-6 h-6 text-[#003f7d]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-3 text-gray-900">Verified Spaces</h3>
-            <p class="text-gray-600 leading-relaxed">
-              Professionally inspected properties with quality assurance
-            </p>
-          </div>
-
-          <div
-            class="p-6 bg-white rounded-xl border border-gray-100 hover:border-[#003f7d]/20 transition-all duration-300 group"
-          >
-            <div class="w-12 h-12 bg-[#003f7d]/10 rounded-lg mb-6 flex items-center justify-center">
-              <svg
-                class="w-6 h-6 text-[#003f7d]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-3 text-gray-900">Flexible Terms</h3>
-            <p class="text-gray-600 leading-relaxed">
-              Customizable lease durations with transparent pricing
-            </p>
-          </div>
+    <!-- Subleasing Rules Section -->
+    <section class="py-20 bg-white font-Sriracha">
+      <div class="max-w-7xl mx-auto px-6 md:px-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-14 text-center">
+          Subleasing Rules from ACC @ UCI
+        </h2>
+        <div class="text-neutral-900 space-y-4">
+          <p>
+            Subleasing your apartment at UCI is a great way to save money and help fellow students find housing. However, there are specific rules and guidelines set by the ACC (Anteater Community Council) that you must follow:
+          </p>
+          <ul class="list-disc list-inside space-y-2">
+            <li>Subleasing is only allowed for current UCI students.</li>
+            <li>You must obtain written permission from your landlord or property manager before subleasing.</li>
+            <li>Sublease agreements must be in writing and signed by both parties.</li>
+            <li>Sublessees must adhere to all terms and conditions of the original lease agreement.</li>
+            <li>Subleasing for profit is strictly prohibited. You may only charge the sublessee the same rent amount you pay.</li>
+            <li>All sublease agreements must be reported to the ACC for record-keeping purposes.</li>
+            <li>Failure to comply with these rules may result in disciplinary action, including termination of your lease.</li>
+          </ul>
+          <p>
+            For more information on subleasing rules and guidelines, please visit the ACC website or contact your property manager.
+          </p>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-[#003f7d] py-8 text-center text-white">
+    <footer class="bg-white py-8 text-center text-white">
       <p class="text-sm md:text-base opacity-80">© 2024 ZotLease. All rights reserved.</p>
     </footer>
   </div>
 </template>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Bubbly+Sans&display=swap');
+<script>
+import { ref, onMounted } from 'vue';
+import L from 'leaflet';
+import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
+import {API_URL} from '../../constants.js';
+import VueTypewriterEffect from "vue-typewriter-effect";
 
-:root {
-  font-family: 'Bubbly Sans', sans-serif;
+export default {
+  name: 'LandingView',
+  components: {
+    VueTypewriterEffect,
+  },
+  setup() {
+    const isMenuOpen = ref(false);
+    const MAPBOX_TILE_URL = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`
+
+    const toggleMenu = () => {
+      isMenuOpen.value = !isMenuOpen.value;
+    };
+    // 2. Create a custom marker icon
+    const createHexMarker = () => {
+      return L.divIcon({
+        className: 'custom-icon',
+        html: `
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 24 24" fill="none">
+            <!-- Outer Pin Shape -->
+            <path 
+              d="M12 0C7.03 0 3 4.03 3 9C3 15 12 24 12 24S21 15 21 9C21 4.03 16.97 0 12 0Z" 
+              fill=#007BFF 
+            />
+            <!-- Inner Circle -->
+            <circle 
+              cx="12" 
+              cy="9" 
+              r="3" 
+              fill="#FFFFFF" 
+            />
+          </svg>
+        `,
+        iconSize: [25, 41],
+        iconAnchor: [12.5, 41],
+      })
+    }
+    const addMarkers = (locations, map) => {
+      const markersLayer = L.layerGroup().addTo(map);
+
+      locations.forEach((location) => {
+        const marker = L.marker([location.latitude, location.longitude],{
+          icon: createHexMarker(),  
+        }).addTo(markersLayer);
+      });
+
+      return markersLayer;
+    };
+
+    onMounted(async () => {
+      const map = L.map('map').setView([33.644, -117.826], 15);
+
+      // Add the Mapbox tile layer
+      L.tileLayer(MAPBOX_TILE_URL, {
+        maxZoom: 19,
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1,
+        attribution:
+          'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+          '<a href="https://www.mapbox.com/">Mapbox</a>',
+      }).addTo(map)
+
+
+      
+      console.log(API_URL);
+      const locations = await fetch(`${API_URL}sublease/getLandingLocations`, {
+        method: 'GET',
+      })
+        .then((res) => res.json())
+        .catch((err) => console.log(err));
+
+      console.log(locations);
+      addMarkers(locations, map);
+    });
+
+    return {
+      isMenuOpen,
+      toggleMenu,
+    };
+  },
+};
+</script>
+
+<style scoped>
+#map {
+  height: 100%;
+  width: 100%;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes scrollIndicator {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(10px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 1s ease-out forwards;
-}
-
-.animate-slideInUp {
-  animation: slideInUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.animate-scrollIndicator {
-  animation: scrollIndicator 1.5s infinite;
-}
-
-/* Custom Utilities */
-.tracking-tight {
-  letter-spacing: -0.03em;
-}
-
-.shadow-sm {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.hover\:shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
 </style>
