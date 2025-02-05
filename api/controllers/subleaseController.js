@@ -256,6 +256,14 @@ const getSubleaseFromController = async (req, res) => {
   res.status(200).json(response.rows);
 };
 
+const getLandingLocationsController = async(req, res)=>{
+  const query = {
+    text: `SELECT latitude, longitude FROM sublease`,
+  };
+  const response = await pool.query(query);
+  res.status(200).json(response.rows);
+}
+
 module.exports = {
   createSubleaseController,
   getSubleasesController,
@@ -263,4 +271,5 @@ module.exports = {
   getSubleaseFilterController,
   deleteSubleaseController,
   getSubleaseFromController,
+  getLandingLocationsController
 };
