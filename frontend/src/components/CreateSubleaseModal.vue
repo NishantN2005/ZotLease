@@ -1,5 +1,5 @@
 <template>
-  <form class="space-y-4 p-2">
+  <form class="space-y-4 p-2 font-Sriracha">
     <!-- Wrap your address inputs in <mapbox-address-autofill> -->
     <mapbox-address-autofill
       :accessToken="MAPBOX_ACCESS_TOKEN"

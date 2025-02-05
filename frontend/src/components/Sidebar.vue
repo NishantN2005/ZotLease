@@ -1,75 +1,168 @@
 <template>
-  <div
-    class="bg-neutral-900 lg:w-[4%] h-screen flex flex-col justify-between text-stone-300 py-4 relative"
+  <!-- Mobile Toggle Button (always visible on mobile) -->
+  <button
+    @click="toggleSidebar"
+    :class="[
+      'md:hidden p-4 fixed top-0 left-0 z-50',
+      isSidebarOpen ? 'text-white' : 'text-neutral-900'
+    ]"
   >
-    <!-- Top Section: Profile Picture -->
-    <div class="flex flex-col items-center space-y-6">
+    <svg
+      class="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M4 6h16M4 12h16m-7 6h7"
+      ></path>
+    </svg>
+  </button>
+
+  <!-- Desktop Sidebar -->
+  <div
+    class="hidden md:flex flex-col justify-between bg-neutral-900 text-white h-full w-24 z-40"
+  >
+    <!-- Top Section: Profile and Buttons -->
+    <div class="flex flex-col items-center space-y-6 py-4">
       <button
-        class="w-10 h-10 border border-stone-500 rounded-full flex items-center justify-center hover:cursor-pointer"
+        class="w-16 h-16 border border-stone-500 rounded-full flex items-center justify-center hover:cursor-pointer"
         @click="redirectToProfile"
       >
-        <!-- Font Awesome Icon for Profile Picture -->
-        <i class="fas fa-user text-white text-xl"></i>
+        <i class="fas fa-user text-white text-3xl"></i>
       </button>
-      <!-- Middle Section: Buttons -->
-      <div class="flex flex-col justify-start">
+      <div class="flex flex-col w-full">
         <button
           @click="turnOnModal"
-          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
+          class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-plus"></i>
         </button>
         <button
           @click="toggleFilterModals"
-          :class="showFilterModal ? 'bg-stone-500' : ''"
-          class="hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
+          :class="{'bg-stone-500': showFilterModal}"
+          class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-filter"></i>
         </button>
         <button
-          :class="messagesOpen ? 'bg-stone-500' : ''"
-          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
           @click="toggleMessages"
+          :class="{'bg-stone-500': messagesOpen}"
+          class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-comments"></i>
         </button>
         <button
-          :class="mapView ? 'bg-stone-500' : ''"
-          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
-          @click="toggleView()"
+          @click="toggleView"
+          :class="{'bg-stone-500': mapView}"
+          class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-map-location-dot"></i>
         </button>
         <button
-          :class="!mapView ? 'bg-stone-500' : ''"
-          class="border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
           @click="toggleView(false)"
+          :class="{'bg-stone-500': !mapView}"
+          class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-list"></i>
         </button>
       </div>
     </div>
-
-    <!-- Bottom Section: Logout Button -->
-    <div>
+    <!-- Bottom Section: Logout -->
+    <div class="w-full">
       <button
         @click="Logout"
-        class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 px-4 flex items-center justify-center space-x-2"
+        class="w-full border-t border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
       >
         <i class="fas fa-sign-out-alt"></i>
       </button>
     </div>
   </div>
+
+  <!-- Mobile Sidebar -->
+  <transition name="slide">
+    <div
+      v-if="isSidebarOpen"
+      class="md:hidden pt-12 w-1/3 h-full bg-neutral-900 text-white z-40 transform transition-transform"
+    >
+      <div class="flex flex-col items-center space-y-6 py-4">
+        <button
+          class="w-12 h-12 border border-stone-500 rounded-full flex items-center justify-center hover:cursor-pointer"
+          @click="redirectToProfile"
+        >
+          <i class="fas fa-user text-white text-2xl"></i>
+        </button>
+        <div class="flex flex-col w-full">
+          <button
+            @click="turnOnModal"
+            class="w-full h-12 border-y border-stone-500 hover:bg-stone-500 text-white flex items-center justify-center"
+          >
+            <i class="fas fa-plus text-xl"></i>
+          </button>
+          <button
+            @click="toggleFilterModals"
+            :class="{'bg-stone-500': showFilterModal}"
+            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
+          >
+            <i class="fas fa-filter"></i>
+          </button>
+          <button
+            @click="toggleMessages"
+            :class="{'bg-stone-500': messagesOpen}"
+            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
+          >
+            <i class="fas fa-comments"></i>
+          </button>
+          <button
+            @click="toggleView"
+            :class="{'bg-stone-500': mapView}"
+            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
+          >
+            <i class="fas fa-map-location-dot"></i>
+          </button>
+          <button
+            @click="toggleView(false)"
+            :class="{'bg-stone-500': !mapView}"
+            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
+          >
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+      <div class="absolute bottom-0 left-0 right-0">
+        <button
+          @click="Logout"
+          class="w-full border-t border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
+        >
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </transition>
+
+  <!-- Mobile Overlay -->
+  <transition name="fade">
+    <div
+      v-if="isSidebarOpen"
+      @click="toggleSidebar"
+      class="md:hidden fixed inset-0 bg-black opacity-50 z-30"
+    ></div>
+  </transition>
 </template>
 
 <script>
-import Messages from './Messages.vue'
+import { ref } from 'vue'
 import { useChatStore } from '@/stores/chatStore'
 import { useUserStore } from '@/stores/userStore'
-import { ref, nextTick } from 'vue'
+import Messages from './Messages.vue'
 
 export default {
   name: 'Sidebar',
+  components: { Messages },
   props: {
     Logout: {
       type: Function,
@@ -116,54 +209,77 @@ export default {
       required: true,
     },
   },
-  components: {
-    Messages,
-  },
-  methods: {
-    redirectToProfile(){
-      this.router.push('/profile')
-    },
-    Logout() {
-      this.Logout() // This calls the prop passed to the component.
-    },
-    turnOnModal() {
-      this.turnOnModal()
-    },
-    toggleFilterModals() {
-      this.filterOpen = !this.filterOpen
-      if (this.filterOpen) {
-        this.chatStore.setChatRoomID(null)
-        this.chatStore.setActiveChatID(null)
-      }
-      this.toggleFilterModal()
-    },
-
-    toggleDashMessage(chatroomID, partnerName, partnerID) {
-      console.log('heyyy')
-      this.toggleMessages()
-
-      if (this.messagesOpen && this.filterOpen) {
-        this.toggleFilterModal()
-      }
-
-      this.$nextTick(() => {
-        if (Object.keys(this.messageRef).length > 0) {
-          this.messageRef.selectChat(chatroomID, partnerName, partnerID)
-          this.messageRef.updateUnreadCount(chatroomID)
-        }
-      })
-    },
-  },
-
   setup(props) {
+    const isSidebarOpen = ref(false)
     const chatStore = useChatStore()
     const userStore = useUserStore()
 
-    return { chatStore, userStore }
+    const toggleSidebar = () => {
+      isSidebarOpen.value = !isSidebarOpen.value
+      if(!isSidebarOpen.value){
+        if(props.messagesOpen){
+          props.toggleMessages()
+        }
+        if(props.showFilterModal){
+          props.toggleFilterModal()
+        }
+      }
+      console.log('Sidebar open:', isSidebarOpen.value)
+    }
+
+    const redirectToProfile = () => {
+      props.router.push('/profile')
+    }
+
+    // Wrapper functions to call the passed-in props.
+    const turnOnModal = () => {
+      props.turnOnModal()
+    }
+    const toggleFilterModals = () => {
+      props.toggleFilterModal()
+    }
+    const toggleMessages = () => {
+      props.toggleMessages()
+    }
+    const toggleView = (param) => {
+      props.toggleView(param)
+    }
+    const Logout = () => {
+      props.Logout()
+    }
+
+    return {
+      isSidebarOpen,
+      toggleSidebar,
+      redirectToProfile,
+      turnOnModal,
+      toggleFilterModals,
+      toggleMessages,
+      toggleView,
+      Logout,
+      chatStore,
+      userStore,
+    }
   },
 }
 </script>
 
-<style>
-/* Optional: Add custom styles here if needed */
+<style scoped>
+/* Transitions for mobile sidebar and overlay */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(-100%);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 </style>
