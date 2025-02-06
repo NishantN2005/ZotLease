@@ -39,11 +39,7 @@
           @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
         >
           <img
-            :src="
-              allLocations.firstPhotos[listing.subleaseid]
-                ? allLocations.firstPhotos[listing.subleaseid]
-                : housePlaceholder
-            "
+            :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
             alt="Failed to Render Photo"
             class="w-full h-48 rounded-t-lg"
           />
@@ -73,14 +69,11 @@ import { makeAuthenticatedRequest } from '../services/authService.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
 import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 import { useUserStore } from '@/stores/userStore.js'
+import { useAllLocationsStore } from '@/stores/AllLocationsStore.js'
 
 export default {
   name: 'leaseList',
   props: {
-    allLocations: {
-      type: Object,
-      required: true,
-    },
     filterStore: {
       type: Object,
       required: true,
@@ -103,11 +96,13 @@ export default {
     },
   },
   setup(props) {
-    console.log('allLocationsStore:', props.allLocations)
+    const allLocations = useAllLocationsStore()
+    const photos = ref(allLocations.firstPhotos)
+    console.log('allLocationsStore:', allLocations)
     console.log('filterStore:', props.filterStore)
     console.log('lol')
     console.log(props.userToken)
-    let listings = ref([...props.allLocations.allLocations])
+    let listings = ref([...allLocations.allLocations])
     const filterActive = ref(false)
     const selectedSubleaseStore = useSelectedSubleaseStore()
     const userStore = useUserStore()
@@ -117,6 +112,14 @@ export default {
     //   baths: '',
     //   priceRange: '',
     // })
+
+    watch(
+      () => allLocations.firstPhotos,
+      (newPhotos) => {
+        photos.value = newPhotos
+      },
+      { immediate: true },
+    )
 
     async function activateSubleaseModal(subid, uniqueid) {
       const userID = userStore.userID
@@ -151,7 +154,7 @@ export default {
 
       try {
         // Create an array of promises for all listings
-        const photoFetchPromises = props.allLocations.allLocations.map(async (listing) => {
+        const photoFetchPromises = allLocations.allLocations.map(async (listing) => {
           try {
             const key = `${listing.listerid}/${listing.subleaseid}`
             console.log('Fetching photo for key:', key)
@@ -173,8 +176,11 @@ export default {
         await Promise.all(photoFetchPromises)
 
         // Assign the photos to the parent object
-        props.allLocations.firstPhotos = photos
-        console.log(props.allLocations.firstPhotos)
+        allLocations.firstPhotos = photos
+        console.log(
+          'photooososss',
+          allLocations.firstPhotos['1cb815b4-41ee-4c9d-8157-bc3c2b428ed8'],
+        )
         props.turnOffLoading()
       } catch (error) {
         console.error('Error fetching photos:', error)
@@ -186,13 +192,13 @@ export default {
 
       if (!query) {
         // Reset listings when input is cleared
-        listings.value = props.allLocations.allLocations
+        listings.value = allLocations.allLocations
         props.filterStore.resetFilter()
         filterActive.value = false
         return
       }
 
-      listings.value = props.allLocations.allLocations.filter((listing) =>
+      listings.value = allLocations.allLocations.filter((listing) =>
         [listing.street_name, listing.city].join(', ').toLowerCase().includes(query),
       )
 
@@ -202,7 +208,7 @@ export default {
     function clearInput() {
       const input = document.getElementById('searchInput')
       input.value = ''
-      listings.value = props.allLocations.allLocations
+      listings.value = allLocations.allLocations
       filterActive.value = false
       props.filterStore.resetFilter()
       console.log(listings.value, 'why')
@@ -211,7 +217,7 @@ export default {
     // Fetch photos on component mount
 
     watch(
-      () => props.allLocations.allLocations,
+      () => allLocations.allLocations,
       (newListings) => {
         console.log('ALL LOCATION CHANGE')
         listings.value = newListings
@@ -239,7 +245,7 @@ export default {
             listings.value = newValue // Clear listings if filter is active
           } else {
             console.log('no way josea')
-            listings.value = [...props.allLocations.allLocations] // Reset to all locations if filter is not active
+            listings.value = [...allLocations.allLocations] // Reset to all locations if filter is not active
             filterActive.value = false
           }
         }
@@ -250,7 +256,7 @@ export default {
     //   () => filters,
     //   (newFilters) => {
     //     console.log('lol')
-    //     listings.value = props.allLocations.allLocations.filter((listing) => {
+    //     listings.value = allLocations.allLocations.filter((listing) => {
     //       const matchesGender = !newFilters.gender || listing.gender === newFilters.gender
 
     //       const matchesRooms = !newFilters.rooms || listing.roomcount === parseInt(newFilters.rooms)
@@ -280,6 +286,7 @@ export default {
       filterActive,
       activateSubleaseModal,
       MAPBOX_ACCESS_TOKEN,
+      photos,
       // filters,
     }
   },

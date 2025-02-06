@@ -76,6 +76,11 @@
         :chatStore="chatStore"
         :router="router"
         :userStore="userStore"
+        :userToken="userStore.userToken"
+        :turnOnSubleaseModal="turnOnSubleaseModal"
+        :toggleMessageProfile="toggleMessageProfile"
+        :messageProfileActive="messageProfileActive"
+        :turnOffMessageProfile="turnOffMessageProfile"
       />
 
       <!-- The Leaflet map -->
@@ -219,6 +224,7 @@ export default {
     const mapView = ref(true)
     const listView = ref(false)
     const filterOpen = ref(false)
+    const messageProfileActive = ref(false)
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -509,9 +515,18 @@ export default {
         toggleFilterModal()
       }
       messagesOpen.value = !messagesOpen.value
+      messageProfileActive.value = false
       toggleCheckMessage()
       chatStore.setChatRoomID(null)
       chatStore.setActiveChatID(null)
+    }
+
+    const toggleMessageProfile = () => {
+      messageProfileActive.value = !messageProfileActive.value
+    }
+
+    const turnOffMessageProfile = () => {
+      messageProfileActive.value = false
     }
 
     const resetFilters = () => {
@@ -577,6 +592,9 @@ export default {
       showLoadingScreen,
       turnOffLoading,
       isSmallScreen,
+      toggleMessageProfile,
+      messageProfileActive,
+      turnOffMessageProfile,
     }
   },
 }

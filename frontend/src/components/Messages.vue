@@ -12,7 +12,8 @@
             class="relative flex items-center space-x-2 my-4 bg-stone-800 hover:bg-stone-500"
             @click="
               (selectChat(chat.chatRoomID, chat.partnerName, chat.partnerID),
-              updateUnreadCount(chat.chatRoomID))
+              updateUnreadCount(chat.chatRoomID),
+              turnOffMessageProfile())
             "
           >
             <span class="chat-name">
@@ -29,15 +30,62 @@
         </ul>
       </div>
 
+      <div v-if="messageProfileActive" class="w-[400px] flex flex-col items-center py-4">
+        <button
+          @click="toggleMessageProfile"
+          class="text-white absolute top-2 right-2 p-2 rounded-full transition-colors duration-200 hover:text-red-600"
+          aria-label="Close"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+
+        <h2 class="text-white font-extrabold text-2xl mt-4">{{ partnerName }}'s Properties</h2>
+        <div class="w-5/6 h-full mt-4 overflow-y-auto">
+          <div
+            v-if="listings.length > 0"
+            class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-4 rounded-lg"
+          >
+            <div
+              v-for="listing in listings"
+              :key="listing.subleaseid"
+              class="listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer w-52"
+              @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
+            >
+              <img
+                :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
+                alt="Failed to Render Photo"
+                class="w-full h-48 rounded-t-lg"
+              />
+              <div class="p-3">
+                <h3
+                  class="font-bold text-black"
+                  style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
+                >
+                  ${{ listing.price }}
+                </h3>
+                <p class="text-gray-600">{{ [listing.street_name, listing.city].join(', ') }}</p>
+              </div>
+            </div>
+          </div>
+          <div
+            v-else
+            class="flex justify-center items-center h-48 text-gray-600 font-semibold text-lg"
+          >
+            No results found.
+          </div>
+        </div>
+      </div>
+
       <!-- Chat Messages -->
       <div
         class="chat-box"
-        v-if="chatStore.chatRoomID"
+        v-if="chatStore.chatRoomID && !messageProfileActive"
         :class="{ invisible: !chatStore.chatRoomID }"
       >
         <div class="flex items-center space-x-3 py-4 px-6 bg-stone-800 rounded-t-lg mb-5">
           <i
             class="fas fa-user w-10 h-10 bg-stone-600 rounded-full text-white flex items-center justify-center"
+            @click="toggleMessageProfile"
           ></i>
           <h4 class="text-stone-300 font-bold text-xl">{{ partnerName }}</h4>
         </div>
@@ -64,16 +112,36 @@
 
 <script>
 import { makeAuthenticatedRequest } from '@/services/authService'
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import SocketConnection from '@/components/SocketConnection.vue'
+import { useAllLocationsStore } from '@/stores/AllLocationsStore'
+import { useUserStore } from '@/stores/userStore'
+import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 
 export default {
   name: 'Messages',
   setup(props) {
+    const allLocations = useAllLocationsStore()
+    const userStore = useUserStore()
+    const selectedSubleaseStore = useSelectedSubleaseStore()
+    const photos = ref({})
     const messages = ref([])
     const partnerName = ref('')
     const activeChatId = ref(null)
     const messagesContainer = ref(null)
+    const listings = computed(() => {
+      return allLocations.allLocations.filter(
+        (loc) => loc.listerid === props.chatStore.activeChatID,
+      )
+    })
+
+    watch(
+      () => allLocations.firstPhotos,
+      (newPhotos) => {
+        photos.value = newPhotos
+      },
+      { immediate: true },
+    )
 
     const scrollToBottom = () => {
       nextTick(() => {
@@ -81,6 +149,33 @@ export default {
           messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
         }
       })
+    }
+
+    async function activateSubleaseModal(subid, uniqueid) {
+      const userID = userStore.userID
+      // Make call to retrieve listing information
+      let info = await makeAuthenticatedRequest(
+        'sublease/selectedInfo',
+        { subleaseID: subid, uniqueid: uniqueid, userid: userID },
+        props.router,
+        props.userToken,
+      )
+
+      // parse JSON
+      const subleaseData = await info.json()
+
+      // set Pinia store state
+      if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
+        selectedSubleaseStore.resetSelectedSublease()
+        selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
+        subleaseData.forEach((subletter) => {
+          const { subleaseid, id, ...subletterData } = subletter
+          selectedSubleaseStore.addSubletter(subletterData)
+        })
+      }
+
+      // open your sublease modal
+      props.turnOnSubleaseModal()
     }
 
     watch(() => props.chatStore.onlineChats, scrollToBottom)
@@ -100,7 +195,15 @@ export default {
         props.chatStore.setOnlineChats(response.messages)
       },
     )
-    return { messages, partnerName, activeChatId, messagesContainer }
+    return {
+      messages,
+      partnerName,
+      activeChatId,
+      messagesContainer,
+      listings,
+      photos,
+      activateSubleaseModal,
+    }
   },
   computed: {
     activeChat() {
@@ -122,6 +225,26 @@ export default {
     },
     messagesOpen: {
       type: Boolean,
+      required: true,
+    },
+    toggleMessageProfile: {
+      type: Function,
+      required: true,
+    },
+    turnOffMessageProfile: {
+      type: Function,
+      required: true,
+    },
+    messageProfileActive: {
+      type: Boolean,
+      required: true,
+    },
+    turnOnSubleaseModal: {
+      type: Function,
+      required: true,
+    },
+    userToken: {
+      type: String,
       required: true,
     },
   },

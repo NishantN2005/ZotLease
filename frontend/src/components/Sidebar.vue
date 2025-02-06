@@ -120,7 +120,7 @@ export default {
     Messages,
   },
   methods: {
-    redirectToProfile(){
+    redirectToProfile() {
       this.router.push('/profile')
     },
     Logout() {
@@ -139,8 +139,7 @@ export default {
     },
 
     toggleDashMessage(chatroomID, partnerName, partnerID) {
-      console.log('heyyy')
-      this.toggleMessages()
+      if (!this.messagesOpen) this.toggleMessages()
 
       if (this.messagesOpen && this.filterOpen) {
         this.toggleFilterModal()

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 export const useAllLocationsStore = defineStore('allLocationsStore', {
   state: () => ({
     allLocations: [],
+    firstPhotos: {},
   }),
   actions: {
     setAllLocations(locations) {
