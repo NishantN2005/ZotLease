@@ -95,7 +95,7 @@
       />
 
       <LeaseList
-        v-show="listView"
+        v-show="listView && (!chatStore.chatRoomID || !isSmallScreen)"
         :allLocations="allLocationsStore"
         :filterStore="filterStore"
         :turnOnSubleaseModal="turnOnSubleaseModal"

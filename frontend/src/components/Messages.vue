@@ -39,22 +39,23 @@
           <i class="fas fa-times"></i>
         </button>
 
-        <h2 class="text-white font-extrabold text-2xl mt-4">{{ partnerName }}'s Properties</h2>
-        <div class="w-5/6 h-full mt-4 overflow-y-auto">
-          <div
-            v-if="listings.length > 0"
-            class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-4 rounded-lg"
-          >
+        <!-- Responsive Title -->
+        <h2 class="text-white font-extrabold text-2xl sm:text-3xl mt-4 text-center">
+          {{ partnerName }}'s Properties
+        </h2>
+
+        <div class="w-full mt-4 px-4 flex justify-center">
+          <div v-if="listings.length > 0" class="w-full rounded-lg">
             <div
               v-for="listing in listings"
               :key="listing.subleaseid"
-              class="listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer w-52"
+              class="listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer w-full mt-4"
               @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
             >
               <img
                 :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
                 alt="Failed to Render Photo"
-                class="w-full h-48 rounded-t-lg"
+                class="w-full h-48 rounded-t-lg object-cover"
               />
               <div class="p-3">
                 <h3
@@ -67,6 +68,7 @@
               </div>
             </div>
           </div>
+
           <div
             v-else
             class="flex justify-center items-center h-48 text-gray-600 font-semibold text-lg"
