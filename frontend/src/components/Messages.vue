@@ -86,7 +86,7 @@
       >
         <div class="flex items-center space-x-3 py-4 px-6 bg-stone-800 rounded-t-lg mb-5">
           <i
-            class="fas fa-user w-10 h-10 bg-stone-600 rounded-full text-white flex items-center justify-center"
+            class="cursor-pointer fas fa-user w-10 h-10 bg-stone-600 rounded-full text-white flex items-center justify-center"
             @click="toggleMessageProfile"
           ></i>
           <h4 class="text-stone-300 font-bold text-xl">{{ partnerName }}</h4>
