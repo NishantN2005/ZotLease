@@ -4,7 +4,7 @@
     @click="toggleSidebar"
     :class="[
       'md:hidden p-4 fixed top-0 left-0 z-50',
-      isSidebarOpen ? 'text-white' : 'text-neutral-900'
+      isSidebarOpen ? 'text-white' : 'text-neutral-900',
     ]"
   >
     <svg
@@ -24,9 +24,7 @@
   </button>
 
   <!-- Desktop Sidebar -->
-  <div
-    class="hidden md:flex flex-col justify-between bg-neutral-900 text-white h-full w-24 z-40"
-  >
+  <div class="hidden md:flex flex-col justify-between bg-neutral-900 text-white h-full w-24 z-40">
     <!-- Top Section: Profile and Buttons -->
     <div class="flex flex-col items-center space-y-6 py-4">
       <button
@@ -44,28 +42,28 @@
         </button>
         <button
           @click="toggleFilterModals"
-          :class="{'bg-stone-500': showFilterModal}"
+          :class="{ 'bg-stone-500': showFilterModal }"
           class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-filter"></i>
         </button>
         <button
           @click="toggleMessages"
-          :class="{'bg-stone-500': messagesOpen}"
+          :class="{ 'bg-stone-500': messagesOpen }"
           class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-comments"></i>
         </button>
         <button
           @click="toggleView"
-          :class="{'bg-stone-500': mapView}"
+          :class="{ 'bg-stone-500': mapView }"
           class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-map-location-dot"></i>
         </button>
         <button
           @click="toggleView(false)"
-          :class="{'bg-stone-500': !mapView}"
+          :class="{ 'bg-stone-500': !mapView }"
           class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
         >
           <i class="fas fa-list"></i>
@@ -105,28 +103,28 @@
           </button>
           <button
             @click="toggleFilterModals"
-            :class="{'bg-stone-500': showFilterModal}"
+            :class="{ 'bg-stone-500': showFilterModal }"
             class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
           >
             <i class="fas fa-filter"></i>
           </button>
           <button
             @click="toggleMessages"
-            :class="{'bg-stone-500': messagesOpen}"
+            :class="{ 'bg-stone-500': messagesOpen }"
             class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
           >
             <i class="fas fa-comments"></i>
           </button>
           <button
             @click="toggleView"
-            :class="{'bg-stone-500': mapView}"
+            :class="{ 'bg-stone-500': mapView }"
             class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
           >
             <i class="fas fa-map-location-dot"></i>
           </button>
           <button
             @click="toggleView(false)"
-            :class="{'bg-stone-500': !mapView}"
+            :class="{ 'bg-stone-500': !mapView }"
             class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
           >
             <i class="fas fa-list"></i>
@@ -209,6 +207,44 @@ export default {
       required: true,
     },
   },
+  components: {
+    Messages,
+  },
+  methods: {
+    redirectToProfile() {
+      this.router.push('/profile')
+    },
+    Logout() {
+      this.Logout() // This calls the prop passed to the component.
+    },
+    turnOnModal() {
+      this.turnOnModal()
+    },
+    toggleFilterModals() {
+      this.filterOpen = !this.filterOpen
+      if (this.filterOpen) {
+        this.chatStore.setChatRoomID(null)
+        this.chatStore.setActiveChatID(null)
+      }
+      this.toggleFilterModal()
+    },
+
+    toggleDashMessage(chatroomID, partnerName, partnerID) {
+      if (!this.messagesOpen) this.toggleMessages()
+
+      if (this.messagesOpen && this.filterOpen) {
+        this.toggleFilterModal()
+      }
+
+      this.$nextTick(() => {
+        if (Object.keys(this.messageRef).length > 0) {
+          this.messageRef.selectChat(chatroomID, partnerName, partnerID)
+          this.messageRef.updateUnreadCount(chatroomID)
+        }
+      })
+    },
+  },
+
   setup(props) {
     const isSidebarOpen = ref(false)
     const chatStore = useChatStore()
@@ -216,11 +252,11 @@ export default {
 
     const toggleSidebar = () => {
       isSidebarOpen.value = !isSidebarOpen.value
-      if(!isSidebarOpen.value){
-        if(props.messagesOpen){
+      if (!isSidebarOpen.value) {
+        if (props.messagesOpen) {
           props.toggleMessages()
         }
-        if(props.showFilterModal){
+        if (props.showFilterModal) {
           props.toggleFilterModal()
         }
       }

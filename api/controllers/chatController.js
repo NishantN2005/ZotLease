@@ -213,6 +213,7 @@ const getChatRooms = async (req, res) => {
         unreadMessages: unreadMessages,
         partnerName: partnerNames[partnerID],
       });
+      chatRooms.sort((a, b) => b.unreadMessages - a.unreadMessages);
     });
 
     console.log("newChats", chatRooms);
