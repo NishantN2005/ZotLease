@@ -288,7 +288,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  z-index: 10;
+  z-index: 30;
   padding: 0;
   margin: 0;
   color: black;
