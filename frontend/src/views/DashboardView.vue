@@ -9,7 +9,7 @@
     >
       <div class="bg-white p-4 shadow-lg rounded-lg max-h-[95vh] flex flex-col md:w-2/5 sm:w-3/4">
         <!-- Title -->
-        <h1 class="font-bold flex justify-center items-center text-xl mb-5">
+        <h1 class="font-bold flex justify-center items-center text-xl mb-5 font-Sriracha">
           Enter Sublease Information
         </h1>
         <!-- Error Message -->
@@ -30,13 +30,13 @@
         <div class="flex items-center justify-center mt-5 border-t border-gray-200 pt-4">
           <button
             @click="turnOffModal"
-            class="mx-10 px-3 py-2 border-2 border-black rounded-md hover:text-uciyellow hover:bg-uciblue"
+            class="mx-10 px-3 py-2 border-2 border-black rounded-md hover:text-neutral-900 hover:bg-neutral-200"
           >
             Cancel
           </button>
           <button
             @click="createListing"
-            class="mx-10 px-3 py-2 border-2 border-black rounded-md hover:text-uciyellow hover:bg-uciblue"
+            class="mx-10 px-3 py-2 border-2 border-black rounded-md hover:text-neutral-900 hover:bg-neutral-200"
           >
             Post Sublease
           </button>
