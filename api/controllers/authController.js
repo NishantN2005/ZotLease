@@ -172,7 +172,7 @@ const signupController = async (req, res) => {
     res.cookie("token", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "Lax",
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
