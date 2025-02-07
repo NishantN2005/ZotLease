@@ -49,6 +49,7 @@ export const makeAuthenticatedRequest = async (
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      'Cookie': `token=${token}`,
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
