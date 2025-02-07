@@ -191,6 +191,7 @@ const signupController = async (req, res) => {
 const logoutController = async (req, res) => {
   console.log('inside logout')
   console.log(req.cookies.token);
+  console.log(req?.cookies);
   if (req.cookies?.token) {
     const refreshToken = req.cookies.token;
     console.log("refresh here", refreshToken);

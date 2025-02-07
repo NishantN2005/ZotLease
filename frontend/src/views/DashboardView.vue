@@ -133,8 +133,8 @@ import Sidebar from '@/components/Sidebar.vue'
 import Messages from '../components/Messages.vue'
 import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
-import { useWindowSize } from '@vueuse/core'
-
+import { useWindowSize } from '@vueuse/core';
+import {API_URL} from '../../constants.js';
 export default {
   name: 'DashboardView',
   components: {
@@ -415,6 +415,7 @@ export default {
     }
     const Logout = async () => {
       try {
+        console.log(userStore.userToken, 'token is here')
         let response = await makeAuthenticatedRequest(
           'auth/logout',
           {},
