@@ -206,6 +206,14 @@ export default {
       type: Object,
       required: true,
     },
+    isSidebarOpen: {
+      type: Boolean,
+      required: true,
+    },
+    toggleSidebar: {
+      type: Object,
+      required: true,
+    },
   },
   components: {
     Messages,
@@ -246,22 +254,8 @@ export default {
   },
 
   setup(props) {
-    const isSidebarOpen = ref(false)
     const chatStore = useChatStore()
     const userStore = useUserStore()
-
-    const toggleSidebar = () => {
-      isSidebarOpen.value = !isSidebarOpen.value
-      if (!isSidebarOpen.value) {
-        if (props.messagesOpen) {
-          props.toggleMessages()
-        }
-        if (props.showFilterModal) {
-          props.toggleFilterModal()
-        }
-      }
-      console.log('Sidebar open:', isSidebarOpen.value)
-    }
 
     const redirectToProfile = () => {
       props.router.push('/profile')
@@ -285,8 +279,6 @@ export default {
     }
 
     return {
-      isSidebarOpen,
-      toggleSidebar,
       redirectToProfile,
       turnOnModal,
       toggleFilterModals,
