@@ -41,7 +41,7 @@ export async function uploadPhotos(path, filesRef){
         ContentType: webpFile.type
       };
 
-      return s3Client.send(new PutObjectCommand(params));
+      await s3Client.send(new PutObjectCommand(params));
     }catch(error){
       console.error('Error uploading files to S3:', error);
       return false;
