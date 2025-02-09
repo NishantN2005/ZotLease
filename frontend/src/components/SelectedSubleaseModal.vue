@@ -122,7 +122,12 @@
 
       <!-- Chat Button -->
       <button
-        @click="createChatRoom"
+        @click="
+          () => {
+            createChatRoom()
+            toggleSidebar()
+          }
+        "
         class="bg-neutral-900 text-stone-200 text-xl font-bold rounded-md py-1 px-4 transition-colors duration-200 w-full hover:bg-neutral-700"
         v-if="selectedSubleaseStore.selectedSublet.listerid !== userStore.userID"
       >
@@ -158,6 +163,10 @@ export default {
       required: true,
     },
     togglePhotoGallery: {
+      type: Function,
+      required: true,
+    },
+    toggleSidebar: {
       type: Function,
       required: true,
     },

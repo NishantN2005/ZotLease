@@ -59,6 +59,8 @@
         :showFilterModal="showFilterModal"
         :messagesOpen="messagesOpen"
         :messageRef="messageRef"
+        :isSidebarOpen="isSidebarOpen"
+        :toggleSidebar="toggleSidebar"
       />
       <!-- Filter Modal-->
       <FilterModal
@@ -111,6 +113,7 @@
         :createChatRoom="createChatRoom"
         :router="router"
         :togglePhotoGallery="togglePhotoGallery"
+        :toggleSidebar="toggleSidebar"
       />
 
       <PhotoGalleryModal v-if="showPhotoGallery" :togglePhotoGallery="togglePhotoGallery" />
@@ -139,7 +142,7 @@ import Messages from '../components/Messages.vue'
 import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
 import { useWindowSize } from '@vueuse/core'
-
+import { API_URL } from '../../constants.js'
 export default {
   name: 'DashboardView',
   components: {
@@ -183,6 +186,7 @@ export default {
     const filterStore = useFilterStore()
     const allLocationsStore = useAllLocationsStore()
     const showLoadingScreen = ref(false)
+    const isSidebarOpen = ref(false)
 
     const showSelectedSubleaseModal = ref(false)
     const showPhotoGallery = ref(false)
@@ -421,6 +425,7 @@ export default {
     }
     const Logout = async () => {
       try {
+        console.log(userStore.userToken, 'token is here')
         let response = await makeAuthenticatedRequest(
           'auth/logout',
           {},
@@ -548,6 +553,19 @@ export default {
       console.log('Updated files:', filesRef.value)
     }
 
+    const toggleSidebar = () => {
+      isSidebarOpen.value = !isSidebarOpen.value
+      if (!isSidebarOpen.value) {
+        if (props.messagesOpen) {
+          props.toggleMessages()
+        }
+        if (props.showFilterModal) {
+          props.toggleFilterModal()
+        }
+      }
+      console.log('Sidebar open:', isSidebarOpen.value)
+    }
+
     return {
       callTestRoute,
       navigateToLogin,
@@ -595,6 +613,8 @@ export default {
       toggleMessageProfile,
       messageProfileActive,
       turnOffMessageProfile,
+      isSidebarOpen,
+      toggleSidebar,
     }
   },
 }

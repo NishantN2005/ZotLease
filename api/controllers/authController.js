@@ -66,7 +66,7 @@ const loginController = async (req, res) => {
   res.cookie("token", refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "Lax",
+    sameSite: "None",
     maxAge: 24 * 60 * 60 * 1000,
   });
 
@@ -172,7 +172,7 @@ const signupController = async (req, res) => {
     res.cookie("token", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "Lax",
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -189,7 +189,9 @@ const signupController = async (req, res) => {
 };
 
 const logoutController = async (req, res) => {
+  console.log('inside logout')
   console.log(req.cookies.token);
+
   if (req.cookies?.token) {
     const refreshToken = req.cookies.token;
     console.log("refresh here", refreshToken);
