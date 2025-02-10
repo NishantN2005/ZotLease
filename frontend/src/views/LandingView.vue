@@ -71,9 +71,11 @@
         <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-14 text-center">
           How it works
         </h2>
-        <h1 class="flex items-center justify-center w-full text-neutral-900">
-          THIS IS WHERE THE DEMO VIDEO SHOULD GO
-        </h1>
+        <div class="flex items-center justify-center w-full text-neutral-900">
+          <video controls> 
+            <source src="/videos/Demo.mp4" type="video/mp4">
+          </video>
+        </div>
       </div>
     </section>
 
