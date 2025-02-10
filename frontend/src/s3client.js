@@ -38,7 +38,7 @@ export async function uploadPhotos(path, filesRef){
       const params = {
         Bucket: PHOTO_BUCKET,
         Key: `${path}/${webpFile.name}`,
-        Body: webpFile,
+        Body: arrayBuffer,
         ContentType: webpFile.type
       };
 
