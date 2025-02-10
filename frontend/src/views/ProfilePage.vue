@@ -38,8 +38,8 @@
         </div>
       </div>
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-if="activeListings.length==0">
-          <h1 class="text-neutral-900 font-Sriracha"> No active listings :(</h1>
+        <div v-if="activeListings.length == 0">
+          <h1 class="text-neutral-900 font-Sriracha">No active listings :(</h1>
         </div>
         <div
           v-for="listing in activeListings"
@@ -73,10 +73,7 @@
             >
               Remove Listing
             </button>
-            <p
-              v-if="listing.viewcount > 0"
-              class="text-white font-medium flex items-center gap-1"
-            >
+            <p v-if="listing.viewcount > 0" class="text-white font-medium flex items-center gap-1">
               🔥 <span>{{ listing.viewcount }}</span>
               {{ listing.viewcount === 1 ? 'view' : 'views' }}
             </p>
@@ -87,7 +84,7 @@
 
     <!-- Leasing Activity Section -->
     <div class="mt-8">
-      <h2 class="text-xl font-semibold text-gray-100">Leasing Activity</h2>
+      <h2 class="text-xl font-semibold text-neutral-900">Leasing Activity</h2>
       <div v-if="isLoading" class="mt-4 bg-neutral-900 rounded-lg p-4 animate-pulse space-y-4">
         <div v-for="m in 3" :key="'activity-skeleton-' + m" class="flex items-center space-x-4">
           <div class="rounded-full bg-neutral-900 h-10 w-10"></div>
@@ -98,19 +95,12 @@
         <div v-if="leaseActivity.length === 0" class="text-gray-400">
           No leasing activity available.
         </div>
-        <ul
-          v-else
-          class="mt-4 bg-neutral-900 rounded-lg shadow-md divide-y divide-gray-700"
-        >
-          <li
-            v-for="activity in leaseActivity"
-            :key="activity.id"
-            class="text-gray-300"
-          >
-          <h1 class="pt-2 px-4">
-            {{ activity.activity }}
-          </h1>
-           <p class="px-4 text-neutral-400">{{ formatDate(activity.date) }}</p>
+        <ul v-else class="mt-4 bg-neutral-900 rounded-lg shadow-md divide-y divide-gray-700">
+          <li v-for="activity in leaseActivity" :key="activity.id" class="text-gray-300">
+            <h1 class="pt-2 px-4">
+              {{ activity.activity }}
+            </h1>
+            <p class="px-4 text-neutral-400">{{ formatDate(activity.date) }}</p>
           </li>
         </ul>
       </div>
@@ -189,7 +179,7 @@ export default {
 
       await fetchUserActivity()
 
-      isLoading.value = false;
+      isLoading.value = false
     })
 
     console.log(activeListings.value)
