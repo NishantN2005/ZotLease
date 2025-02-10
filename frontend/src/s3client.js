@@ -42,14 +42,16 @@ export async function uploadPhotos(path, filesRef){
         ContentType: webpFile.type
       };
 
-      return s3Client.send(new PutObjectCommand(params));
+      await s3Client.send(new PutObjectCommand(params));
+      return `https://${PHOTO_BUCKET}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com/${params.Key}`
     }catch(error){
       console.error('Error uploading files to S3:', error);
       return false;
     };
   });
   console.log(uploadPromises);
-  return Promise.all(uploadPromises);
+  const fileURLS = await Promise.all(uploadPromises);
+  return fileURLS;
 }
 
 /**
