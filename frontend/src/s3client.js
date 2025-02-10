@@ -37,9 +37,9 @@ export async function uploadPhotos(path, filesRef){
       console.log('PATHS ARE HERE: ', `${path}/${webpFile.name}`)
       const params = {
         Bucket: PHOTO_BUCKET,
-        Key: `${path}/${webpFile.name}`,
-        Body: webpFile,
-        ContentType: webpFile.type
+        Key: `${path}/${file.name}`,
+        Body: file,
+        ContentType: file.type
       };
 
       await s3Client.send(new PutObjectCommand(params));
