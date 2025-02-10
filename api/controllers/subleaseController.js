@@ -125,7 +125,7 @@ const getSubleasesController = async (req, res) => {
   const query =
     "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount FROM sublease";
   const response = await pool.query(query);
-
+  console.log(response.rows, 'get here')
   return res.status(200).json(response.rows);
 };
 
