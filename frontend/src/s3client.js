@@ -32,8 +32,9 @@ export async function uploadPhotos(path, filesRef){
         newName = file.name;
       }
       console.log(dotIndex, newName);
-      const webpFile = new Blob([compressedFile], `${newName}.webp`, {type: 'image/webp'});
+      const webpFile = new File([compressedFile], `${newName}.webp`, {type: 'image/webp'});
       console.log('PATHS ARE HERE: ', `${path}/${webpFile.name}`)
+      const arrayBuffer = await webpFile.arrayBuffer();
       const params = {
         Bucket: PHOTO_BUCKET,
         Key: `${path}/${webpFile.name}`,
