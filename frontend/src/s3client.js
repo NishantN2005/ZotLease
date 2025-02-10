@@ -13,28 +13,9 @@ const s3Client = new S3Client({
     },
   });
 export async function uploadPhotos(path, filesRef){
-  const uploadPromises = Array.from(filesRef).map(async (file) => {
-    const options = {
-      maxSizeMB: 1,
-      maxWidthOrHeight: 1920,
-      useWebWorker: true,
-      fileType: 'image/webp'
-    }
+  const uploadPromises = filesRef.map(async (file) => {
 
     try{
-      const compressedFile = await imageCompression(file, options);
-      console.log('COMPRESSED FILE: ', compressedFile);
-      const dotIndex = file.name.lastIndexOf('.');
-      let newName;
-      if(dotIndex !== -1){
-        newName = file.name.substring(0, dotIndex);
-      }else{
-        newName = file.name;
-      }
-      console.log(dotIndex, newName);
-      const webpFile = new File([compressedFile], `${newName}.webp`, {type: 'image/webp'});
-
-      console.log('PATHS ARE HERE: ', `${path}/${webpFile.name}`)
       const params = {
         Bucket: PHOTO_BUCKET,
         Key: `${path}/${file.name}`,
@@ -42,16 +23,17 @@ export async function uploadPhotos(path, filesRef){
         ContentType: file.type
       };
 
-      await s3Client.send(new PutObjectCommand(params));
+      const command = new PutObjectCommand(params);
+      await s3Client.send(command);
       return `https://${PHOTO_BUCKET}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com/${params.Key}`
     }catch(error){
       console.error('Error uploading files to S3:', error);
       return false;
     };
   });
-  console.log(uploadPromises);
-  const fileURLS = await Promise.all(uploadPromises);
-  return fileURLS;
+  // Wait for all uploads to complete
+  const fileUrls = await Promise.all(uploadPromises);
+  return fileUrls;
 }
 
 /**
