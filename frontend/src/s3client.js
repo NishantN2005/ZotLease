@@ -23,7 +23,7 @@ export async function uploadPhotos(path, filesRef){
 
     try{
       const compressedFile = await imageCompression(file, options);
-
+      console.log('COMPRESSED FILE: ', compressedFile);
       const dotIndex = file.name.lastIndexOf('.');
       let newName;
       if(dotIndex !== -1){
@@ -31,6 +31,7 @@ export async function uploadPhotos(path, filesRef){
       }else{
         newName = file.name;
       }
+      console.log(dotIndex, newName);
       const webpFile = new File([compressedFile], `${newName}.webp`, {type: 'image/webp'});
 
       console.log('PATHS ARE HERE: ', `${path}/${webpFile.name}`)
