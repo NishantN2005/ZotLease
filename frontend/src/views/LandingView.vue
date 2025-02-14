@@ -51,7 +51,7 @@
 
     <!-- Hero Section - Leaflet Map -->
     <header
-      class="z-10 relative flex flex-col items-center justify-center text-center text-neutral-900 overflow-hidden pt-16 bg-black h-[100vh] md:h-[80vh]"
+      class="z-10 relative flex flex-col items-center justify-center text-center text-neutral-900 overflow-hidden pt-16 bg-black h-[80vh] md:h-[80vh]"
     >
       <div id="map" class="w-full h-full blur-sm"></div>
       <div class="z-50 absolute top-1/4 right-8 text-right">
