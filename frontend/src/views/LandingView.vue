@@ -51,7 +51,7 @@
 
     <!-- Hero Section - Leaflet Map -->
     <header
-      class="z-10 relative flex flex-col items-center justify-center text-center text-neutral-900 overflow-hidden pt-16 bg-black h-[100vh] md:h-[80vh]"
+      class="z-10 relative flex flex-col items-center justify-center text-center text-neutral-900 overflow-hidden pt-16 bg-black h-[80vh] md:h-[80vh]"
     >
       <div id="map" class="w-full h-full blur-sm"></div>
       <div class="z-50 absolute top-1/4 right-8 text-right">
@@ -71,9 +71,11 @@
         <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-14 text-center">
           How it works
         </h2>
-        <h1 class="flex items-center justify-center w-full text-neutral-900">
-          THIS IS WHERE THE DEMO VIDEO SHOULD GO
-        </h1>
+        <div class="flex items-center justify-center w-full text-neutral-900">
+          <video controls> 
+            <source src="/videos/Demo.mp4" type="video/mp4">
+          </video>
+        </div>
       </div>
     </section>
 
