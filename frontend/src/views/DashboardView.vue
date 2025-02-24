@@ -94,7 +94,37 @@
         :userID="userStore.userID"
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :filterForm="filterForm"
+        :toggleMapCard="toggleMapCard"
+        :setEventPos="setEventPos"
       />
+
+      <div
+        v-for="listing in filteredListings"
+        :key="listing.subleaseid"
+        class="absolute listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer"
+        :style="cardPosition"
+        @click="
+          () => {
+            console.log('boo')
+            //activateSubleaseModal(listing.subleaseid, listing.id)
+          }
+        "
+      >
+        <img
+          :src="allLocationsStore.firstPhotos[listing?.subleaseid] || housePlaceholder"
+          alt="Failed to Render Photo"
+          class="w-full h-48 rounded-t-lg"
+        />
+        <div class="p-3">
+          <h3
+            class="font-bold text-black"
+            style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
+          >
+            ${{ listing.price }}
+          </h3>
+          <p class="text-gray-600">{{ [listing.street_name, listing.city].join(', ') }}</p>
+        </div>
+      </div>
 
       <LeaseList
         v-show="listView && (!chatStore.chatRoomID || !isSmallScreen)"
@@ -131,7 +161,7 @@ import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import SocketConnection from '@/components/SocketConnection.vue'
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
 import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import FilterModal from '@/components/FilterModal.vue'
 import { useFilterStore } from '@/stores/filterStore'
 import SelectedSubleaseModal from '@/components/SelectedSubleaseModal.vue'
@@ -187,11 +217,13 @@ export default {
     const allLocationsStore = useAllLocationsStore()
     const showLoadingScreen = ref(false)
     const isSidebarOpen = ref(false)
+    const activeHoverID = ref(null)
 
     const showSelectedSubleaseModal = ref(false)
     const showPhotoGallery = ref(false)
     const showFilterModal = ref(false)
     const messagesOpen = ref(false)
+    const pinHovered = ref(false)
     const messageRef = ref({})
     const filterForm = ref({
       gender: '',
@@ -229,6 +261,31 @@ export default {
     const listView = ref(false)
     const filterOpen = ref(false)
     const messageProfileActive = ref(false)
+    const cardPosition = ref({ top: '0px', left: '0px' })
+
+    const filteredListings = computed(() => {
+      console.log('change in active', activeHoverID.value)
+      const offset = 10 // offset for positioning the card next to the cursor
+
+      return (
+        allLocationsStore.allLocations?.filter((listing) => listing?.id === activeHoverID.value) ||
+        []
+      )
+    })
+    watch(filteredListings, (newVal) => {
+      console.log('Filtered Listings:', newVal)
+    })
+
+    const setEventPos = (e) => {
+      const offset = 10
+      const mouseX = e.originalEvent.clientX
+      const mouseY = e.originalEvent.clientY
+
+      cardPosition.value = {
+        top: `${mouseY + offset}px`,
+        left: `${mouseX + offset}px`,
+      }
+    }
 
     const turnOffModal = () => {
       console.log('modal off')
@@ -282,6 +339,11 @@ export default {
       } catch (error) {
         console.error('Error fetching chat rooms:', error)
       }
+    }
+
+    const toggleMapCard = (uniqueid) => {
+      pinHovered.value = !pinHovered.value
+      activeHoverID.value = uniqueid
     }
 
     const findChatRooms = () => {
@@ -615,6 +677,10 @@ export default {
       turnOffMessageProfile,
       isSidebarOpen,
       toggleSidebar,
+      toggleMapCard,
+      filteredListings,
+      setEventPos,
+      cardPosition,
     }
   },
 }

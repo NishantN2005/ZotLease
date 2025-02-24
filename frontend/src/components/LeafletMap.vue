@@ -38,6 +38,14 @@ export default {
       type: Object,
       required: true,
     },
+    toggleMapCard: {
+      type: Function,
+      required: true,
+    },
+    setEventPos: {
+      type: Function,
+      required: true,
+    },
   },
 
   setup(props) {
@@ -122,6 +130,17 @@ export default {
           marker.subleaseID = location.subleaseid
           marker.id = location.id
 
+          marker.on('mouseover', (event) => {
+            const uniqueid = marker.id // uses markers unique id
+            props.setEventPos(event)
+            props.toggleMapCard(uniqueid)
+            console.log(event)
+          })
+          marker.on('mouseout', (event) => {
+            const uniqueid = null
+            props.toggleMapCard(uniqueid)
+          })
+
           marker.on('click', async () => {
             const subid = marker.subleaseID
             const uniqueid = marker.id
@@ -169,7 +188,7 @@ export default {
       }
 
       // Initialize the Leaflet map
-      map = L.map(mapContainer, {zoomControl: false}).setView([33.644, -117.826], 15)
+      map = L.map(mapContainer, { zoomControl: false }).setView([33.644, -117.826], 15)
 
       // Add the Mapbox tile layer
       L.tileLayer(MAPBOX_TILE_URL, {
