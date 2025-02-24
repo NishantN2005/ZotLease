@@ -177,10 +177,7 @@ export default {
 
         // Assign the photos to the parent object
         allLocations.firstPhotos = photos
-        console.log(
-          'photooososss',
-          allLocations.firstPhotos['1cb815b4-41ee-4c9d-8157-bc3c2b428ed8'],
-        )
+        console.log('photooososss', allLocations.firstPhotos)
         props.turnOffLoading()
       } catch (error) {
         console.error('Error fetching photos:', error)
