@@ -103,17 +103,11 @@
         :key="listing.subleaseid"
         class="absolute listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer"
         :style="cardPosition"
-        @click="
-          () => {
-            console.log('boo')
-            //activateSubleaseModal(listing.subleaseid, listing.id)
-          }
-        "
       >
         <img
           :src="allLocationsStore.firstPhotos[listing?.subleaseid] || housePlaceholder"
           alt="Failed to Render Photo"
-          class="w-full h-48 rounded-t-lg"
+          class="w-64 h-48 rounded-t-lg"
         />
         <div class="p-3">
           <h3
@@ -171,6 +165,7 @@ import Sidebar from '@/components/Sidebar.vue'
 import Messages from '../components/Messages.vue'
 import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
+import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { useWindowSize } from '@vueuse/core'
 import { API_URL } from '../../constants.js'
 export default {
@@ -681,6 +676,7 @@ export default {
       filteredListings,
       setEventPos,
       cardPosition,
+      housePlaceholder,
     }
   },
 }
