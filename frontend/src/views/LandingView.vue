@@ -72,8 +72,8 @@
           How it works
         </h2>
         <div class="flex items-center justify-center w-full text-neutral-900">
-          <video controls> 
-            <source src="/videos/Demo.mp4" type="video/mp4">
+          <video controls>
+            <source src="/videos/Demo.mp4" type="video/mp4" />
           </video>
         </div>
       </div>
