@@ -4,5 +4,4 @@ import { RouterView } from 'vue-router'
 
 <template>
   <RouterView />
-  <vue-cookieconsent />
 </template>
