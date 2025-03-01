@@ -1,11 +1,13 @@
 <template>
-  <div id="map"></div>
+  <div id="map" class="relative h-full w-full"></div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
+import 'leaflet-control-geocoder/dist/Control.Geocoder.css'
+import 'leaflet-control-geocoder'
 import { makeAuthenticatedRequest } from '../services/authService.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
 import { useFilterStore } from '@/stores/filterStore'
@@ -84,16 +86,16 @@ export default {
         html: `
           <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 24 24" fill="none">
             <!-- Outer Pin Shape -->
-            <path 
-              d="M12 0C7.03 0 3 4.03 3 9C3 15 12 24 12 24S21 15 21 9C21 4.03 16.97 0 12 0Z" 
-              fill=${hexColor} 
+            <path
+              d="M12 0C7.03 0 3 4.03 3 9C3 15 12 24 12 24S21 15 21 9C21 4.03 16.97 0 12 0Z"
+              fill=${hexColor}
             />
             <!-- Inner Circle -->
-            <circle 
-              cx="12" 
-              cy="9" 
-              r="3" 
-              fill="#FFFFFF" 
+            <circle
+              cx="12"
+              cy="9"
+              r="3"
+              fill="#FFFFFF"
             />
           </svg>
         `,
@@ -201,6 +203,31 @@ export default {
           '<a href="https://www.mapbox.com/">Mapbox</a>',
       }).addTo(map)
 
+      var geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false,
+        position: 'topleft',
+      })
+        .on('markgeocode', function (e) {
+          // No bounding box or polygon added here
+          // You can simply zoom the map to the geocode location
+          map.fitBounds(e.geocode.bbox) // Fits the map bounds to the geocode result
+        })
+        .addTo(map)
+
+      function updateGeocoderPosition() {
+        if (window.innerWidth <= 768) {
+          geocoder.setPosition('bottomleft') // Move to bottom-left on smaller screens
+        } else {
+          geocoder.setPosition('topleft') // Move to top-left on larger screens
+        }
+      }
+
+      // Update position on initial load
+      updateGeocoderPosition()
+
+      // Update position on window resize
+      window.addEventListener('resize', updateGeocoderPosition)
+
       // Create a LayerGroup to hold markers
       markersLayer = L.layerGroup().addTo(map)
 
@@ -215,7 +242,6 @@ export default {
 
       map.on('locationfound', (e) => {
         map.setView(e.latlng, 16) // Zoom into the user's location
-        console.alert('lolll')
       })
 
       map.on('locationerror', () => {
@@ -649,6 +675,10 @@ export default {
         map = null
       }
     })
+
+    return {
+      MAPBOX_ACCESS_TOKEN,
+    }
   },
 }
 </script>
