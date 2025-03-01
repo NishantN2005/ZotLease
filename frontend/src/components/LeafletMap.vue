@@ -210,6 +210,18 @@ export default {
       // Add markers for the initial (unfiltered) load
       addMarkers(allLocationsStore.allLocations)
 
+      // Get user location data and zoom into it
+      map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true })
+
+      map.on('locationfound', (e) => {
+        map.setView(e.latlng, 16) // Zoom into the user's location
+        console.alert('lolll')
+      })
+
+      map.on('locationerror', () => {
+        console.error('Geolocation failed.')
+      })
+
       // 5. Watch filter store changes.
       //    Whenever `acceptedSubleases` changes, re-draw markers.
       watch(
