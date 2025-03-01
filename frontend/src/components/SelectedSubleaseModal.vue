@@ -42,26 +42,37 @@
 
     <!-- Content Container -->
     <div class="space-y-3 text-gray-700 overflow-auto mt-2">
-      <div v-if="true" class="mt-4 flex flex-col gap-1">
-        <!-- Top Image -->
-        <img
-          v-for="(photo, index) in selectedSubleaseStore.photos.slice(0, 1)"
-          :key="index"
-          :src="photo"
-          :alt="'Photo ' + (index + 1)"
-          class="rounded shadow w-full h-64"
-        />
-
-        <div class="flex gap-1 relative">
+      <div class="mt-4 flex flex-col gap-1">
+        <!-- Top Image with Skeleton Overlay -->
+        <div v-if="selectedSubleaseStore.photos.length" class="relative w-full h-64">
+          <div v-if="!loadedImages[0]" class="animate-pulse bg-gray-300 absolute inset-0 rounded shadow"></div>
           <img
+            :src="selectedSubleaseStore.photos[0]"
+            @load="onImageLoad(0)"
+            :alt="'Photo 1'"
+            class="rounded shadow w-full h-64"
+            v-show="loadedImages[0]"
+          />
+        </div>
+
+        <!-- Secondary Images with Skeleton Overlays -->
+        <div class="flex gap-1 relative mt-4" v-if="selectedSubleaseStore.photos.length > 1">
+          <div
             v-for="(photo, index) in selectedSubleaseStore.photos.slice(1, 3)"
             :key="index"
-            :src="photo"
-            :alt="'Photo ' + (index + 2)"
-            class="rounded shadow w-1/2 h-48"
-          />
+            class="relative w-1/2 h-48"
+          >
+            <div v-if="!loadedImages[index + 1]" class="animate-pulse bg-gray-300 absolute inset-0 rounded shadow"></div>
+            <img
+              :src="photo"
+              @load="onImageLoad(index + 1)"
+              :alt="'Photo ' + (index + 2)"
+              class="rounded shadow w-full h-48"
+              v-show="loadedImages[index + 1]"
+            />
+          </div>
 
-          <!-- View All Button (on the 3rd image) -->
+          <!-- View All Button (if more than 3 photos) -->
           <button
             class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white text-xs px-3 py-1 rounded"
             @click="togglePhotoGallery"
@@ -72,29 +83,22 @@
         </div>
       </div>
 
-      <!-- Price -->
+      <!-- Price, Terms, Rooms, Address, Description, and Chat Button below... -->
       <div class="flex justify-between">
         <div class="font-extrabold text-3xl text-black">
-          ${{ selectedSubleaseStore.selectedSublet.price
-          }}<span class="text-gray-500 font-normal text-lg">/mo</span>
+          ${{ selectedSubleaseStore.selectedSublet.price }}<span class="text-gray-500 font-normal text-lg">/mo</span>
         </div>
-        <!-- Start/End Term -->
         <div class="border border-gray-500 flex space-x-6 w-fit px-5 rounded-md text-sm text-black">
           <div>
-            <span class="text-xs text-gray-800">Start Term:</span> <br />{{
-              selectedSubleaseStore.selectedSublet.startterm
-            }}
+            <span class="text-xs text-gray-800">Start Term:</span> <br />{{ selectedSubleaseStore.selectedSublet.startterm }}
           </div>
           <div class="border-l border-gray-500 pl-2">
-            <span class="text-xs text-gray-800">End Term:</span> <br />
-            {{ selectedSubleaseStore.selectedSublet.endterm }}
+            <span class="text-xs text-gray-800">End Term:</span> <br />{{ selectedSubleaseStore.selectedSublet.endterm }}
           </div>
         </div>
       </div>
 
-      <!-- Rooms/Bathrooms -->
       <div class="text-black text-extrabold text-lg">
-        <span class="font-semibold"></span>
         {{ selectedSubleaseStore.selectedSublet.roomcount }}
         <span class="font-normal text-base text-gray-700">bed</span>
         {{ selectedSubleaseStore.selectedSublet.bathroomcount }}
@@ -103,16 +107,12 @@
         <span class="font-normal text-base text-gray-700">occupation</span>
       </div>
 
-      <!-- Address -->
       <div class="text-gray-700">
         {{ selectedSubleaseStore.selectedSublet.street_name }},
         {{ selectedSubleaseStore.selectedSublet.city }}, California,
-        {{ selectedSubleaseStore.selectedSublet.postal_code }} #{{
-          selectedSubleaseStore.selectedSublet.room
-        }}
+        {{ selectedSubleaseStore.selectedSublet.postal_code }} #{{ selectedSubleaseStore.selectedSublet.room }}
       </div>
 
-      <!-- Description -->
       <div>
         <span class="font-semibold text-black">Special Notes:</span>
         <p class="whitespace-pre-line mt-2 border border-gray-500 rounded-sm p-2">
@@ -120,14 +120,8 @@
         </p>
       </div>
 
-      <!-- Chat Button -->
       <button
-        @click="
-          () => {
-            createChatRoom()
-            toggleSidebar()
-          }
-        "
+        @click="() => { createChatRoom(); toggleSidebar(); }"
         class="bg-neutral-900 text-stone-200 text-xl font-bold rounded-md py-1 px-4 transition-colors duration-200 w-full hover:bg-neutral-700"
         v-if="selectedSubleaseStore.selectedSublet.listerid !== userStore.userID"
       >
@@ -146,35 +140,19 @@ import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 export default {
   name: 'SelectedSubleaseModal',
   props: {
-    showSelectedSubleaseModal: {
-      type: Boolean,
-      required: true,
-    },
-    turnOffSubleaseModal: {
-      type: Function,
-      required: true,
-    },
-    createChatRoom: {
-      type: Function,
-      required: true,
-    },
-    router: {
-      type: Object,
-      required: true,
-    },
-    togglePhotoGallery: {
-      type: Function,
-      required: true,
-    },
-    toggleSidebar: {
-      type: Function,
-      required: true,
-    },
+    showSelectedSubleaseModal: { type: Boolean, required: true },
+    turnOffSubleaseModal: { type: Function, required: true },
+    createChatRoom: { type: Function, required: true },
+    router: { type: Object, required: true },
+    togglePhotoGallery: { type: Function, required: true },
+    toggleSidebar: { type: Function, required: true },
   },
   setup(props) {
     const userStore = useUserStore()
     const selectedSubleaseStore = useSelectedSubleaseStore()
     const selectedTab = ref(0)
+    // Track individual image load states
+    const loadedImages = ref([])
 
     const selectSublet = (index) => {
       selectedTab.value = index
@@ -183,28 +161,34 @@ export default {
 
     async function fetchPhotos(newSublet) {
       try {
-        console.log('fetching photos')
-        const key = `${newSublet.listerid}/${selectedSubleaseStore.subleaseID}` // Dynamic prefix
-        console.log(key)
+        const key = `${newSublet.listerid}/${selectedSubleaseStore.subleaseID}`
         const response = await getPhotos(key)
-        console.log(response)
         selectedSubleaseStore.setPhotos(response)
       } catch (error) {
         console.error('Error fetching photos:', error)
       }
     }
 
+    // When photos array updates, initialize loadedImages to false for each photo
+    watch(
+      () => selectedSubleaseStore.photos,
+      (newPhotos) => {
+        loadedImages.value = new Array(newPhotos.length).fill(false)
+      }
+    )
+
+    // Watch for changes to the selected sublet and fetch photos accordingly
     watch(
       () => selectedSubleaseStore.selectedSublet,
       (newSublet) => {
         if (newSublet) {
-          console.log('HERE', newSublet.listerid)
           fetchPhotos(newSublet)
         }
       },
-      { immediate: true },
+      { immediate: true }
     )
-    // Watch for changes in subletters and set the default selected sublet
+
+    // Watch for subletters and set the default selected sublet
     watch(
       () => selectedSubleaseStore.subletters,
       (newSubletters) => {
@@ -212,14 +196,21 @@ export default {
           selectedSubleaseStore.selectedSublet = newSubletters[0]
         }
       },
-      { immediate: true },
+      { immediate: true }
     )
+
+    // Called when an image finishes loading
+    function onImageLoad(index) {
+      loadedImages.value[index] = true
+    }
 
     return {
       selectedSubleaseStore,
       selectedTab,
       selectSublet,
       userStore,
+      loadedImages,
+      onImageLoad,
     }
   },
 }

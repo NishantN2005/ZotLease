@@ -142,6 +142,7 @@ export default {
           })
 
           marker.on('click', async () => {
+            
             const subid = marker.subleaseID
             const uniqueid = marker.id
             const userid = userStore.userID
