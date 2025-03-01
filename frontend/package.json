@@ -35,8 +35,8 @@
     "pinia": "^2.2.6",
     "pinia-plugin-persistedstate": "^4.2.0",
     "socket.io-client": "^4.8.1",
-    "vue": "^3.5.13",
     "vanilla-cookieconsent": "^3.1.0",
+    "vue": "^3.5.13",
     "vue-router": "^4.4.5",
     "vue-typer": "^1.2.0",
     "vue-typewriter-effect": "^1.0.1"
