@@ -2,8 +2,7 @@
   <div
     v-if="showSelectedSubleaseModal"
     id="filterModal"
-    class="absolute inset-0 z-10 bg-white p-4 shadow-md border border-gray-200 overflow-y-auto w-screen h-[calc(100vh-env(safe-area-inset-bottom))] md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:h-auto md:rounded-lg"
-    style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
+    class="fixed inset-0 z-10 bg-white px-4 pt-4 pb-16 md:pb-4 shadow-md border border-gray-200 overflow-y-auto w-screen h-[calc(100vh-env(safe-area-inset-bottom))] md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:h-auto md:rounded-lg"
   >
     <div class="flex items-center justify-between">
       <!-- Title -->
@@ -45,7 +44,10 @@
       <div class="mt-4 flex flex-col gap-1">
         <!-- Top Image with Skeleton Overlay -->
         <div v-if="selectedSubleaseStore.photos.length" class="relative w-full h-64">
-          <div v-if="!loadedImages[0]" class="animate-pulse bg-gray-300 absolute inset-0 rounded shadow"></div>
+          <div
+            v-if="!loadedImages[0]"
+            class="animate-pulse bg-gray-300 absolute inset-0 rounded shadow"
+          ></div>
           <img
             :src="selectedSubleaseStore.photos[0]"
             @load="onImageLoad(0)"
@@ -62,7 +64,10 @@
             :key="index"
             class="relative w-1/2 h-48"
           >
-            <div v-if="!loadedImages[index + 1]" class="animate-pulse bg-gray-300 absolute inset-0 rounded shadow"></div>
+            <div
+              v-if="!loadedImages[index + 1]"
+              class="animate-pulse bg-gray-300 absolute inset-0 rounded shadow"
+            ></div>
             <img
               :src="photo"
               @load="onImageLoad(index + 1)"
@@ -86,14 +91,19 @@
       <!-- Price, Terms, Rooms, Address, Description, and Chat Button below... -->
       <div class="flex justify-between">
         <div class="font-extrabold text-3xl text-black">
-          ${{ selectedSubleaseStore.selectedSublet.price }}<span class="text-gray-500 font-normal text-lg">/mo</span>
+          ${{ selectedSubleaseStore.selectedSublet.price
+          }}<span class="text-gray-500 font-normal text-lg">/mo</span>
         </div>
         <div class="border border-gray-500 flex space-x-6 w-fit px-5 rounded-md text-sm text-black">
           <div>
-            <span class="text-xs text-gray-800">Start Term:</span> <br />{{ selectedSubleaseStore.selectedSublet.startterm }}
+            <span class="text-xs text-gray-800">Start Term:</span> <br />{{
+              selectedSubleaseStore.selectedSublet.startterm
+            }}
           </div>
           <div class="border-l border-gray-500 pl-2">
-            <span class="text-xs text-gray-800">End Term:</span> <br />{{ selectedSubleaseStore.selectedSublet.endterm }}
+            <span class="text-xs text-gray-800">End Term:</span> <br />{{
+              selectedSubleaseStore.selectedSublet.endterm
+            }}
           </div>
         </div>
       </div>
@@ -110,7 +120,9 @@
       <div class="text-gray-700">
         {{ selectedSubleaseStore.selectedSublet.street_name }},
         {{ selectedSubleaseStore.selectedSublet.city }}, California,
-        {{ selectedSubleaseStore.selectedSublet.postal_code }} #{{ selectedSubleaseStore.selectedSublet.room }}
+        {{ selectedSubleaseStore.selectedSublet.postal_code }} #{{
+          selectedSubleaseStore.selectedSublet.room
+        }}
       </div>
 
       <div>
@@ -121,7 +133,12 @@
       </div>
 
       <button
-        @click="() => { createChatRoom(); toggleSidebar(); }"
+        @click="
+          () => {
+            createChatRoom()
+            toggleSidebar()
+          }
+        "
         class="bg-neutral-900 text-stone-200 text-xl font-bold rounded-md py-1 px-4 transition-colors duration-200 w-full hover:bg-neutral-700"
         v-if="selectedSubleaseStore.selectedSublet.listerid !== userStore.userID"
       >
@@ -174,7 +191,7 @@ export default {
       () => selectedSubleaseStore.photos,
       (newPhotos) => {
         loadedImages.value = new Array(newPhotos.length).fill(false)
-      }
+      },
     )
 
     // Watch for changes to the selected sublet and fetch photos accordingly
@@ -185,7 +202,7 @@ export default {
           fetchPhotos(newSublet)
         }
       },
-      { immediate: true }
+      { immediate: true },
     )
 
     // Watch for subletters and set the default selected sublet
@@ -196,7 +213,7 @@ export default {
           selectedSubleaseStore.selectedSublet = newSubletters[0]
         }
       },
-      { immediate: true }
+      { immediate: true },
     )
 
     // Called when an image finishes loading
