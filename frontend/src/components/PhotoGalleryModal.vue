@@ -1,11 +1,14 @@
 <template>
   <div
     id="PhotoGallery"
-    class="absolute z-10 bg-white inset-y-2 right-2 md:w-1/2 lg:w-1/3 rounded-lg p-4 shadow-md border border-gray-200 overflow-y-auto"
+    class="fixed inset-0 z-10 bg-white p-4 shadow-md border border-gray-200 overflow-y-auto w-screen h-screen md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:h-auto md:rounded-lg"
     style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
   >
     <div class="flex items-center">
-      <i class="fa-solid fa-arrow-left cursor-pointer" @click="togglePhotoGallery"></i>
+      <i
+        class="fa-solid text-xl fa-xmark fixed top-4 right-4 md:top-7 md:right-8 z-20 cursor-pointer"
+        @click="togglePhotoGallery"
+      ></i>
       <h1 class="font-bold text-2xl text-gray-900 text-center flex-1">
         {{
           selectedSubleaseStore.selectedSublet.fname.charAt(0).toUpperCase() +
