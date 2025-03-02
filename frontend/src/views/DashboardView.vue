@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="flex relative w-full h-[calc(100vh-env(safe-area-inset-bottom))]">
+    <div class="flex relative w-full h-screen">
       <Sidebar
         ref="sidebarRef"
         :Logout="Logout"
