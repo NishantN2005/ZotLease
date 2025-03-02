@@ -206,6 +206,10 @@ export default {
       var geocoder = L.Control.geocoder({
         defaultMarkGeocode: false,
         position: 'topleft',
+        placeholder: 'Enter city/street...',
+        geocoder: new L.Control.Geocoder.nominatim({
+          geocodingQueryParams: { countrycodes: 'us' }, // Prioritizes US results
+        }),
       })
         .on('markgeocode', function (e) {
           // No bounding box or polygon added here
@@ -684,6 +688,15 @@ export default {
 </script>
 
 <style>
+/* Style for the Leaflet attribution */
+.leaflet-control-attribution {
+  font-size: 0.45rem; /* Smaller text size (equivalent to text-xs in Tailwind) */
+  opacity: 0.7; /* Slightly transparent */
+  padding: 0.25rem 0.5rem; /* Padding for spacing */
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+  border-radius: 0.375rem; /* Slightly rounded corners */
+}
+
 /*Legend specific*/
 .legend {
   padding: 6px 8px;

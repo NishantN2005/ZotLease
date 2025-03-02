@@ -31,6 +31,7 @@ export const useSelectedSubleaseStore = defineStore('selectedsublease', {
       this.subleaseID = null
       this.subletters = []
       this.selectedSublet = null
+      this.photos = []
     },
   },
   getters: {},
