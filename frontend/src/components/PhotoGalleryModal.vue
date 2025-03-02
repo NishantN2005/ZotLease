@@ -1,7 +1,7 @@
 <template>
   <div
     id="PhotoGallery"
-    class="fixed md:absolute inset-0 z-10 bg-white p-4 shadow-md border border-gray-200 overflow-y-auto w-screen h-[calc(100vh-env(safe-area-inset-bottom))] md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:h-auto md:rounded-lg"
+    class="absolute inset-0 z-10 bg-white p-4 shadow-md border border-gray-200 overflow-y-auto w-screen h-[calc(100vh-env(safe-area-inset-bottom))] md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:h-auto md:rounded-lg"
   >
     <div class="flex items-center">
       <i
