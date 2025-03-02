@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="flex relative w-full h-screen">
+    <div class="flex relative w-full h-[100dvh]">
       <Sidebar
         ref="sidebarRef"
         :Logout="Logout"
