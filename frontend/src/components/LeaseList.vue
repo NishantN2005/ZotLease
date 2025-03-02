@@ -1,5 +1,7 @@
 <template>
-  <div class="h-screen w-screen bg-gray-100 flex flex-col items-center py-6 relative">
+  <div
+    class="h-[calc(100vh-env(safe-area-inset-bottom))] w-screen bg-gray-100 flex flex-col items-center py-6 relative"
+  >
     <div class="relative w-5/6 flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
       <!-- Input box with search icon inside -->
       <div class="flex-grow relative">
