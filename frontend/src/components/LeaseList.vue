@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="h-[calc(100vh-env(safe-area-inset-bottom))] w-screen bg-gray-100 flex flex-col items-center py-6 relative"
-  >
+  <div class="h-[100dvh] w-screen bg-gray-100 flex flex-col items-center py-6 relative">
     <div class="relative w-5/6 flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
       <!-- Input box with search icon inside -->
       <div class="flex-grow relative">
@@ -18,11 +16,11 @@
               type="text"
               id="searchInput"
               placeholder="Address, city, ZIP"
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
+              class="w-full pl-10 pr-4 py-2 mt-6 md:mt-0 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
               @input="filterAddress($event.target.value)"
             />
             <i
-              class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              class="fas fa-search absolute left-3 top-2/3 md:top-1/2 transform -translate-y-1/2 text-gray-400"
             ></i>
           </div>
         </mapbox-address-autofill>

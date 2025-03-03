@@ -7,7 +7,9 @@
       v-if="createSubleaseModal"
       class="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
     >
-      <div class="bg-white p-4 shadow-lg rounded-lg max-h-[95vh] flex flex-col md:w-2/5 sm:w-3/4">
+      <div
+        class="bg-white p-4 shadow-lg rounded-lg h-[100dvh] md:max-h-[95vh] flex flex-col md:w-2/5 sm:w-3/4"
+      >
         <!-- Title -->
         <h1 class="font-bold flex justify-center items-center text-xl mb-5 font-Sriracha">
           Enter Sublease Information
