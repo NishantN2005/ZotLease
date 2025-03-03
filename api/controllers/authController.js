@@ -14,6 +14,7 @@ async function hashPassword(plainTextPassword) {
 async function verifyPassword(plainTextPassword, hashedPassword) {
   try {
     const isMatch = await bcrypt.compare(plainTextPassword, hashedPassword);
+    console.log("matchhhchhchchhed", isMatch);
     return isMatch; // true if passwords match, false otherwise
   } catch (error) {
     console.error("Error verifying password:", error);
@@ -42,7 +43,7 @@ const loginController = async (req, res) => {
   if (!user) return res.status(400).send({ message: "user not found" });
 
   // check password match
-  if (!verifyPassword(password, user.password)) {
+  if (!(await verifyPassword(password, user.password))) {
     console.log("Invalid password");
     return res.status(403).send({ message: "invalid login" });
   }
@@ -189,7 +190,7 @@ const signupController = async (req, res) => {
 };
 
 const logoutController = async (req, res) => {
-  console.log('inside logout')
+  console.log("inside logout");
   console.log(req.cookies.token);
 
   if (req.cookies?.token) {
