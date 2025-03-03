@@ -1,8 +1,6 @@
 import { useUserStore } from '@/stores/userStore'
 import { API_URL } from '../../constants.js'
 export const refreshAccessToken = async (router) => {
-  const userStore = useUserStore()
-
   try {
     const refreshResponse = await fetch(`${API_URL}auth/refresh`, {
       method: 'POST',
@@ -17,9 +15,8 @@ export const refreshAccessToken = async (router) => {
     const data = await refreshResponse.json()
 
     // If access token is returned, store it
+    console.log('DATTTAAAA', data, data.accessToken)
     if (data.accessToken) {
-      userStore.setUserToken(data.accessToken)
-      console.log('New access token:', data.accessToken)
       return data.accessToken
     } else {
       console.log('Token could not be refreshed')
@@ -37,19 +34,12 @@ const navigateToLogin = (router) => {
   router.push('/login')
 }
 
-export const makeAuthenticatedRequest = async (
-  endpoint,
-  data,
-  router,
-  token,
-  methodType = 'POST',
-) => {
+export const makeAuthenticatedRequest = async (endpoint, data, router, methodType = 'POST') => {
   let response = await fetch(`${API_URL}${endpoint}`, {
     method: methodType,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
   })
@@ -58,7 +48,9 @@ export const makeAuthenticatedRequest = async (
   } else {
     if (response.status == 401) {
       //if request was unauthorized
+      console.log('unathorized')
       const newAccessToken = await refreshAccessToken(router)
+      console.log('newwwwwowowow', newAccessToken)
       if (newAccessToken) {
         //make another request with new access token
         let resp = await fetch(`${API_URL}${endpoint}`, {
@@ -66,7 +58,6 @@ export const makeAuthenticatedRequest = async (
           credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${newAccessToken}`,
           },
           body: JSON.stringify(data),
         })

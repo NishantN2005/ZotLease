@@ -82,10 +82,6 @@ export default {
       type: Function,
       required: true,
     },
-    userToken: {
-      type: String,
-      required: true,
-    },
     routerPass: {
       type: Object,
       required: true,
@@ -101,7 +97,6 @@ export default {
     console.log('allLocationsStore:', allLocations)
     console.log('filterStore:', props.filterStore)
     console.log('lol')
-    console.log(props.userToken)
     let listings = ref([...allLocations.allLocations])
     const filterActive = ref(false)
     const selectedSubleaseStore = useSelectedSubleaseStore()
@@ -128,7 +123,6 @@ export default {
         'sublease/selectedInfo',
         { subleaseID: subid, uniqueid: uniqueid, userid: userID },
         props.routerPass,
-        props.userToken,
       )
 
       // parse JSON
