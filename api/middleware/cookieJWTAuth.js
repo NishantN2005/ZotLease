@@ -3,12 +3,11 @@ require("dotenv").config("api/.env");
 
 // verifies access token is valid
 cookieJwtAuth = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  console.log(authHeader);
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  const token = req.cookies["accessToken"];
+  console.log("BackTOKENHERE", token);
+  if (!token) {
     return res.status(401).send({ message: "Unauthorized. Please log in." });
   }
-  const token = authHeader.split(" ")[1];
 
   try {
     const user = jwt.verify(token, process.env.MY_SECRET);

@@ -14,7 +14,6 @@ async function hashPassword(plainTextPassword) {
 async function verifyPassword(plainTextPassword, hashedPassword) {
   try {
     const isMatch = await bcrypt.compare(plainTextPassword, hashedPassword);
-    console.log("matchhhchhchchhed", isMatch);
     return isMatch; // true if passwords match, false otherwise
   } catch (error) {
     console.error("Error verifying password:", error);
@@ -71,8 +70,14 @@ const loginController = async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
+  res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 60 * 60 * 1000,
+  });
+
   return res.json({
-    accessToken,
     id: user.userid,
     fname: user.fname,
     lname: user.lname,
@@ -110,6 +115,12 @@ const refreshController = async (req, res) => {
           expiresIn: "1h",
         }
       );
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 60 * 60 * 1000,
+      });
 
       return res.json({ accessToken, id: decoded.userID });
     });
@@ -177,10 +188,16 @@ const signupController = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 60 * 60 * 1000,
+    });
+
     return res.status(200).send({
       message: "Successfully created user profile",
       id: userID,
-      accessToken,
     });
   } catch (err) {
     // TODO: need to check if they tried to signup after already having an account
