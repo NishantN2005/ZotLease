@@ -233,8 +233,6 @@ export default {
       room: '',
       city: '',
       postal_code: '',
-      state:'',
-      country: '',
       listerID: userStore.userID,
       price: '',
       gender: '',
@@ -387,7 +385,6 @@ export default {
 
     async function createListing() {
       try {
-        console.log('creating listing', formData.value)
         formError.value.display = false
 
         let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
@@ -422,8 +419,6 @@ export default {
             room: '',
             city: '',
             postal_code: '',
-            state:'',
-            country:'',
             listerID: userStore.userID,
             price: '',
             gender: '',

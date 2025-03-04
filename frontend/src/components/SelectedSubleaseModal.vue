@@ -117,13 +117,12 @@
         <span class="font-normal text-base text-gray-700">occupation</span>
       </div>
 
-      <div class="text-gray-700">  
-        #{{selectedSubleaseStore.selectedSublet.room}} 
-          {{ selectedSubleaseStore.selectedSublet.street_name }},
-          {{ selectedSubleaseStore.selectedSublet.city }},
-          {{ selectedSubleaseStore.selectedSublet.state }}
-          {{ selectedSubleaseStore.selectedSublet.postal_code }},
-          {{ selectedSubleaseStore.selectedSublet.country }} 
+      <div class="text-gray-700">
+        {{ selectedSubleaseStore.selectedSublet.street_name }},
+        {{ selectedSubleaseStore.selectedSublet.city }}, California,
+        {{ selectedSubleaseStore.selectedSublet.postal_code }} #{{
+          selectedSubleaseStore.selectedSublet.room
+        }}
       </div>
 
       <div>
