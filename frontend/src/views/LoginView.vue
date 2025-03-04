@@ -33,6 +33,7 @@ function handleLogin() {
       credentials: 'include',
     })
       .then((res) => {
+        console.log('stats', res.status)
         if (res.status === 400 || res.status === 403) {
           isWrongPass.value = true
           formData.value.password = ''
@@ -44,6 +45,7 @@ function handleLogin() {
       })
       .then((data) => {
         console.log('Login successful:', data)
+        userStore.setUserToken(data.accessToken)
         userStore.setUserID(data.id)
         userStore.setFirstname(data.fname)
         userStore.setLastname(data.lname)

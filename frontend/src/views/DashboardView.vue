@@ -69,6 +69,7 @@
         :filterform="filterForm"
         :showFilterModal="showFilterModal"
         :routerPass="router"
+        :token="userStore.userToken"
         :toggleFilterModal="toggleFilterModal"
         :resetFilters="resetFilters"
       />
@@ -79,6 +80,7 @@
         :chatStore="chatStore"
         :router="router"
         :userStore="userStore"
+        :userToken="userStore.userToken"
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :toggleMessageProfile="toggleMessageProfile"
         :messageProfileActive="messageProfileActive"
@@ -89,6 +91,7 @@
       <LeafletMap
         v-show="mapView && (!chatStore.chatRoomID || !isSmallScreen)"
         class="z-0 w-full h-full"
+        :userToken="userStore.userToken"
         :routerPass="router"
         :userID="userStore.userID"
         :turnOnSubleaseModal="turnOnSubleaseModal"
@@ -124,6 +127,7 @@
         :allLocations="allLocationsStore"
         :filterStore="filterStore"
         :turnOnSubleaseModal="turnOnSubleaseModal"
+        :userToken="userStore.userToken"
         :routerPass="router"
         :turnOffLoading="turnOffLoading"
       />
@@ -152,7 +156,7 @@ import { useChatStore } from '@/stores/chatStore'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
 import SocketConnection from '@/components/SocketConnection.vue'
 import CreateSubleaseModal from '@/components/CreateSubleaseModal.vue'
-import { makeAuthenticatedRequest } from '@/services/authService'
+import { refreshAccessToken, makeAuthenticatedRequest } from '@/services/authService'
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import FilterModal from '@/components/FilterModal.vue'
 import { useFilterStore } from '@/stores/filterStore'
@@ -325,6 +329,7 @@ export default {
           'chat/getChatRooms',
           { userID: userStore.userID },
           router,
+          userStore.userToken,
         )
         console.log('res', response)
         const result = await response.json()
@@ -357,7 +362,12 @@ export default {
       ) {
         const userID1 = userStore.userID
         const userID2 = selectedSubleaseStore.selectedSublet.listerid
-        const res = await makeAuthenticatedRequest(`chat/createRoom`, { userID1, userID2 }, router)
+        const res = await makeAuthenticatedRequest(
+          `chat/createRoom`,
+          { userID1, userID2 },
+          router,
+          userStore.userToken,
+        )
         const newRes = await res.json()
 
         const { chatRoomID, partnerID, partnerName } = newRes.newChatRoom
@@ -379,6 +389,7 @@ export default {
         `chat/chatRoomID`,
         {}, // change this to a dictionary
         router,
+        userStore.userToken,
       )
       const textRes = await response.json()
 
@@ -390,7 +401,12 @@ export default {
         console.log('creating listing', formData.value)
         formError.value.display = false
 
-        let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
+        let response = await makeAuthenticatedRequest(
+          `sublease/create`,
+          formData.value,
+          router,
+          userStore.userToken,
+        )
         console.log(response)
 
         if (response.status == 200) {
@@ -413,6 +429,7 @@ export default {
               listerid: userStore.userID,
             },
             router,
+            userStore.userToken,
           )
           console.log(activityResponse)
 
@@ -472,12 +489,19 @@ export default {
     }
     const Logout = async () => {
       try {
-        let response = await makeAuthenticatedRequest('auth/logout', {}, router)
+        console.log(userStore.userToken, 'token is here')
+        let response = await makeAuthenticatedRequest(
+          'auth/logout',
+          {},
+          router,
+          userStore.userToken,
+        )
         console.log(response)
 
         if (response.status == 200) {
           handleSessionEnd()
           userStore.setIsLoggedIn(false)
+          userStore.setUserToken(null)
           userStore.setUserID(null)
           chatStore.setChatRoomID(null)
           chatStore.setActiveChatID(null)
@@ -503,6 +527,7 @@ export default {
           'chat/updateUnreadCount',
           { userID: userStore.userID, chatRooms: chatStore.chatRooms },
           router,
+          userStore.userToken,
         )
 
         const data = await response.json()
@@ -514,7 +539,7 @@ export default {
 
     const callTestRoute = async () => {
       try {
-        let response = await makeAuthenticatedRequest('user/test', {}, router)
+        let response = await makeAuthenticatedRequest('user/test', {}, router, userStore.userToken)
         console.log(response)
       } catch (error) {
         console.log('Failed to call /test route:', error)

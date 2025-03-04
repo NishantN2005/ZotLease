@@ -14,6 +14,7 @@ async function hashPassword(plainTextPassword) {
 async function verifyPassword(plainTextPassword, hashedPassword) {
   try {
     const isMatch = await bcrypt.compare(plainTextPassword, hashedPassword);
+    console.log("matchhhchhchchhed", isMatch);
     return isMatch; // true if passwords match, false otherwise
   } catch (error) {
     console.error("Error verifying password:", error);
@@ -62,29 +63,16 @@ const loginController = async (req, res) => {
     }
   );
 
-  const isLocal = process.env.ORIGIN === "http://localhost:5173/";
-  console.log("ORIGIN in production:", process.env.ORIGIN);
-  console.log("is this locallllll", isLocal);
-
-  // Set token cookie
+  // stores jwt as a cookie for security
   res.cookie("token", refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: isLocal ? "None" : "Lax", // SameSite=Lax should work here for cross-subdomain requests
-    maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-    domain: isLocal ? undefined : ".zotlease.org", // Apply to both the main domain and subdomains
-  });
-
-  // Set accessToken cookie
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: isLocal ? "None" : "Lax", // SameSite=Lax should work here for cross-subdomain requests
-    maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-    domain: isLocal ? undefined : ".zotlease.org", // Apply to both the main domain and subdomains
+    sameSite: "None",
+    maxAge: 24 * 60 * 60 * 1000,
   });
 
   return res.json({
+    accessToken,
     id: user.userid,
     fname: user.fname,
     lname: user.lname,
@@ -122,16 +110,6 @@ const refreshController = async (req, res) => {
           expiresIn: "1h",
         }
       );
-
-      const isLocal = process.env.ORIGIN === "http://localhost:5173/";
-      // Set accessToken cookie
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: isLocal ? "None" : "Lax", // SameSite=Lax should work here for cross-subdomain requests
-        maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-        domain: isLocal ? undefined : ".zotlease.org", // Apply to both the main domain and subdomains
-      });
 
       return res.json({ accessToken, id: decoded.userID });
     });
@@ -191,28 +169,18 @@ const signupController = async (req, res) => {
       }
     );
 
-    const isLocal = process.env.ORIGIN === "http://localhost:5173/";
-    // Set token cookie
+    // stores jwt as a cookie for security
     res.cookie("token", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: isLocal ? "None" : "Lax", // SameSite=Lax should work here for cross-subdomain requests
-      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      domain: isLocal ? undefined : ".zotlease.org", // Apply to both the main domain and subdomains
-    });
-
-    // Set accessToken cookie
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: isLocal ? "None" : "Lax", // SameSite=Lax should work here for cross-subdomain requests
-      maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
-      domain: isLocal ? undefined : ".zotlease.org", // Apply to both the main domain and subdomains
+      sameSite: "None",
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).send({
       message: "Successfully created user profile",
       id: userID,
+      accessToken,
     });
   } catch (err) {
     // TODO: need to check if they tried to signup after already having an account

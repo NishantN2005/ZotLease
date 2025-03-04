@@ -160,6 +160,7 @@ export default {
         'sublease/selectedInfo',
         { subleaseID: subid, uniqueid: uniqueid, userid: userID },
         props.router,
+        props.userToken,
       )
 
       // parse JSON
@@ -190,6 +191,7 @@ export default {
           'chat/getOfflineChats',
           { chatRoomID: newActiveChatRoomID },
           props.router,
+          props.userStore.userToken,
         )
         response = await response.json()
         props.chatStore.setOnlineChats(response.messages)
@@ -241,6 +243,10 @@ export default {
     },
     turnOnSubleaseModal: {
       type: Function,
+      required: true,
+    },
+    userToken: {
+      type: String,
       required: true,
     },
   },
