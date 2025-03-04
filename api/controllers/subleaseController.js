@@ -1,5 +1,4 @@
 const pool = require("../src/db.js");
-const {COUNTRYMAP}= require("../constants.js")
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config("api/.env");
 
@@ -10,9 +9,7 @@ const createSubleaseController = async (req, res) => {
       street_name,
       room,
       city,
-      postal_code, 
-      state, 
-      country,
+      postal_code,
       listerID,
       price,
       gender,
@@ -26,8 +23,6 @@ const createSubleaseController = async (req, res) => {
       street_name == "" ||
       city == "" ||
       postal_code == "" ||
-      state == "" ||
-      country == "" ||
       listerID == null ||
       price == "" ||
       gender == "" ||
@@ -43,10 +38,9 @@ const createSubleaseController = async (req, res) => {
      * using lat/lon so no need to santize the address
      */
     let coordinates;
-    let iso2Country = COUNTRYMAP[country] || 'US';
     //get log/lat
     const resp = await fetch(`
-      https://api.mapbox.com/search/geocode/v6/forward?address_line1=${street_name}&place=${city}&region=${state}&postcode=${postal_code}&country=${iso2Country}&limit=1&permanent=true&access_token=${process.env.MAPBOX_KEY}`);
+      https://api.mapbox.com/search/geocode/v6/forward?address_line1=${street_name}&place=${city}&region=California&postcode=${postal_code}&limit=1&permanent=true&access_token=${process.env.MAPBOX_KEY}`);
     const val = await resp.json();
     //check if address exists
     if (val.length == 0) {
@@ -82,15 +76,13 @@ const createSubleaseController = async (req, res) => {
         city,
         room,
         postal_code,
-        state,
-        country,
         startTerm,
         endTerm,
         description,
         subleaseID,
         latitude,
         longitude
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
       values: [
         listerID,
         price,
@@ -101,8 +93,6 @@ const createSubleaseController = async (req, res) => {
         city,
         room,
         postal_code,
-        state,
-        country,
         startTerm,
         endTerm,
         description,
@@ -123,8 +113,6 @@ const createSubleaseController = async (req, res) => {
       price: price,
       street_name: street_name,
       city: city,
-      state: state,
-      country: country,
       postal_code: postal_code,
     });
   } catch (err) {

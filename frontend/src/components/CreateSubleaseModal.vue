@@ -52,29 +52,6 @@
           class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
         />
       </div>
-
-      <div class="flex flex-wrap">
-        <!-- New State Field -->
-        <input
-          v-model="formData.state"
-          type="text"
-          name="address-level1"
-          id="state"
-          placeholder="State"
-          autocomplete="address-level1"
-          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
-        />
-        <!-- New Country Field -->
-        <input
-          v-model="formData.country"
-          type="text"
-          name="country"
-          id="country"
-          placeholder="Country"
-          autocomplete="country-name"
-          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
-        />
-      </div>
     </mapbox-address-autofill>
 
     <div>
