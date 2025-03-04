@@ -63,6 +63,8 @@ const loginController = async (req, res) => {
   );
 
   const isLocal = process.env.ORIGIN === "http://localhost:5173/";
+  console.log("ORIGIN in production:", process.env.ORIGIN);
+  console.log("is this locallllll", isLocal);
 
   // Set token cookie
   res.cookie("token", refreshToken, {
