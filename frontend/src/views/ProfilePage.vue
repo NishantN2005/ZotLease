@@ -135,6 +135,7 @@ export default {
           'sublease/fromUser',
           { listerid: userStore.userID },
           userStore.routerPass,
+          userStore.userToken,
         )
         const locations = await response.json()
         if (Array.isArray(locations)) {
@@ -155,6 +156,7 @@ export default {
           'activity/getActivity',
           { listerid: userStore.userID },
           userStore.routerPass,
+          userStore.userToken,
         )
         const activity = await resp.json()
         console.log(activity)
@@ -208,6 +210,7 @@ export default {
         'sublease/delete',
         { id: listingToDelete.id },
         this.$router,
+        this.userStore.userToken,
       )
       console.log(response)
 
@@ -219,6 +222,7 @@ export default {
           listerid: listingToDelete.listerid,
         },
         this.$router,
+        this.userStore.userToken,
       )
       const activity = await responseForActivity.json()
       this.leaseActivity.unshift({

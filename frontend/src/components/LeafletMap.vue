@@ -19,6 +19,10 @@ import { useUserStore } from '@/stores/userStore.js'
 export default {
   name: 'LeafletMap',
   props: {
+    userToken: {
+      type: String,
+      required: true,
+    },
     routerPass: {
       type: Object,
       required: true,
@@ -65,6 +69,7 @@ export default {
           'sublease/retrieve',
           {}, // any payload if needed
           props.routerPass,
+          props.userToken,
         )
         // Return the parsed JSON array of subleases
         return await response.json()
@@ -139,6 +144,7 @@ export default {
           })
 
           marker.on('click', async () => {
+            
             const subid = marker.subleaseID
             const uniqueid = marker.id
             const userid = userStore.userID
@@ -150,6 +156,7 @@ export default {
               'sublease/selectedInfo',
               { subleaseID: subid, uniqueid: uniqueid, userid: userid },
               props.routerPass,
+              props.userToken,
             )
             console.log(info)
             // parse JSON
