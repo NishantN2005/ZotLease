@@ -45,6 +45,7 @@ function handleLogin() {
       })
       .then((data) => {
         console.log('Login successful:', data)
+        userStore.setUserToken(data.accessToken)
         userStore.setUserID(data.id)
         userStore.setFirstname(data.fname)
         userStore.setLastname(data.lname)

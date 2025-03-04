@@ -36,7 +36,7 @@ const sendMessage = () => {
 
   if (formData.content === '') return
 
-  makeAuthenticatedRequest('chat/sendMessage', formData, props.router)
+  makeAuthenticatedRequest('chat/sendMessage', formData, props.router, userStore.userToken)
     .then((response) => {
       return response.json()
     })
@@ -92,6 +92,7 @@ onMounted(() => {
           'chat/getChatRooms',
           { userID: userStore.userID },
           props.router,
+          userStore.userToken,
         )
         console.log('Response:', response)
         const result = await response.json()
