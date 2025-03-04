@@ -33,6 +33,7 @@ function handleLogin() {
       credentials: 'include',
     })
       .then((res) => {
+        console.log('stats', res.status)
         if (res.status === 400 || res.status === 403) {
           isWrongPass.value = true
           formData.value.password = ''
