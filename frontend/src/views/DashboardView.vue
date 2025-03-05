@@ -149,8 +149,8 @@
 
 <script>
 import { useRouter } from 'vue-router'
-import LeafletMap from '../components/LeafletMap.vue'
-import LeaseList from '@/components/LeaseList.vue'
+import LeafletMap from '../components/LeafletMap.vue';
+import LeaseList from '@/components/LeaseList.vue';
 import { useUserStore } from '@/stores/userStore'
 import { useChatStore } from '@/stores/chatStore'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
@@ -169,7 +169,8 @@ import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
 import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { useWindowSize } from '@vueuse/core'
-import { API_URL } from '../../constants.js'
+
+
 export default {
   name: 'DashboardView',
   components: {
@@ -398,6 +399,7 @@ export default {
 
     async function createListing() {
       try {
+        showLoadingScreen.value = true
         console.log('creating listing', formData.value)
         formError.value.display = false
 
@@ -485,6 +487,8 @@ export default {
         }
       } catch (err) {
         console.log('Error creating listing: ', err)
+      }finally{
+        showLoadingScreen.value = false;
       }
     }
     const Logout = async () => {
