@@ -189,11 +189,13 @@ export default {
     onMounted(async () => {
       if (userStore.isLoggedIn) {
         turnOnLoading()
-        const { decoded } = await decodeToken()
+        const { decoded, token } = await decodeToken()
         userStore.setFirstname(decoded.fname)
         userStore.setLastname(decoded.lname)
         userStore.setEmail(decoded.email)
         userStore.setUserID(decoded.userid)
+        userStore.setUserToken(token)
+        console.log(token, 'tokennn')
         chatStore.onlineChats = []
         sequencialFetch()
       }

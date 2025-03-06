@@ -305,7 +305,7 @@ const decoderController = (req, res) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.MY_SECRET);
-    return res.status(200).json({ decoded });
+    return res.status(200).json({ decoded, token });
   } catch (ex) {
     res.status(400).json({ message: "Invalid token" });
   }
