@@ -5,7 +5,7 @@ const {
   loginController,
   refreshController,
   signupController,
-  logoutController
+  logoutController,
 } = require("../controllers/authController");
 
 router.post("/login", loginController);

@@ -80,6 +80,64 @@ const loginController = async (req, res) => {
   });
 };
 
+const googleAuthController = async (email, fname, lname, res) => {
+  const checkUserQuery = `SELECT * FROM users WHERE email = $1`;
+  const checkUserValues = [email];
+  const checkUserRes = await pool.query(checkUserQuery, checkUserValues);
+
+  let userid;
+  if (!lname) lname = "";
+
+  if (checkUserRes.rowCount === 0) {
+    userid = uuidv4();
+    const defaultPassword = uuidv4();
+    const insertUserQuery = `INSERT INTO users (userID, email, fname, lname, password) VALUES ($1, $2, $3, $4, $5)`;
+    const insertUserValues = [userid, email, fname, lname, defaultPassword];
+    await pool.query(insertUserQuery, insertUserValues);
+  } else {
+    console.log(checkUserRes.rows[0]);
+    userid = checkUserRes.rows[0].userid;
+  }
+  console.log("YOYOYOOYYO");
+  console.log("USERID", userid);
+
+  const user = {
+    fname: fname,
+    lname: lname,
+    email: email,
+  };
+
+  const accessToken = jwt.sign(user, process.env.MY_SECRET, {
+    expiresIn: "1h",
+  });
+
+  const refreshToken = jwt.sign(
+    { email: email, jti: uuidv4() },
+    process.env.MY_SECRET,
+    {
+      expiresIn: "8h",
+    }
+  );
+
+  // stores jwt as a cookie for security
+  res.cookie("token", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+
+  // stores access jwt as a cookie for security
+  res.cookie("accesstoken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 24 * 60 * 60,
+  });
+
+  return { accessToken, id: userid };
+};
+
 const refreshController = async (req, res) => {
   if (req.cookies?.token) {
     const refreshToken = req.cookies.token;
@@ -226,9 +284,11 @@ const logoutController = async (req, res) => {
     .status(400)
     .send({ message: "Refresh token was already cleared", success: false });
 };
+
 module.exports = {
   loginController,
   signupController,
   refreshController,
   logoutController,
+  googleAuthController,
 };

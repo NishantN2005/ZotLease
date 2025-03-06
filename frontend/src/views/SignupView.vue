@@ -23,6 +23,15 @@ function backToLogin() {
   router.push('/')
 }
 
+function loginWithGoogle() {
+  const CLIENTID = import.meta.env.VITE_CLIENT_ID
+  const googleURI = import.meta.env.VITE_CALLBACK_URI
+  const SCOPE = 'email profile'
+  console.log(CLIENTID, googleURI, SCOPE)
+  const authURL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENTID}&redirect_uri=${googleURI}&response_type=code&scope=${SCOPE}`
+  window.location.href = authURL
+}
+
 function handleSignup() {
   console.log(formData.value)
   if (
@@ -182,6 +191,13 @@ function handleSignup() {
               </RouterLink>
             </p>
           </form>
+          <button
+            @click="loginWithGoogle"
+            class="w-full mt-4 flex items-center justify-center bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 focus:ring-2 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5"
+          >
+            <img src="/googlelogo.webp" alt="Google" class="w-5 h-5 mr-2" />
+            Sign in with Google
+          </button>
         </div>
       </div>
     </div>

@@ -4,7 +4,8 @@ import LoginView from '@/views/LoginView.vue'
 import LandingView from '@/views/LandingView.vue'
 import DashboardView from '@/views/DashboardView.vue'
 import ProfilePage from '@/views/ProfilePage.vue'
-import {useUserStore} from '../stores/userStore.js';
+import OathLoadingView from '@/views/OathLoadingView.vue'
+import { useUserStore } from '../stores/userStore.js'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,19 +34,25 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfilePage,
-    }
-    
+    },
+    {
+      path: '/auth/google/callback',
+      name: 'OathLoading',
+      component: OathLoadingView,
+    },
   ],
 })
 
 // Add the navigation guard
 router.beforeEach(async (to, from) => {
-  const userStore = useUserStore();
+  const userStore = useUserStore()
   if (
     // make sure the user is authenticated
     !userStore.isLoggedIn &&
     // ❗️ Avoid an infinite redirect
-    to.name !== 'login' && to.name !=='signup' && to.name!=='landing'
+    to.name !== 'login' &&
+    to.name !== 'signup' &&
+    to.name !== 'landing'
   ) {
     // redirect the user to the login page
     return { name: 'Login' }
