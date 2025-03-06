@@ -181,6 +181,9 @@ const signupController = async (req, res) => {
       message: "Successfully created user profile",
       id: userID,
       accessToken,
+      fname,
+      lname,
+      email,
     });
   } catch (err) {
     // TODO: need to check if they tried to signup after already having an account
