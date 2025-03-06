@@ -54,6 +54,9 @@ function handleSignup() {
         userStore.setUserToken(res.accessToken)
         userStore.setIsLoggedIn(true)
         userStore.setUserID(res.id)
+        userStore.setFirstname(res.fname)
+        userStore.setLastname(res.lname)
+        userStore.setEmail(res.email)
         router.push('/dashboard')
       } else {
         console.log('ERROR status was not 200: ', res.status)
