@@ -186,9 +186,14 @@ export default {
   },
   methods: {},
   setup() {
-    onMounted(() => {
+    onMounted(async () => {
       if (userStore.isLoggedIn) {
         turnOnLoading()
+        const { decoded } = await decodeToken()
+        userStore.setFirstname(decoded.fname)
+        userStore.setLastname(decoded.lname)
+        userStore.setEmail(decoded.email)
+        userStore.setUserID(decoded.userid)
         chatStore.onlineChats = []
         sequencialFetch()
       }
@@ -274,6 +279,30 @@ export default {
     watch(filteredListings, (newVal) => {
       console.log('Filtered Listings:', newVal)
     })
+
+    /// CHANGE TP CORRECT PORT
+    const decodeToken = async () => {
+      try {
+        const response = await fetch('http://localhost:5555/auth/decode', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        console.log('Decoded Token Data:', data)
+        return data
+      } catch (error) {
+        console.error('Failed to decode token:', error)
+        throw error
+      }
+    }
 
     const setEventPos = (e) => {
       const offset = 10
@@ -507,6 +536,9 @@ export default {
           chatStore.setActiveChatID(null)
           chatStore.setChatRooms([])
           chatStore.setOnlineChats([])
+          userStore.setFirstname(null)
+          userStore.setLastname(null)
+          userStore.setEmail(null)
           router.push('/login')
         } else {
           const resp = await response.json()
@@ -684,6 +716,7 @@ export default {
       setEventPos,
       cardPosition,
       housePlaceholder,
+      decodeToken,
     }
   },
 }

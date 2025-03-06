@@ -44,12 +44,6 @@ function handleLogin() {
         return res.json()
       })
       .then((data) => {
-        console.log('Login successful:', data)
-        userStore.setUserToken(data.accessToken)
-        userStore.setUserID(data.id)
-        userStore.setFirstname(data.fname)
-        userStore.setLastname(data.lname)
-        userStore.setEmail(data.email)
         userStore.setIsLoggedIn(true)
         router.push('/dashboard')
       })

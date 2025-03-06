@@ -99,12 +99,8 @@ app.get("/auth/google/callback", async (req, res) => {
     );
     console.log("INFOOOO", id, email, firstName, lastName);
 
-    // res.redirect("http://localhost:5173/dashboard");
-    return res.status(200).send({
-      message: "Successfully created user profile",
-      id: id,
-      accessToken,
-    });
+    // change to production url
+    res.redirect("http://localhost:5173/dashboard");
   } catch (error) {
     console.error("Error during authentication:", error);
     res.status(500).send("Authentication failed");

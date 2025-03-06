@@ -57,12 +57,8 @@ function handleSignup() {
     }).then(async (res) => {
       console.log(res.status)
       if (res.status == 200) {
-        //updating state of user to logged in and establishing id
-        res = await res.json()
-        console.log('sign', res)
-        userStore.setUserToken(res.accessToken)
+        //updating state of user to logged in
         userStore.setIsLoggedIn(true)
-        userStore.setUserID(res.id)
         router.push('/dashboard')
       } else {
         console.log('ERROR status was not 200: ', res.status)

@@ -12,6 +12,7 @@ import { useUserStore } from '@/stores/userStore'
 import LoadingScreen from '@/components/LoadingScreen.vue'
 
 export default {
+  // we can get rid of this component
   name: 'OathLoadingView',
   components: {
     LoadingScreen, // Register the LoadingScreen component
@@ -43,10 +44,6 @@ export default {
           if (!response.ok) {
             throw new Error('Authentication failed')
           }
-
-          userStore.setUserToken(res.accessToken)
-          userStore.setIsLoggedIn(true)
-          userStore.setUserID(res.id)
 
           // Redirect to the dashboard
           router.push('/dashboard')

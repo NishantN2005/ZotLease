@@ -71,13 +71,15 @@ const loginController = async (req, res) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return res.json({
-    accessToken,
-    id: user.userid,
-    fname: user.fname,
-    lname: user.lname,
-    email: user.email,
+  // stores access jwt as a cookie for security
+  res.cookie("accesstoken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 24 * 60 * 60,
   });
+
+  return res.status(200).send({ message: "Logged in!" });
 };
 
 const googleAuthController = async (email, fname, lname, res) => {
@@ -105,6 +107,7 @@ const googleAuthController = async (email, fname, lname, res) => {
     fname: fname,
     lname: lname,
     email: email,
+    userid: userid,
   };
 
   const accessToken = jwt.sign(user, process.env.MY_SECRET, {
@@ -208,6 +211,7 @@ const signupController = async (req, res) => {
       fname: fname,
       lname: lname,
       email: email,
+      userid: userID,
     };
 
     // creates json web token that allows access to api
@@ -235,10 +239,16 @@ const signupController = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
     });
 
+    // stores access jwt as a cookie for security
+    res.cookie("accesstoken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 24 * 60 * 60,
+    });
+
     return res.status(200).send({
       message: "Successfully created user profile",
-      id: userID,
-      accessToken,
     });
   } catch (err) {
     // TODO: need to check if they tried to signup after already having an account
@@ -285,10 +295,27 @@ const logoutController = async (req, res) => {
     .send({ message: "Refresh token was already cleared", success: false });
 };
 
+const decoderController = (req, res) => {
+  console.log("inside decoder", req.cookies);
+  const token = req.cookies.accesstoken;
+  console.log("token here", token);
+
+  if (!token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.MY_SECRET);
+    return res.status(200).json({ decoded });
+  } catch (ex) {
+    res.status(400).json({ message: "Invalid token" });
+  }
+};
+
 module.exports = {
   loginController,
   signupController,
   refreshController,
   logoutController,
   googleAuthController,
+  decoderController,
 };
