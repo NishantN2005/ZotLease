@@ -258,13 +258,23 @@ export default {
       this.chatStore.setChatRoomID(chatId)
       this.chatStore.setActiveChatID(partnerID)
     },
-    updateUnreadCount(chatroomid) {
+    async updateUnreadCount(chatroomid) {
       console.log('in message update')
       this.chatStore.chatRooms.forEach((chat) => {
         if (chat.chatRoomID === chatroomid) {
           chat.unreadMessages = 0
         }
       })
+       // Send authenticated request to update session
+       const response = await makeAuthenticatedRequest(
+          'chat/updateUnreadCount',
+          { userID: this.userStore.userID, chatRooms: this.chatStore.chatRooms },
+          this.router,
+          this.userStore.userToken,
+        )
+
+        const data = await response.json()
+        console.log(data)
     },
   },
 }
