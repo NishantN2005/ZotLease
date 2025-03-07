@@ -194,10 +194,11 @@ export default {
   methods: {},
   setup() {
     onMounted(async () => {
-      if (userStore.isLoggedIn) {
-        turnOnLoading()
-        const { decoded, token } = await decodeToken()
+      // used to check if user is logged in we can make an endpoint to do so in order to prevent unneccessary calls
+      turnOnLoading()
+      const { decoded, token } = await decodeToken()
 
+      if (userStore.isLoggedIn) {
         userStore.setFirstname(decoded.fname)
         userStore.setLastname(decoded.lname)
         userStore.setEmail(decoded.email)
@@ -301,11 +302,19 @@ export default {
         })
 
         if (!response.ok) {
+          userStore.setIsLoggedIn(false)
+          userStore.setFirstname(null)
+          userStore.setLastname(null)
+          userStore.setEmail(null)
+          userStore.setUserID(null)
+          chatStore.setChatRoomID(null)
+          chatStore.onlineChats = []
           throw new Error(`HTTP error! Status: ${response.status}`)
         }
 
         const data = await response.json()
         console.log('Decoded Token Data:', data)
+        userStore.setIsLoggedIn(true)
         return data
       } catch (error) {
         console.error('Failed to decode token:', error)

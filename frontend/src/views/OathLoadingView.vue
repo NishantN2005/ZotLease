@@ -30,9 +30,7 @@ export default {
 
       if (code) {
         try {
-          // const userInfoEndpoint = `${API_URL}auth/google/callback`
-          // hardcoded
-          const userInfoEndpoint = `http://localhost:5555/auth/google/callback`
+          const userInfoEndpoint = `${API_URL}auth/google/callback`
           const response = await fetch(userInfoEndpoint, {
             method: 'POST',
             headers: {

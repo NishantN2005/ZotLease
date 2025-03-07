@@ -54,7 +54,6 @@ const GOOGLE_CLIENT_SECRET = process.env.CLIENT_SECRET;
 // const REDIRECT_URI = "https://www.zotlease.org/auth/google/callback";
 // const REDIRECT_URI = `http://${IP}:${PORT}/auth/google/callback`;
 
-// hardcoded
 const REDIRECT_URI = `http://localhost:5555/auth/google/callback`;
 
 const oAuth2Client = new OAuth2Client(
@@ -104,7 +103,7 @@ app.get("/auth/google/callback", async (req, res) => {
     // res.redirect(`${ORIGIN}/dashboard`);
 
     // hardcoded
-    res.redirect("http://localhost:5173/dashboard");
+    res.redirect(`${ORIGIN}/dashboard`);
   } catch (error) {
     console.error("Error during authentication:", error);
     res.status(500).send("Authentication failed");

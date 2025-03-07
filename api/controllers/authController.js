@@ -10,18 +10,18 @@ console.log("AUTH ORIGIN", ORIGIN);
 // need to change domain to be dynamic
 const accessCookieOptions = {
   httpOnly: true,
-  secure: ORIGIN === "https://www.zotlease.org/",
+  secure: ORIGIN === "https://www.zotlease.org",
   sameSite: "Lax",
-  domain: ORIGIN === "https://www.zotlease.org/" ? ORIGIN : "localhost",
+  domain: ORIGIN === "https://www.zotlease.org" ? ORIGIN : "localhost",
   path: "/",
   maxAge: 24 * 60 * 60,
 };
 
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: ORIGIN === "https://www.zotlease.org/",
+  secure: ORIGIN === "https://www.zotlease.org",
   sameSite: "Lax",
-  domain: ORIGIN === "https://www.zotlease.org/" ? ORIGIN : "localhost",
+  domain: ORIGIN === "https://www.zotlease.org" ? ORIGIN : "localhost",
   path: "/",
   maxAge: 24 * 60 * 60 * 1000,
 };
@@ -274,6 +274,7 @@ const logoutController = async (req, res) => {
     console.log(response);
 
     res.clearCookie("token");
+    res.clearCookie("accesstoken");
     return res.status(200).send({
       message: "Successfully added token to blacklist",
       success: true,
