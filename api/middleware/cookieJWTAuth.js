@@ -1,16 +1,16 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config("api/.env");
 
-// verifies access token is valid
-cookieJwtAuth = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  console.log(authHeader);
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+// verifies if token is valid
+const cookieJwtAuth = (req, res, next) => {
+  const token = req.cookies.accesstoken; // Get the token from cookies
+
+  if (!token) {
     return res.status(401).send({ message: "Unauthorized. Please log in." });
   }
-  const token = authHeader.split(" ")[1];
 
   try {
+    // Verify the token
     const user = jwt.verify(token, process.env.MY_SECRET);
     req.user = user;
     next();

@@ -52,7 +52,10 @@ app.get("/health", (req, res) => {
 const GOOGLE_CLIENT_ID = process.env.CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.CLIENT_SECRET;
 // const REDIRECT_URI = "https://www.zotlease.org/auth/google/callback";
-const REDIRECT_URI = "http://localhost:5555/auth/google/callback";
+// const REDIRECT_URI = `http://${IP}:${PORT}/auth/google/callback`;
+
+// hardcoded
+const REDIRECT_URI = `http://localhost:5555/auth/google/callback`;
 
 const oAuth2Client = new OAuth2Client(
   GOOGLE_CLIENT_ID,
@@ -73,7 +76,6 @@ app.get("/auth/google", (req, res) => {
 
 app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
-  console.log("lol");
 
   try {
     // Exchange the authorization code for tokens
@@ -97,9 +99,11 @@ app.get("/auth/google/callback", async (req, res) => {
       lastName,
       res
     );
-    console.log("INFOOOO", id, email, firstName, lastName);
 
     // change to production url
+    // res.redirect(`${ORIGIN}/dashboard`);
+
+    // hardcoded
     res.redirect("http://localhost:5173/dashboard");
   } catch (error) {
     console.error("Error during authentication:", error);

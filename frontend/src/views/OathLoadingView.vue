@@ -10,6 +10,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import LoadingScreen from '@/components/LoadingScreen.vue'
+import { API_URL } from '../../constants.js'
 
 export default {
   // we can get rid of this component
@@ -19,7 +20,6 @@ export default {
   },
   setup() {
     const router = useRouter()
-    const userStore = useUserStore()
     const isLoading = ref(true)
     const error = ref(null)
 
@@ -27,12 +27,12 @@ export default {
       // Extract the code from the URL
       const queryParams = new URLSearchParams(window.location.search)
       const code = queryParams.get('code')
-      console.log('ieniocowsevbuweiwevevwevweedewde')
 
       if (code) {
         try {
-          // Send the code to backend for processing
-          const userInfoEndpoint = `${import.meta.env.VITE_API_URL}auth/google/callback`
+          // const userInfoEndpoint = `${API_URL}auth/google/callback`
+          // hardcoded
+          const userInfoEndpoint = `http://localhost:5555/auth/google/callback`
           const response = await fetch(userInfoEndpoint, {
             method: 'POST',
             headers: {
@@ -44,9 +44,6 @@ export default {
           if (!response.ok) {
             throw new Error('Authentication failed')
           }
-
-          // Redirect to the dashboard
-          router.push('/dashboard')
         } catch (err) {
           console.error('Error:', err)
           error.value = 'Authentication failed. Please try again.'

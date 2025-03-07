@@ -3,6 +3,28 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config("api/.env");
+const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
+
+console.log("AUTH ORIGIN", ORIGIN);
+
+// need to change domain to be dynamic
+const accessCookieOptions = {
+  httpOnly: true,
+  secure: ORIGIN === "https://www.zotlease.org/",
+  sameSite: "Lax",
+  domain: ORIGIN === "https://www.zotlease.org/" ? ORIGIN : "localhost",
+  path: "/",
+  maxAge: 24 * 60 * 60,
+};
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: ORIGIN === "https://www.zotlease.org/",
+  sameSite: "Lax",
+  domain: ORIGIN === "https://www.zotlease.org/" ? ORIGIN : "localhost",
+  path: "/",
+  maxAge: 24 * 60 * 60 * 1000,
+};
 
 async function hashPassword(plainTextPassword) {
   // The saltRounds parameter controls how much time is needed to calculate a single hash.
@@ -14,7 +36,6 @@ async function hashPassword(plainTextPassword) {
 async function verifyPassword(plainTextPassword, hashedPassword) {
   try {
     const isMatch = await bcrypt.compare(plainTextPassword, hashedPassword);
-    console.log("matchhhchhchchhed", isMatch);
     return isMatch; // true if passwords match, false otherwise
   } catch (error) {
     console.error("Error verifying password:", error);
@@ -64,20 +85,10 @@ const loginController = async (req, res) => {
   );
 
   // stores jwt as a cookie for security
-  res.cookie("token", refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
+  res.cookie("token", refreshToken, refreshCookieOptions);
 
   // stores access jwt as a cookie for security
-  res.cookie("accesstoken", accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    maxAge: 24 * 60 * 60,
-  });
+  res.cookie("accesstoken", accessToken, accessCookieOptions);
 
   return res.status(200).send({ message: "Logged in!" });
 };
@@ -100,8 +111,6 @@ const googleAuthController = async (email, fname, lname, res) => {
     console.log(checkUserRes.rows[0]);
     userid = checkUserRes.rows[0].userid;
   }
-  console.log("YOYOYOOYYO");
-  console.log("USERID", userid);
 
   const user = {
     fname: fname,
@@ -123,20 +132,10 @@ const googleAuthController = async (email, fname, lname, res) => {
   );
 
   // stores jwt as a cookie for security
-  res.cookie("token", refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    maxAge: 24 * 60 * 60 * 1000,
-  });
+  res.cookie("token", refreshToken, refreshCookieOptions);
 
   // stores access jwt as a cookie for security
-  res.cookie("accesstoken", accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    maxAge: 24 * 60 * 60,
-  });
+  res.cookie("accesstoken", accessToken, accessCookieOptions);
 
   return { accessToken, id: userid };
 };
@@ -232,20 +231,10 @@ const signupController = async (req, res) => {
     );
 
     // stores jwt as a cookie for security
-    res.cookie("token", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", refreshToken, refreshCookieOptions);
 
     // stores access jwt as a cookie for security
-    res.cookie("accesstoken", accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 24 * 60 * 60,
-    });
+    res.cookie("accesstoken", accessToken, accessCookieOptions);
 
     return res.status(200).send({
       message: "Successfully created user profile",

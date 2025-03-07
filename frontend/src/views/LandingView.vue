@@ -51,9 +51,22 @@
 
     <!-- Hero Section - Leaflet Map -->
     <header
-      class="z-10 relative flex flex-col items-center justify-center text-center text-neutral-900 overflow-hidden pt-16 bg-black h-[80vh] md:h-[80vh]"
+      class="group z-10 relative flex flex-col items-center justify-center text-center text-neutral-900 overflow-hidden pt-16 bg-black h-[80vh] md:h-[80vh]"
     >
       <div id="map" class="w-full h-full blur-sm"></div>
+
+      <!-- Preview button -->
+      <div
+        class="z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      >
+        <a
+          href="/dashboard"
+          class="bg-neutral-900 text-white px-6 py-3 text-lg font-Sriracha font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:bg-neutral-800 opacity-90 hover:opacity-100"
+        >
+          Preview
+        </a>
+      </div>
+
       <div class="z-50 absolute top-1/4 right-8 text-right">
         <h1 class="text-4xl md:text-6xl font-extrabold mb-4">
           <vue-typewriter-effect
