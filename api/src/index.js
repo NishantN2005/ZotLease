@@ -12,7 +12,13 @@ const activityRoutes = require("../routes/activityRoutes.js");
 const chatRoutes = require("../routes/chatRoutes.js");
 const pool = require("./db.js");
 const cron = require("node-cron");
-const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
+const {
+  ORIGIN,
+  IP,
+  PORT,
+  ENVIRONMENT,
+  REDIRECT_URI,
+} = require("../constants.js");
 require("dotenv").config("api/.env");
 const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
@@ -53,8 +59,6 @@ const GOOGLE_CLIENT_ID = process.env.CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.CLIENT_SECRET;
 // const REDIRECT_URI = "https://www.zotlease.org/auth/google/callback";
 // const REDIRECT_URI = `http://${IP}:${PORT}/auth/google/callback`;
-
-const REDIRECT_URI = `http://localhost:5555/auth/google/callback`;
 
 const oAuth2Client = new OAuth2Client(
   GOOGLE_CLIENT_ID,
