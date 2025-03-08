@@ -27,6 +27,7 @@ function loginWithGoogle() {
   const CLIENTID = import.meta.env.VITE_CLIENT_ID
   const googleURI = `${API_URL}/auth/google/callback`
   const SCOPE = 'email profile'
+  console.log('All env vars:', import.meta.env)
   console.log(CLIENTID, googleURI, SCOPE)
   const authURL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENTID}&redirect_uri=${googleURI}&response_type=code&scope=${SCOPE}`
   window.location.href = authURL
