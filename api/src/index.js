@@ -103,10 +103,6 @@ app.get("/auth/google/callback", async (req, res) => {
       res
     );
 
-    // change to production url
-    // res.redirect(`${ORIGIN}/dashboard`);
-
-    // hardcoded
     res.redirect(`${ORIGIN}/dashboard`);
   } catch (error) {
     console.error("Error during authentication:", error);

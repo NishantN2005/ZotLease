@@ -184,6 +184,7 @@ import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
 import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { useWindowSize } from '@vueuse/core'
+import { API_URL } from '../../constants'
 
 export default {
   name: 'DashboardView',
@@ -301,7 +302,7 @@ export default {
     /// CHANGE TP CORRECT PORT
     const decodeToken = async () => {
       try {
-        const response = await fetch('http://localhost:5555/auth/decode', {
+        const response = await fetch(`${API_URL}auth/decode`, {
           method: 'POST',
           credentials: 'include',
           headers: {
