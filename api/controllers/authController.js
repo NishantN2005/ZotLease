@@ -13,16 +13,16 @@ const accessCookieOptions = {
   httpOnly: true,
   secure: isProd,
   sameSite: "Lax",
-  domain: isProd ? ".zotlease.org" : "localhost",
+  domain: isProd ? "zotlease.org" : "localhost",
   path: "/",
-  maxAge: 24 * 60 * 60,
+  maxAge: 60 * 60 * 1000,
 };
 
 const refreshCookieOptions = {
   httpOnly: true,
   secure: isProd,
   sameSite: "Lax",
-  domain: isProd ? ".zotlease.org" : "localhost",
+  domain: isProd ? "zotlease.org" : "localhost",
   path: "/",
   maxAge: 24 * 60 * 60 * 1000,
 };
