@@ -5,7 +5,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { API_URL } from '../../constants.js'
+import { API_URL, VITE_CLIENT_ID } from '../../constants.js'
 library.add(faArrowCircleLeft)
 
 const router = useRouter()
@@ -24,7 +24,7 @@ function backToLogin() {
 }
 
 function loginWithGoogle() {
-  const CLIENTID = import.meta.env.VITE_CLIENT_ID
+  const CLIENTID = VITE_CLIENT_ID
   const googleURI = `${API_URL}/auth/google/callback`
   const SCOPE = 'email profile'
   console.log('All env vars:', import.meta.env)
