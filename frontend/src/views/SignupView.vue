@@ -25,7 +25,7 @@ function backToLogin() {
 
 function loginWithGoogle() {
   const CLIENTID = VITE_CLIENT_ID
-  const googleURI = `${API_URL}/auth/google/callback`
+  const googleURI = `${API_URL}auth/google/callback`
   const SCOPE = 'email profile'
   console.log('All env vars:', import.meta.env)
   console.log(CLIENTID, googleURI, SCOPE)
