@@ -57,7 +57,7 @@ function handleLogin() {
 </script>
 
 <template>
-  <section class="bg-[url('bluenehanced.jpeg')] min-h-screen bg-cover">
+  <section class="bg-[url('/bluenehanced.jpeg')] min-h-screen bg-cover">
     <div
       class="flex flex-col md:flex-row items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
     >

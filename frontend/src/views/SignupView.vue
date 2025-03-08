@@ -71,7 +71,7 @@ function handleSignup() {
 </script>
 
 <template>
-  <section class="bg-[url('bluenehanced.jpeg')] min-h-screen overflow-hidden bg-cover">
+  <section class="bg-[url('/bluenehanced.jpeg')] min-h-screen overflow-hidden bg-cover">
     <div
       class="flex flex-col md:flex-row items-center justify-center min-h-full px-6 py-8 mx-auto md:h-screen lg:py-0 w-full max-w-full"
     >
