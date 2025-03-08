@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[100dvh] w-screen bg-gray-100 flex flex-col items-center py-6 relative">
+  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative">
     <div class="relative w-5/6 flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
       <!-- Input box with search icon inside -->
       <div class="flex-grow relative">
@@ -27,30 +27,42 @@
       </div>
     </div>
 
-    <div class="w-5/6 h-full mt-4 overflow-y-auto">
-      <div
-        v-if="listings.length > 0"
-        class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-4 rounded-lg"
-      >
+    <div class="w-5/6 h-full mt-4 overflow-y-auto scrollbar-hide">
+      <div v-if="listings.length > 0" class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4">
         <div
           v-for="listing in listings"
           :key="listing.subleaseid"
-          class="listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer"
+          class="listing-card bg-transparent rounded-xl cursor-pointer overflow-hidden"
           @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
         >
-          <img
-            :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
-            alt="Failed to Render Photo"
-            class="w-full h-48 rounded-t-lg"
-          />
-          <div class="p-3">
-            <h3
-              class="font-bold text-black"
-              style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
+          <!-- Image Section -->
+          <div class="relative w-full h-64 overflow-hidden">
+            <img
+              :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
+              alt="Property Image"
+              class="w-full h-full object-cover rounded-xl transition-transform duration-300 hover:scale-105"
+            />
+            <!-- Price Tag Overlay -->
+            <div
+              class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm"
             >
-              ${{ listing.price }}
-            </h3>
-            <p class="text-gray-600">{{ [listing.street_name, listing.city].join(', ') }}</p>
+              <h3 class="text-sm font-bold text-gray-800">${{ listing.price }}</h3>
+            </div>
+          </div>
+
+          <!-- Details Section -->
+          <div class="mt-3 ml-1">
+            <!-- Location -->
+            <p class="text-md font-medium text-gray-800 truncate">
+              {{ [listing.street_name, listing.city].join(', ') }}
+            </p>
+            <!-- Additional Details -->
+            <div class="mt-1 flex items-center space-x-2 text-gray-600">
+              <i class="fas fa-bed"></i>
+              <span>{{ listing.roomcount }} beds</span>
+              <i class="fas fa-bath ml-2"></i>
+              <span>{{ listing.bathroomcount }} baths</span>
+            </div>
           </div>
         </div>
       </div>

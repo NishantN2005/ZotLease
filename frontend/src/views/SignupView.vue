@@ -86,7 +86,7 @@ function handleSignup() {
         <font-awesome-icon
           @click="backToLogin"
           icon="circle-arrow-left"
-          class="text-xl text-uciblue hover:cursor-pointer"
+          class="text-2xl text-uciblue hover:text-blue-600 hover:scale-110 transition-all duration-200 cursor-pointer"
         />
         <div class="relative w-full min-h-full flex items-center justify-center">
           <img src="/favicon.png" class="w-[620px] h-92 pr-10" alt="Petr" />

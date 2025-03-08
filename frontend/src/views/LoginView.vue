@@ -57,7 +57,7 @@ function handleLogin() {
 </script>
 
 <template>
-  <section class="bg-neutral-900 min-h-screen">
+  <section class="bg-[url('bluenehanced.jpeg')] min-h-screen bg-cover">
     <div
       class="flex flex-col md:flex-row items-center justify-center min-h-screen px-6 py-8 mx-auto md:h-screen lg:py-0"
     >
@@ -73,12 +73,12 @@ function handleLogin() {
         <font-awesome-icon
           @click="backToLogin"
           icon="circle-arrow-left"
-          class="text-xl text-uciblue hover:cursor-pointer"
+          class="text-2xl text-uciblue hover:text-blue-600 hover:scale-110 transition-all duration-200 cursor-pointer"
         />
-        <div class="w-full h-full">
-          <img src="/favicon.png" class="w-[500px] h-92 pt-5 pr-10" alt="Petr" />
+        <div class="relative w-full min-h-full flex items-center justify-center">
+          <img src="/favicon.png" class="w-[620px] h-92 pr-10" alt="Petr" />
         </div>
-        <div class="border-b border-uciblue md:border-l md:border-uciblue mr-4"></div>
+        <div class="mr-4"></div>
         <div class="w-full h-full py-8 px-5 rounded-xl">
           <h1 class="text-3xl font-bold mb-2 leading-tight tracking-tight text-black md:text-3xl">
             Sign In
@@ -94,7 +94,7 @@ function handleLogin() {
               </div>
             </div>
             <div>
-              <div class="flex items-center border-b border-gray-400 mt-7">
+              <div class="flex items-center border-b border-gray-400 mt-10">
                 <font-awesome-icon icon="user" class="mr-2" />
                 <input
                   v-model="formData.email"
@@ -107,7 +107,7 @@ function handleLogin() {
                 />
               </div>
             </div>
-            <div class="mb-4 md:mb-10 lg:mb-12 mt-7">
+            <div class="mb-8 mt-6">
               <div class="flex items-center border-b border-gray-400">
                 <font-awesome-icon icon="lock" class="mr-2" />
                 <input
@@ -135,6 +135,18 @@ function handleLogin() {
               </RouterLink>
             </p>
           </form>
+          <div class="flex items-center my-4">
+            <div class="flex-1 border-t border-gray-300"></div>
+            <span class="mx-4 text-md text-gray-500">or</span>
+            <div class="flex-1 border-t border-gray-300"></div>
+          </div>
+          <button
+            @click="loginWithGoogle"
+            class="w-full mt-4 flex items-center justify-center bg-white text-gray-700 border border-gray-300 hover:bg-gray-100 focus:ring-2 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-3.5"
+          >
+            <img src="/googlelogo.webp" alt="Google" class="w-5 h-5 mr-2" />
+            Sign in with Google
+          </button>
         </div>
       </div>
     </div>

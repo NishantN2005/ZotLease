@@ -49,9 +49,17 @@
     <transition name="slide-up">
       <div
         v-if="signupBanner"
-        class="fixed bottom-0 left-0 w-full bg-red-600/90 text-white text-center py-4 z-50 shadow-lg"
+        class="fixed bottom-0 left-0 w-full bg-uciblue/90 text-white text-center py-4 z-50 shadow-lg"
       >
-        <p class="text-lg font-semibold">Please log in to continue.</p>
+        <div class="container mx-auto px-4 flex items-center justify-between">
+          <p class="text-lg font-semibold">Please sign up to continue.</p>
+          <a
+            href="/signup"
+            class="bg-white text-uciblue px-6 py-2 text-lg font-semibold rounded-lg shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
+          >
+            Sign Up
+          </a>
+        </div>
       </div>
     </transition>
 
@@ -347,8 +355,8 @@ export default {
     const promptSignup = () => {
       signupBanner.value = true
       setTimeout(() => {
-        signupBanner.value = false // Set it back to false after 10 seconds
-      }, 10000)
+        signupBanner.value = false // Set it back to false after 5 seconds
+      }, 5000)
     }
 
     const turnOnLoading = () => {

@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen flex flex-col bg-neutral-100">
     <!-- Navbar -->
-    <nav class="bg-neutral-100 py-4 shadow-md fixed w-full z-50 font-Sriracha">
-      <div class="max-w-7xl mx-auto px-4 flex items-center justify-between">
+    <nav class="bg-neutral-100 shadow-md fixed w-full z-50 font-Sriracha">
+      <div class="max-w-7xl mx-auto px-4 flex items-center justify-between py-4">
         <!-- Left spacer (empty) -->
         <div class="flex-1 flex justify-start space-x-6"></div>
 
@@ -44,8 +44,21 @@
         </div>
       </div>
       <div v-if="isMenuOpen" class="md:hidden bg-neutral-100 shadow-md z-50">
-        <a href="/login" class="block px-4 py-2 text-neutral-900 hover:text-gray-900">Login</a>
-        <a href="/signup" class="block px-4 py-2 text-neutral-900 hover:text-gray-900">Sign Up</a>
+        <a
+          href="/login"
+          class="block px-4 py-2 text-neutral-900 hover:text-gray-900 border-y border-neutral-400"
+          >Login</a
+        >
+        <a
+          href="/signup"
+          class="block px-4 py-2 text-neutral-900 hover:text-gray-900 border-b border-neutral-400"
+          >Sign Up</a
+        >
+        <a
+          href="/dashboard"
+          class="block px-4 py-2 text-neutral-900 hover:text-gray-900 border-b border-neutral-400"
+          >Preview</a
+        >
       </div>
     </nav>
 
@@ -55,13 +68,12 @@
     >
       <div id="map" class="w-full h-full blur-sm"></div>
 
-      <!-- Preview button -->
       <div
-        class="z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        class="z-50 absolute top-2/3 md:top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       >
         <a
           href="/dashboard"
-          class="bg-neutral-900 text-white px-6 py-3 text-lg font-Sriracha font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:bg-neutral-800 opacity-90 hover:opacity-100"
+          class="bg-white/60 backdrop-blur-sm px-6 py-3 text-lg font-Sriracha font-bold rounded-lg shadow-lg hover:shadow-xl transition-all hover:bg-white/60 border border-white/60"
         >
           Preview
         </a>
@@ -84,8 +96,11 @@
         <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-14 text-center">
           How it works
         </h2>
-        <div class="flex items-center justify-center w-full text-neutral-900">
-          <video controls>
+        <div class="flex items-center justify-center w-full">
+          <video
+            controls
+            class="w-full max-w-5xl h-auto rounded-lg shadow-xl border border-gray-300 bg-black"
+          >
             <source src="/videos/Demo.mp4" type="video/mp4" />
           </video>
         </div>
@@ -136,7 +151,35 @@
 
     <!-- Footer -->
     <footer class="bg-neutral-100 py-8 text-center text-neutral-900 font-Sriracha">
-      <p class="text-sm md:text-base opacity-80">© 2024 ZotLease. All rights reserved.</p>
+      <!-- Copyright Text -->
+      <p class="text-sm md:text-base opacity-80 mb-6">© 2024 ZotLease. All rights reserved.</p>
+
+      <!-- Social Media & Email Links -->
+      <div class="flex justify-center space-x-8">
+        <!-- Instagram -->
+        <a href="https://instagram.com/zotlease" target="_blank" class="group">
+          <font-awesome-icon
+            :icon="['fab', 'instagram']"
+            class="text-2xl text-neutral-900 group-hover:text-pink-500 transition duration-300"
+          />
+        </a>
+
+        <!-- TikTok -->
+        <a href="https://www.tiktok.com/@zotlease" target="_blank" class="group">
+          <font-awesome-icon
+            :icon="['fab', 'tiktok']"
+            class="text-2xl text-neutral-900 group-hover:text-black transition duration-300"
+          />
+        </a>
+
+        <!-- Email -->
+        <a href="mailto:zotlease@gmail.com" class="group">
+          <font-awesome-icon
+            :icon="['fas', 'envelope']"
+            class="text-2xl text-neutral-900 group-hover:text-blue-500 transition duration-300"
+          />
+        </a>
+      </div>
     </footer>
   </div>
 </template>
@@ -147,11 +190,18 @@ import L from 'leaflet'
 import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 import { API_URL } from '../../constants.js'
 import VueTypewriterEffect from 'vue-typewriter-effect'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faInstagram, faTiktok } from '@fortawesome/free-brands-svg-icons'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faInstagram, faTiktok, faEnvelope)
 
 export default {
   name: 'LandingView',
   components: {
     VueTypewriterEffect,
+    FontAwesomeIcon,
   },
   setup() {
     const isMenuOpen = ref(false)
