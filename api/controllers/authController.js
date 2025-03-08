@@ -9,6 +9,8 @@ console.log("AUTH ORIGIN", ORIGIN);
 
 const isProd = ORIGIN === "https://www.zotlease.org";
 
+console.log("PROD", isProd);
+
 const accessCookieOptions = {
   httpOnly: true,
   secure: isProd,
