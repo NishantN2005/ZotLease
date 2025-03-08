@@ -18,9 +18,7 @@ export const refreshAccessToken = async (router) => {
 
     // If access token is returned, store it
     if (data.accessToken) {
-      userStore.setUserToken(data.accessToken)
-      console.log('New access token:', data.accessToken)
-      return data.accessToken
+      return // already stored in cookie
     } else {
       console.log('Token could not be refreshed')
       navigateToLogin(router)
@@ -37,39 +35,33 @@ const navigateToLogin = (router) => {
   router.push('/login')
 }
 
-export const makeAuthenticatedRequest = async (
-  endpoint,
-  data,
-  router,
-  token,
-  methodType = 'POST',
-) => {
+export const makeAuthenticatedRequest = async (endpoint, data, router, methodType = 'POST') => {
   let response = await fetch(`${API_URL}${endpoint}`, {
     method: methodType,
     credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(data),
   })
+
   if (response.ok) {
     return response
   } else {
     if (response.status == 401) {
-      //if request was unauthorized
+      // If the request was unauthorized
       const newAccessToken = await refreshAccessToken(router)
       if (newAccessToken) {
-        //make another request with new access token
+        // Make another request with the new access token (token is managed in the cookie)
         let resp = await fetch(`${API_URL}${endpoint}`, {
           method: 'POST',
-          credentials: 'include',
+          credentials: 'include', // Token is still handled via cookies
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${newAccessToken}`,
           },
           body: JSON.stringify(data),
         })
+
         if (resp.ok) {
           console.log(`Retry Response from ${endpoint}:`, resp)
           return resp
