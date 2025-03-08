@@ -10,7 +10,7 @@ const IP = "0.0.0.0";
 
 const REDIRECT_URI =
   ENVIRONMENT === "beta"
-    ? "https://zotlease-api.bwsbscgvvebvc.us-east-1.cs.amazonlightsail.com/auth/google/callback"
+    ? "https://api.zotlease.org/auth/google/callback"
     : "http://localhost:5555/auth/google/callback";
 
 const SSL_PATH = process.env.SSL_PATH;
