@@ -78,6 +78,11 @@ function handleLogin() {
         <div class="relative w-full min-h-full flex items-center justify-center">
           <img src="/favicon.png" class="w-[620px] h-92 pr-10" alt="Petr" />
         </div>
+        <!-- Vertical divider for desktop -->
+        <div class="hidden md:block w-px bg-uciblue mx-6"></div>
+
+        <!-- Horizontal divider for mobile -->
+        <div class="md:hidden w-full border-t my-6 border-uciblue"></div>
         <div class="mr-4"></div>
         <div class="w-full h-full py-8 px-5 rounded-xl">
           <h1 class="text-3xl font-bold mb-2 leading-tight tracking-tight text-black md:text-3xl">
