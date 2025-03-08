@@ -14,7 +14,7 @@ const accessCookieOptions = {
   secure: isProd,
   sameSite: "Lax",
   domain: isProd
-    ? "zotlease-api.bwsbscgvvebvc.us-east-1.cs.amazonlightsail.com"
+    ? ".zotlease.org"
     : "localhost",
   path: "/",
   maxAge: 24 * 60 * 60,
@@ -25,7 +25,7 @@ const refreshCookieOptions = {
   secure: isProd,
   sameSite: "Lax",
   domain: isProd
-    ? "zotlease-api.bwsbscgvvebvc.us-east-1.cs.amazonlightsail.com"
+    ? ".zotlease.org"
     : "localhost",
   path: "/",
   maxAge: 24 * 60 * 60 * 1000,

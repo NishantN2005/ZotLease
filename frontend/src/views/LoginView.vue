@@ -5,7 +5,7 @@ import { useUserStore } from '@/stores/userStore'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faUser, faLock, faArrowCircleLeft } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { API_URL } from '../../constants.js'
+import { API_URL, VITE_CLIENT_ID } from '../../constants.js'
 library.add(faUser, faLock, faArrowCircleLeft)
 
 const formData = ref({
@@ -20,6 +20,17 @@ const isWrongPass = ref(false)
 function backToLogin() {
   router.push('/')
 }
+
+function loginWithGoogle() {
+  const CLIENTID = VITE_CLIENT_ID
+  const googleURI = `${API_URL}auth/google/callback`
+  const SCOPE = 'email profile'
+  console.log('All env vars:', import.meta.env)
+  console.log(CLIENTID, googleURI, SCOPE)
+  const authURL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENTID}&redirect_uri=${googleURI}&response_type=code&scope=${SCOPE}`
+  window.location.href = authURL
+}
+
 function handleLogin() {
   try {
     console.log(formData.value)
