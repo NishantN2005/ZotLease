@@ -47,12 +47,14 @@ jobs:
         id: get_client_id
         run: |
           secret=$(aws secretsmanager get-secret-value --secret-id CLIENT_ID_OAUTH --query SecretString --output text)
+          echo "$secret"
           echo "CLIENT_ID=$secret" >> $GITHUB_ENV
 
       - name: Retrieve CLIENT_SECRET from Secrets Manager
         id: get_client_secret
         run: |
           secret=$(aws secretsmanager get-secret-value --secret-id CLIENT_SECRET_OAUTH --query SecretString --output text)
+          echo "$secret"
           echo "CLIENT_SECRET=$secret" >> $GITHUB_ENV
 
       - name: Build, Tag, and Push the Frontend Image to Amazon ECR
