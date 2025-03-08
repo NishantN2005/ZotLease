@@ -43,6 +43,18 @@ jobs:
           echo "$api_url"
           echo "API_URL=$api_url" >> $GITHUB_ENV
 
+      - name: Retrieve CLIENT_ID from Secrets Manager
+        id: get_client_id
+        run: |
+          secret=$(aws secretsmanager get-secret-value --secret-id CLIENT_ID_OAUTH --query SecretString --output text)
+          echo "CLIENT_ID=$secret" >> $GITHUB_ENV
+
+      - name: Retrieve CLIENT_SECRET from Secrets Manager
+        id: get_client_secret
+        run: |
+          secret=$(aws secretsmanager get-secret-value --secret-id CLIENT_SECRET_OAUTH --query SecretString --output text)
+          echo "CLIENT_SECRET=$secret" >> $GITHUB_ENV
+
       - name: Build, Tag, and Push the Frontend Image to Amazon ECR
         id: build-frontend-image
         env:
@@ -53,6 +65,8 @@ jobs:
           IMAGE_TAG: ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
           MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
           API_URL: ${{ env.API_URL }}
+          CLIENT_ID: ${{ env.CLIENT_ID }}
+          CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
         run: |
           cd frontend
           docker buildx build --build-arg VITE_AWS_ACCESS_KEY_ID=${{env.AWS_ACCESS_KEY_ID}} \
@@ -61,6 +75,8 @@ jobs:
                        --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                        --build-arg VITE_ENV=beta \
                       --build-arg VITE_API_URL=${{env.API_URL}} \
+                      --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
+                      --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
                        -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
