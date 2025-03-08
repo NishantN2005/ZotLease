@@ -12,7 +12,7 @@ const accessCookieOptions = {
   httpOnly: true,
   secure: ORIGIN === "https://www.zotlease.org",
   sameSite: "Lax",
-  domain: ORIGIN === "https://www.zotlease.org" ? "zotlease.org" : "localhost",
+  domain: ORIGIN === "https://www.zotlease.org" ? ".zotlease.org" : "localhost",
   path: "/",
   maxAge: 24 * 60 * 60,
 };
@@ -21,7 +21,7 @@ const refreshCookieOptions = {
   httpOnly: true,
   secure: ORIGIN === "https://www.zotlease.org",
   sameSite: "Lax",
-  domain: ORIGIN === "https://www.zotlease.org" ? "zotlease.org" : "localhost",
+  domain: ORIGIN === "https://www.zotlease.org" ? ".zotlease.org" : "localhost",
   path: "/",
   maxAge: 24 * 60 * 60 * 1000,
 };
