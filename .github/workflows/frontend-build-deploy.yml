@@ -132,5 +132,5 @@ jobs:
         run: |
           aws lightsail create-container-service-deployment \
           --service-name zotlease-frontend \
-          --containers "frontend={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5173=HTTP},environment={VITE_CLIENT_ID=\"VITE_CLIENT_ID\", VITE_CLIENT_SECRET=\"VITE_CLIENT_SECRET\", VITE_API_URL=\"$VITE_API_URL\",VITE_AWS_REGION=\"$VITE_AWS_REGION\",VITE_AWS_ACCESS_KEY_ID=\"$VITE_AWS_ACCESS_KEY_ID\",VITE_AWS_SECRET_ACCESS_KEY=\"$VITE_AWS_SECRET_ACCESS_KEY\",VITE_ENV=\"$VITE_ENV\",VITE_MAPBOX_TOKEN=\"$VITE_MAPBOX_TOKEN\"}}" \
+          --containers "frontend={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5173=HTTP},environment={VITE_CLIENT_ID=\"$VITE_CLIENT_ID\", VITE_CLIENT_SECRET=\"$VITE_CLIENT_SECRET\", VITE_API_URL=\"$VITE_API_URL\",VITE_AWS_REGION=\"$VITE_AWS_REGION\",VITE_AWS_ACCESS_KEY_ID=\"$VITE_AWS_ACCESS_KEY_ID\",VITE_AWS_SECRET_ACCESS_KEY=\"$VITE_AWS_SECRET_ACCESS_KEY\",VITE_ENV=\"$VITE_ENV\",VITE_MAPBOX_TOKEN=\"$VITE_MAPBOX_TOKEN\"}}" \
           --public-endpoint "containerName=frontend,containerPort=5173" \
