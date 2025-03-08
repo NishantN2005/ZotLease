@@ -120,6 +120,8 @@ const googleAuthController = async (email, fname, lname, res) => {
     userid: userid,
   };
 
+  console.log("IN GOOGLE TOKEN");
+
   const accessToken = jwt.sign(user, process.env.MY_SECRET, {
     expiresIn: "1h",
   });

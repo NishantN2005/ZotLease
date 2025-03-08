@@ -143,7 +143,7 @@ jobs:
           MY_SECRET: ${{ env.MY_SECRET }}
           VITE_MAPBOX_TOKEN: ${{ env.MAPBOX_KEY }}
           VITE_ENV: beta
-          VITE_API_URL: ${{ env.API_URL }}
+          VITE_API_URL: "https://api.zotlease.org/"
           VITE_CLIENT_ID: ${{ env.CLIENT_ID }}
           VITE_CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
 
