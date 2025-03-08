@@ -9,7 +9,7 @@ const PORT = 5555;
 const IP = "0.0.0.0";
 
 const REDIRECT_URI =
-  ENV === "beta"
+  ENVIRONMENT === "beta"
     ? "https://zotlease-api.bwsbscgvvebvc.us-east-1.cs.amazonlightsail.com/auth/google/callback"
     : "http://localhost:5555/auth/google/callback";
 
