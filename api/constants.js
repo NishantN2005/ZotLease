@@ -8,6 +8,12 @@ if (ORIGIN.endsWith('/')) {
 const PORT = 5555;
 const IP = '0.0.0.0';
 
+let API_URL;
+if(ORIGIN=='beta'){
+  API_URL = 'https://api.zotlease.com';
+}else{
+  API_URL = 'http://localhost:5555';
+}
 const SSL_PATH = process.env.SSL_PATH;
 const COUNTRYMAP = {
   'United States': 'US',
@@ -54,4 +60,6 @@ const COUNTRYMAP = {
   'Ghana': 'GH'
 };
 
-module.exports={ORIGIN,IP,PORT, ENVIRONMENT, SSL_PATH, COUNTRYMAP};
+SES_FROM_EMAIL = 'zotlease@gmail.com'
+
+module.exports={ORIGIN,IP,PORT, ENVIRONMENT, SSL_PATH, COUNTRYMAP, SES_FROM_EMAIL};

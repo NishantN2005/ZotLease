@@ -1,6 +1,7 @@
 const pool = require("../src/db.js");
 require("dotenv").config("api/.env");
 const { nanoid } = require("nanoid");
+const { sendUnreadMessagesNotification } = require('./notificationController');
 
 const createChatRoom = async (req, res) => {
   try {
@@ -109,6 +110,8 @@ const createNewChat = async (req, res) => {
     }
     console.log("Validation successful: Sender is a participant");
 
+    const recipient = sender === validationResponse.rows[0].userid1 ? validationResponse.rows[0].userid2 : validationResponse.rows[0].userid1;
+
     const incrementQuery1 = {
       text: `UPDATE chatRooms
          SET unreadCount1 = unreadCount1 + 1
@@ -129,6 +132,7 @@ const createNewChat = async (req, res) => {
     response = await pool.query(incrementQuery2);
     console.log(response);
 
+    await sendUnreadMessagesNotification(recipient)
     const messageData = {
       id,
       chatRoomID,
