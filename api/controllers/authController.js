@@ -7,22 +7,27 @@ const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
 
 console.log("AUTH ORIGIN", ORIGIN);
 
-// need to change domain to be dynamic
+const isProd = ORIGIN === "https://www.zotlease.org";
+
 const accessCookieOptions = {
   httpOnly: true,
-  secure: ORIGIN === "https://www.zotlease.org",
-  sameSite: "None",
-  //domain: ORIGIN === "https://www.zotlease.org" ? ".zotlease.org" : "localhost",
-  //path: "/",
+  secure: isProd,
+  sameSite: "Lax",
+  domain: isProd
+    ? "zotlease-api.bwsbscgvvebvc.us-east-1.cs.amazonlightsail.com"
+    : "localhost",
+  path: "/",
   maxAge: 24 * 60 * 60,
 };
 
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: ORIGIN === "https://www.zotlease.org",
-  sameSite: "None",
-  //domain: ORIGIN === "https://www.zotlease.org" ? ".zotlease.org" : "localhost",
-  //path: "/",
+  secure: isProd,
+  sameSite: "Lax",
+  domain: isProd
+    ? "zotlease-api.bwsbscgvvebvc.us-east-1.cs.amazonlightsail.com"
+    : "localhost",
+  path: "/",
   maxAge: 24 * 60 * 60 * 1000,
 };
 
