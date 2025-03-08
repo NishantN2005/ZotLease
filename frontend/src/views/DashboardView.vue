@@ -546,7 +546,7 @@ export default {
     }
     const Logout = async () => {
       if (!userStore.isLoggedIn) {
-        router.push('/login')
+        router.push('/signup')
         return
       }
       try {
