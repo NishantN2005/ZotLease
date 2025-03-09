@@ -1,59 +1,33 @@
-# ZotLease
+# Zotlease
 
-TABLE SCHEMAS:
-CREATE TABLE IF NOT EXISTS users (
-id SERIAL PRIMARY KEY,
-fname VARCHAR(100) NOT NULL,
-lname VARCHAR(100) NOT NULL,
-email VARCHAR(100) UNIQUE NOT NULL,
-password TEXT NOT NULL,
-userID TEXT UNIQUE NOT NULL
-last_notification_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+Zotlease is a web application designed to make it easier to find and post subleases. Our platform is dedicated to creating a seamless, secure, and user-friendly experience for students looking for housing options and those offering subleases.
 
-CREATE TABLE refresh_token_blacklist (
-token_id UUID PRIMARY KEY,
-expiry TIMESTAMP NOT NULL
-)
+## Overview
 
-CREATE TABLE sublease (
-id SERIAL PRIMARY KEY,
-listerID TEXT NOT NULL,
-price DOUBLE PRECISION NOT NULL,
-gender TEXT NOT NULL,
-roomCount INT NOT NULL,
-bathroomCount INT NOT NULL,
-street_name TEXT NOT NULL,
-room TEXT,
-city TEXT NOT NULL,
-postal_code TEXT NOT NULL,
-state TEXT,
-country TEXT,
-startTerm TEXT NOT NULL,
-endTerm TEXT NOT NULL,
-description TEXT,
-subleaseID TEXT NOT NULL,
-latitude DOUBLE PRECISION CHECK (latitude BETWEEN -90 AND 90),
-longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180),
-viewcount INTEGER DEFAULT 0
-);
+Zotlease is built to address the unique challenges students face when searching for subleases. With a clean and intuitive interface, advanced search options, and a secure environment, Zotlease is your go-to platform for connecting with sublease opportunities—all without the need to set up or run the project locally.
 
-CREATE TABLE chatRooms (
-id SERIAL PRIMARY KEY,
-chatRoomID TEXT NOT NULL,
-userID1 TEXT NOT NULL,
-userID2 TEXT NOT NULL,
-unreadCount1 INT DEFAULT 0,
-unreadCount2 INT DEFAULT 0,
-UNIQUE(userID1, userID2),
-CHECK (userID1 <> userID2)
-)
+## Features
 
-CREATE TABLE messages (
-id TEXT PRIMARY KEY,
-chatRoomID TEXT NOT NULL,
-sender TEXT NOT NULL,
-content TEXT NOT NULL,
-timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-status TEXT DEFAULT 'sent',
-)
+- **Intuitive User Experience:** Navigate listings with ease using a streamlined design.
+- **Advanced Search Options:** Filter sublease listings by location, price, and more to find the perfect match.
+- **Effortless Posting:** Quickly create and manage your sublease listings.
+- **Mobile Responsive:** Enjoy a full-featured experience on any device.
+- **Secure & Trusted:** Built with privacy and security in mind to ensure a safe space for all users.
+
+## Contributing
+
+We welcome contributions to make Zotlease even better! To contribute via pull requests, please follow these steps:
+
+1. **Fork the Repository:** Click the "Fork" button at the top-right corner of our repository to create your own copy.
+2. **Create a Branch:** From your fork, create a new branch dedicated to your feature or bug fix.
+3. **Implement Your Changes:** Make sure your code adheres to our coding standards and that new features are thoroughly documented.
+4. **Submit a Pull Request:** Open a pull request on the main repository. Include a detailed description of your changes, why they were made, and any relevant screenshots or test results.
+5. **Review Process:** Our maintainers will review your pull request and may suggest additional changes. We appreciate your patience and collaboration.
+
+
+---
+
+For any questions, suggestions, or feedback, please contact us at [zotlease@gmail.com]. Thank you for helping us build a better platform for students!
+
+
+
