@@ -8,6 +8,7 @@ lname VARCHAR(100) NOT NULL,
 email VARCHAR(100) UNIQUE NOT NULL,
 password TEXT NOT NULL,
 userID TEXT UNIQUE NOT NULL
+last_notification_sent TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE refresh_token_blacklist (

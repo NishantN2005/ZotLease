@@ -1,3 +1,5 @@
+const { SES } = require("@aws-sdk/client-ses");
+
 const ENVIRONMENT = process.env.ENV;
 
 let ORIGIN = process.env.ORIGIN;
@@ -59,6 +61,8 @@ const COUNTRYMAP = {
   Ghana: "GH",
 };
 
+SES_FROM_EMAIL = 'zotlease@gmail.com'
+
 module.exports = {
   ORIGIN,
   IP,
@@ -67,4 +71,5 @@ module.exports = {
   SSL_PATH,
   COUNTRYMAP,
   REDIRECT_URI,
+  SES_FROM_EMAIL
 };
