@@ -131,7 +131,6 @@ export default {
             const uniqueid = marker.id // uses markers unique id
             props.setEventPos(event)
             props.toggleMapCard(uniqueid)
-            console.log(event)
           })
           marker.on('mouseout', (event) => {
             const uniqueid = null
@@ -142,8 +141,6 @@ export default {
             const subid = marker.subleaseID
             const uniqueid = marker.id
             const userid = userStore.userID
-            console.log('Clicked sublease ID:', subid)
-            console.log('Clicked unique id: ', uniqueid)
 
             // Make call to retrieve listing information
             let info = await makeAuthenticatedRequest(
@@ -151,10 +148,8 @@ export default {
               { subleaseID: subid, uniqueid: uniqueid, userid: userid },
               props.routerPass,
             )
-            console.log(info)
             // parse JSON
             const subleaseData = await info.json()
-            console.log(subleaseData)
             // set Pinia store state
             /**
              * If it is a new sublease the user clicked on then load data
@@ -251,7 +246,6 @@ export default {
       watch(
         () => [filterStore.acceptedSubleases, filterStore.isFiltered],
         ([newAcceptedSubleases, newIsFiltered]) => {
-          console.log('inside filter watch right now')
           markersLayer.clearLayers()
           addMarkers(allLocationsStore.allLocations)
         },

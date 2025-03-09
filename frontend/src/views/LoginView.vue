@@ -25,16 +25,12 @@ function loginWithGoogle() {
   const CLIENTID = VITE_CLIENT_ID
   const googleURI = `${API_URL}auth/google/callback`
   const SCOPE = 'email profile'
-  console.log('All env vars:', import.meta.env)
-  console.log(CLIENTID, googleURI, SCOPE)
   const authURL = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENTID}&redirect_uri=${googleURI}&response_type=code&scope=${SCOPE}`
   window.location.href = authURL
 }
 
 function handleLogin() {
   try {
-    console.log(formData.value)
-    console.log(API_URL)
     fetch(`${API_URL}auth/login`, {
       method: 'POST',
       headers: {
@@ -44,7 +40,6 @@ function handleLogin() {
       credentials: 'include',
     })
       .then((res) => {
-        console.log('stats', res.status)
         if (res.status === 400 || res.status === 403) {
           isWrongPass.value = true
           formData.value.password = ''

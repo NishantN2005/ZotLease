@@ -231,7 +231,6 @@ export default {
     },
   },
   setup() {
-    console.log(MAPBOX_ACCESS_TOKEN)
     return { MAPBOX_ACCESS_TOKEN }
   },
   methods: {

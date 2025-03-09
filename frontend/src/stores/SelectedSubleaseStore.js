@@ -16,7 +16,6 @@ export const useSelectedSubleaseStore = defineStore('selectedsublease', {
     },
     setPhotos(val) {
       this.photos = val
-      console.log(this.photos)
     },
     addSubletter(subletter) {
       this.subletters.push(subletter)

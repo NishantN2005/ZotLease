@@ -12,10 +12,10 @@ const addActivityController = async (req, res) => {
 
     // Format the current date as yyyy-mm-dd
     const currentDate = new Date().toLocaleString("en-US", {
-    timeZone: "America/Los_Angeles",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
+      timeZone: "America/Los_Angeles",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
     const id = uuidv4();
     const addActivityQuery = {
@@ -23,9 +23,10 @@ const addActivityController = async (req, res) => {
       values: [id, activity, listerid, currentDate],
     };
     const response = await pool.query(addActivityQuery);
-    console.log(response);
     if (response.rowCount === 1) {
-      return res.status(200).json({ message: "Activity added", id: id, date: currentDate });
+      return res
+        .status(200)
+        .json({ message: "Activity added", id: id, date: currentDate });
     } else {
       return res.status(400).json({ message: "Failed to add activity" });
     }
@@ -35,20 +36,19 @@ const addActivityController = async (req, res) => {
   }
 };
 
-const getActivityController = async(req, res) => {
-    const {listerid} = req.body;
+const getActivityController = async (req, res) => {
+  const { listerid } = req.body;
 
-    if (!listerid) {
-      return res.status(400).json({ message: "Params are incomplete" });
-    }
-    const query = {
-        text: `SELECT * FROM activity WHERE listerid = $1 ORDER BY date DESC LIMIT 10`,
-        values: [listerid]
-    }
-    const response = await pool.query(query);
-    console.log(response);
+  if (!listerid) {
+    return res.status(400).json({ message: "Params are incomplete" });
+  }
+  const query = {
+    text: `SELECT * FROM activity WHERE listerid = $1 ORDER BY date DESC LIMIT 10`,
+    values: [listerid],
+  };
+  const response = await pool.query(query);
 
-    res.status(200).json(response.rows);
+  res.status(200).json(response.rows);
 };
 
-module.exports = { addActivityController,getActivityController };
+module.exports = { addActivityController, getActivityController };

@@ -216,14 +216,12 @@ export default {
         sequencialFetch()
       }
 
-      console.log('component unmounted')
       // Detect page refresh or tab close
       window.addEventListener('beforeunload', handleSessionEnd)
     })
 
     onUnmounted(() => {
       // Cleanup event listener when the component is destroyed
-      console.log('Component unmounted')
       window.removeEventListener('beforeunload', handleSessionEnd)
     })
 
@@ -287,7 +285,6 @@ export default {
     const cardPosition = ref({ top: '0px', left: '0px' })
 
     const filteredListings = computed(() => {
-      console.log('change in active', activeHoverID.value)
       const offset = 10 // offset for positioning the card next to the cursor
 
       return (
@@ -322,7 +319,6 @@ export default {
         }
 
         const data = await response.json()
-        console.log('Decoded Token Data:', data)
         userStore.setIsLoggedIn(true)
         return data
       } catch (error) {
@@ -395,9 +391,7 @@ export default {
           { userID: userStore.userID },
           router,
         )
-        console.log('res', response)
         const result = await response.json()
-        console.log(result)
         chatStore.setChatRooms(result.chatRooms)
       } catch (error) {
         console.error('Error fetching chat rooms:', error)
@@ -465,7 +459,6 @@ export default {
         formError.value.display = false
 
         let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
-        console.log(response)
 
         if (response.status == 200) {
           //reset state of dashboard
@@ -552,7 +545,6 @@ export default {
       }
       try {
         let response = await makeAuthenticatedRequest('auth/logout', {}, router)
-        console.log(response)
 
         if (response.status == 200) {
           handleSessionEnd()
@@ -599,7 +591,6 @@ export default {
     const callTestRoute = async () => {
       try {
         let response = await makeAuthenticatedRequest('user/test', {}, router)
-        console.log(response)
       } catch (error) {
         console.log('Failed to call /test route:', error)
         navigateToLogin()

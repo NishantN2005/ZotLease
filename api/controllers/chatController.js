@@ -1,13 +1,11 @@
 const pool = require("../src/db.js");
 require("dotenv").config("api/.env");
 const { nanoid } = require("nanoid");
-const { sendUnreadMessagesNotification } = require('./notificationController');
+const { sendUnreadMessagesNotification } = require("./notificationController");
 
 const createChatRoom = async (req, res) => {
   try {
-    console.log("WHATTT GOIN ONNNN");
     const { userID1, userID2 } = req.body;
-    console.log(userID1, userID2);
 
     if (!userID1 || !userID2) {
       return res
@@ -30,7 +28,6 @@ const createChatRoom = async (req, res) => {
     };
 
     const existingRoom = await pool.query(checkQuery);
-    console.log(existingRoom.rows);
 
     if (existingRoom.rowCount > 0) {
       return res
@@ -96,7 +93,6 @@ const createNewChat = async (req, res) => {
     };
 
     let response = await pool.query(insertQuery);
-    console.log("Message inserted:", response.rowCount);
 
     const validateQuery = {
       text: `SELECT * FROM chatRooms
@@ -110,7 +106,10 @@ const createNewChat = async (req, res) => {
     }
     console.log("Validation successful: Sender is a participant");
 
-    const recipient = sender === validationResponse.rows[0].userid1 ? validationResponse.rows[0].userid2 : validationResponse.rows[0].userid1;
+    const recipient =
+      sender === validationResponse.rows[0].userid1
+        ? validationResponse.rows[0].userid2
+        : validationResponse.rows[0].userid1;
 
     const incrementQuery1 = {
       text: `UPDATE chatRooms
@@ -127,12 +126,10 @@ const createNewChat = async (req, res) => {
     };
 
     response = await pool.query(incrementQuery1);
-    console.log(response);
 
     response = await pool.query(incrementQuery2);
-    console.log(response);
 
-    await sendUnreadMessagesNotification(recipient)
+    await sendUnreadMessagesNotification(recipient);
     const messageData = {
       id,
       chatRoomID,
@@ -151,14 +148,12 @@ const createNewChat = async (req, res) => {
 const getChatRoomID = async (req, res) => {
   try {
     const { userID1, userID2 } = req.body;
-    console.log("user", userID1, "user", userID2);
 
     const selectQuery = {
       text: `SELECT chatRoomID FROM chatRooms WHERE (userID1 = $1 AND userID2 = $2) OR (userID1 = $2 AND userID2 = $1)`,
       values: [userID1, userID2],
     };
     const response = await pool.query(selectQuery);
-    console.log(response);
 
     return res
       .status(200)
@@ -178,13 +173,11 @@ const getChatRooms = async (req, res) => {
       values: [userID],
     };
     let response = await pool.query(selectQuery);
-    console.log("here", response.rows);
 
     // Step 2: Extract partner IDs
     const partnerIDS = response.rows.map((data) =>
       data.userid1 === userID ? data.userid2 : data.userid1
     );
-    console.log("partners", partnerIDS);
 
     // Step 3: Fetch partner names
     const newselectQuery = {
@@ -192,15 +185,12 @@ const getChatRooms = async (req, res) => {
       values: [partnerIDS],
     };
     const newresponse = await pool.query(newselectQuery);
-    console.log("partners data", newresponse.rows);
 
     // Step 4: Map userID to fname for easier lookup
     const partnerNames = {};
     newresponse.rows.forEach((user) => {
       partnerNames[user.userid] = user.fname;
     });
-
-    console.log("partnerNames mapping", partnerNames);
 
     // Step 5: Create chatRooms object
     const chatRooms = [];
@@ -219,8 +209,6 @@ const getChatRooms = async (req, res) => {
       });
       chatRooms.sort((a, b) => b.unreadMessages - a.unreadMessages);
     });
-
-    console.log("newChats", chatRooms);
 
     return res.status(200).json({ chatRooms, success: true });
   } catch (err) {
@@ -249,8 +237,6 @@ const updateUnreadCount = async (req, res) => {
     const { userID, chatRooms } = req.body;
 
     for (const chat of chatRooms) {
-      console.log("From chats!!", chat, userID);
-
       // Update unreadCount1 for userID1
       const changeQuery1 = {
         text: `UPDATE chatRooms
@@ -269,10 +255,8 @@ const updateUnreadCount = async (req, res) => {
 
       // Execute the queries
       let response = await pool.query(changeQuery1);
-      console.log("Query1 Response:", response);
 
       response = await pool.query(changeQuery2);
-      console.log("Query2 Response:", response);
     }
 
     // Send a success response
