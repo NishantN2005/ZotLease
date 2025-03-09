@@ -66,7 +66,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
           IMAGE_TAG: ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
           MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
-          API_URL: ${{ env.API_URL }}
+          API_URL: "https://api.zotlease.org/"
           CLIENT_ID: ${{ env.CLIENT_ID }}
           CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
         run: |
@@ -76,7 +76,7 @@ jobs:
                        --build-arg VITE_AWS_REGION=us-east-1 \
                        --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                        --build-arg VITE_ENV=beta \
-                      --build-arg VITE_API_URL= https://api.zotlease.org/ \
+                      --build-arg VITE_API_URL=${{env.API_URL}} \
                       --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
                       --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
                        -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
