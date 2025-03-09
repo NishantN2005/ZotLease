@@ -142,8 +142,6 @@ export default {
     // Define the submit handler in setup
     const applyFilters = async () => {
       try {
-        console.log(props.filterform)
-
         let response = await makeAuthenticatedRequest(
           'sublease/filter',
           props.filterform,

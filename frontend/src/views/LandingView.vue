@@ -260,14 +260,12 @@ export default {
           '<a href="https://www.mapbox.com/">Mapbox</a>',
       }).addTo(map)
 
-      console.log(API_URL)
       const locations = await fetch(`${API_URL}sublease/getLandingLocations`, {
         method: 'GET',
       })
         .then((res) => res.json())
         .catch((err) => console.log(err))
 
-      console.log(locations)
       addMarkers(locations, map)
     })
 

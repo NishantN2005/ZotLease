@@ -180,7 +180,6 @@ export default {
 
         // Assign the photos to the parent object
         allLocations.firstPhotos = photos
-        console.log('photooososss', allLocations.firstPhotos)
         props.turnOffLoading()
       } catch (error) {
         console.error('Error fetching photos:', error)
@@ -211,7 +210,6 @@ export default {
       listings.value = allLocations.allLocations
       filterActive.value = false
       props.filterStore.resetFilter()
-      console.log(listings.value, 'why')
     }
 
     // Fetch photos on component mount
@@ -219,7 +217,6 @@ export default {
     watch(
       () => allLocations.allLocations,
       (newListings) => {
-        console.log('ALL LOCATION CHANGE')
         listings.value = newListings
         fetchPhotos()
       },
@@ -231,20 +228,15 @@ export default {
     watch(
       () => props.filterStore.acceptedSubleases,
       (newValue) => {
-        console.log(newValue)
         if (newValue.length) {
-          console.log('no way')
           filterActive.value = true
           listings.value = listings.value.filter((listing) =>
             props.filterStore.acceptedSubleases.includes(listing.subleaseid),
           )
         } else {
-          console.log('lol')
           if (props.filterStore.isFiltered) {
-            console.log('324232')
             listings.value = newValue // Clear listings if filter is active
           } else {
-            console.log('no way josea')
             listings.value = [...allLocations.allLocations] // Reset to all locations if filter is not active
             filterActive.value = false
           }
@@ -252,30 +244,6 @@ export default {
       },
       { deep: true },
     )
-    // watch(
-    //   () => filters,
-    //   (newFilters) => {
-    //     console.log('lol')
-    //     listings.value = allLocations.allLocations.filter((listing) => {
-    //       const matchesGender = !newFilters.gender || listing.gender === newFilters.gender
-
-    //       const matchesRooms = !newFilters.rooms || listing.roomcount === parseInt(newFilters.rooms)
-
-    //       const matchesBath =
-    //         !newFilters.baths || listing.bathroomcount === parseInt(newFilters.baths)
-
-    //       const matchesPriceRange = (() => {
-    //         if (!newFilters.priceRange) return true
-    //         const [min, max] = newFilters.priceRange.split('-').map(Number)
-    //         return max ? listing.price >= min && listing.price <= max : listing.price >= min
-    //       })()
-
-    //       return matchesGender && matchesRooms && matchesBath && matchesPriceRange
-    //     })
-    //     console.log(listings.value)
-    //   },
-    //   { deep: true },
-    // )
 
     return {
       fetchPhotos,

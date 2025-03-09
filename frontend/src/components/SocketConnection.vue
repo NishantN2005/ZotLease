@@ -41,19 +41,13 @@ const sendMessage = () => {
       return response.json()
     })
     .then((data) => {
-      console.log('waiyt what')
-      console.log('activeeewe', chatStore.chatRoomID)
       const recipientRoom = chatStore.chatRooms.find((room) => {
-        console.log(room.chatRoomID)
         return room.chatRoomID === chatStore.chatRoomID
       })
 
       if (data.messageData.chatRoomID === chatStore.chatRoomID) {
         chatStore.addOnlineChat(data.messageData)
       }
-
-      console.log(chatStore.onlineChats)
-      console.log(recipientRoom.partnerID)
 
       socket.value.emit('directMessage', {
         ...data.messageData,
@@ -71,17 +65,12 @@ onMounted(() => {
 
   socket.value.on('connect', () => {
     socketId.value = socket.value.id
-    console.log('Connected with Socket ID:', socket.value.id)
 
     socket.value.emit('setUser', userID)
   })
 
   socket.value.on('message', async (data) => {
-    console.log('Received message:', data)
-
-    console.log(chatStore.chatRooms)
     const keys = chatStore.chatRooms.map((chat) => chat.chatRoomID)
-    console.log(keys, data.chatRoomID)
 
     if (chatStore.chatRoomID === data.chatRoomID) chatStore.addOnlineChat(data)
 

@@ -5,11 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 require("dotenv").config("api/.env");
 const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
 
-console.log("AUTH ORIGIN", ORIGIN);
-
 const isProd = ORIGIN === "https://www.zotlease.org";
-
-console.log("PROD", isProd);
 
 const accessCookieOptions = {
   httpOnly: true,
@@ -111,7 +107,6 @@ const googleAuthController = async (email, fname, lname, res) => {
     const insertUserValues = [userid, email, fname, lname, defaultPassword];
     await pool.query(insertUserQuery, insertUserValues);
   } else {
-    console.log(checkUserRes.rows[0]);
     userid = checkUserRes.rows[0].userid;
   }
 
@@ -121,8 +116,6 @@ const googleAuthController = async (email, fname, lname, res) => {
     email: email,
     userid: userid,
   };
-
-  console.log("IN GOOGLE TOKEN");
 
   const accessToken = jwt.sign(user, process.env.MY_SECRET, {
     expiresIn: "1h",
@@ -150,15 +143,11 @@ const refreshController = async (req, res) => {
     const refreshToken = req.cookies.token;
     const decoded = jwt.decode(refreshToken);
 
-    console.log(refreshToken.jti);
-    console.log("jti here", decoded.jti);
     const query = {
       text: `SELECT 1 FROM refresh_token_blacklist WHERE token_id = $1`,
       values: [decoded.jti],
     };
     const resp = await pool.query(query);
-
-    console.log(resp);
     if (resp.rowCount == 1) {
       return res.status(401).json({ message: "Token is blacklisted" });
     }
@@ -186,7 +175,6 @@ const refreshController = async (req, res) => {
 const signupController = async (req, res) => {
   try {
     const { fname, lname, email, password } = req.body;
-    console.log(fname, lname, email, password);
     if (!fname || !lname || !email || !password) {
       console.log("Something was not defined");
       return res
@@ -195,7 +183,6 @@ const signupController = async (req, res) => {
     }
     //generate unique identification for user
     const userID = uuidv4();
-    console.log(`New user generated userID is: ${userID}`);
 
     //Hash password and delete og
     const hashedPassword = await hashPassword(password);
@@ -208,7 +195,6 @@ const signupController = async (req, res) => {
     };
 
     const response = pool.query(insertQuery);
-    console.log(response);
 
     //Create token
     const user = {
@@ -252,22 +238,14 @@ const signupController = async (req, res) => {
 };
 
 const logoutController = async (req, res) => {
-  console.log("inside logout");
-  console.log(req.cookies.token);
-
   if (req.cookies?.token) {
     const refreshToken = req.cookies.token;
-    console.log("refresh here", refreshToken);
     const decoded = jwt.decode(refreshToken);
-
-    console.log("expiration is here", decoded.exp);
-    console.log(decoded.jti);
 
     const drop = {
       text: `SELECT * FROM chatRooms`,
     };
     const dRes = await pool.query(drop);
-    console.log(dRes);
 
     //add token to blacklist
     const addToBlacklist = {
@@ -276,7 +254,6 @@ const logoutController = async (req, res) => {
     };
 
     const response = await pool.query(addToBlacklist);
-    console.log(response);
 
     res.clearCookie("token");
     res.clearCookie("accesstoken");
@@ -291,9 +268,7 @@ const logoutController = async (req, res) => {
 };
 
 const decoderController = (req, res) => {
-  console.log("inside decoder", req.cookies);
   const token = req.cookies.accesstoken;
-  console.log("token here", token);
 
   if (!token) {
     return res.status(400).json({ message: "Token is required" });

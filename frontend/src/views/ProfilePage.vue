@@ -157,7 +157,6 @@ export default {
           userStore.routerPass,
         )
         const activity = await resp.json()
-        console.log(activity)
         leaseActivity.value = activity
       } catch (error) {
         console.error('Error fetching user activity:', error)
@@ -180,8 +179,6 @@ export default {
       isLoading.value = false
     })
 
-    console.log(activeListings.value)
-
     return {
       goBack,
       formatDate,
@@ -196,10 +193,8 @@ export default {
       // If you want to remove from the store, do it there
       // For example:
       const store = useAllLocationsStore()
-      console.log(store.allLocations)
       store.allLocations = store.allLocations.filter((listing) => listing.id !== listingToDelete.id)
 
-      console.log(this.activeListings)
       this.activeListings = this.activeListings.filter(
         (listing) => listing.id !== listingToDelete.id,
       )
@@ -209,7 +204,6 @@ export default {
         { id: listingToDelete.id },
         this.$router,
       )
-      console.log(response)
 
       // Add activity
       const responseForActivity = await makeAuthenticatedRequest(

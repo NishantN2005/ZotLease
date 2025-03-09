@@ -1,17 +1,16 @@
 const pool = require("../src/db.js");
-const {COUNTRYMAP}= require("../constants.js")
+const { COUNTRYMAP } = require("../constants.js");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config("api/.env");
 
 const createSubleaseController = async (req, res) => {
   try {
-    console.log("inside api func tp create");
     const {
       street_name,
       room,
       city,
-      postal_code, 
-      state, 
+      postal_code,
+      state,
       country,
       listerID,
       price,
@@ -43,7 +42,7 @@ const createSubleaseController = async (req, res) => {
      * using lat/lon so no need to santize the address
      */
     let coordinates;
-    let iso2Country = COUNTRYMAP[country] || 'US';
+    let iso2Country = COUNTRYMAP[country] || "US";
     //get log/lat
     const resp = await fetch(`
       https://api.mapbox.com/search/geocode/v6/forward?address_line1=${street_name}&place=${city}&region=${state}&postcode=${postal_code}&country=${iso2Country}&limit=1&permanent=true&access_token=${process.env.MAPBOX_KEY}`);
@@ -66,11 +65,9 @@ const createSubleaseController = async (req, res) => {
     if (responseOnExists.rows.length > 0) {
       console.log("Address already exists");
       subleaseID = responseOnExists.rows[0].subleaseid;
-      console.log("subleaseID", subleaseID);
     } else {
       subleaseID = uuidv4();
     }
-    console.log(listerID);
     const insertQuery = {
       text: `INSERT INTO sublease(
         listerID,
@@ -112,9 +109,7 @@ const createSubleaseController = async (req, res) => {
       ],
     };
     console.log("about to make query");
-    console.log(insertQuery);
     const response = await pool.query(insertQuery);
-    console.log(response);
     return res.status(200).json({
       subleaseid: subleaseID,
       longitude: lon,
@@ -133,11 +128,9 @@ const createSubleaseController = async (req, res) => {
 };
 
 const getSubleasesController = async (req, res) => {
-  console.log("Hello");
   const query =
     "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount FROM sublease";
   const response = await pool.query(query);
-  console.log(response.rows, "get here");
   return res.status(200).json(response.rows);
 };
 
@@ -158,17 +151,12 @@ const getSubleaseInfoController = async (req, res) => {
   };
   try {
     const response = await pool.query(query);
-    console.log(response);
-
-    console.log(userid, uniqueid);
     // we need to increment view count by 1 now that it has been view
     const updateviewcount = {
       text: `UPDATE sublease SET viewcount = viewcount + 1 WHERE id = $1 AND listerid <> $2;`,
       values: [uniqueid, userid],
     };
     const incrementCount = await pool.query(updateviewcount);
-    console.log("Incremented viewcount");
-    console.log(incrementCount);
 
     return res.status(200).json(response.rows);
   } catch (err) {
@@ -205,8 +193,6 @@ const getSubleaseFilterController = async (req, res) => {
     query.text += ` AND roomcount = $${query.values.length + 1}`;
     query.values.push(roomCount);
   }
-  console.log("FILTER QUERY IS HERE");
-  console.log(query);
   //if both gender and roomcount were selected
   let filterQuery;
   if (gender !== "" && roomCount !== null) {
@@ -232,16 +218,13 @@ const getSubleaseFilterController = async (req, res) => {
       values: [minPrice, maxPrice],
     };
   }
-  console.log("filter query here", filterQuery);
 
   const response = await pool.query(query);
 
-  console.log(response);
   let acceptedSubleases = [];
   for (sublease of response.rows) {
     acceptedSubleases.push(sublease.subleaseid);
   }
-  console.log(acceptedSubleases);
   res.status(200).json({ parsedSubleases: acceptedSubleases });
 };
 
@@ -252,19 +235,16 @@ const deleteSubleaseController = async (req, res) => {
     values: [id],
   };
   const response = await pool.query(query);
-  console.log(response);
   res.status(200).json({ message: "Sublease deleted" });
 };
 
 const getSubleaseFromController = async (req, res) => {
   const { listerid } = req.body;
-  console.log(listerid);
   const query = {
     text: `SELECT * FROM sublease WHERE listerid = $1`,
     values: [listerid],
   };
   const response = await pool.query(query);
-  console.log(response);
   res.status(200).json(response.rows);
 };
 
