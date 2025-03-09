@@ -76,7 +76,7 @@ jobs:
                        --build-arg VITE_AWS_REGION=us-east-1 \
                        --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                        --build-arg VITE_ENV=beta \
-                      --build-arg VITE_API_URL=${{env.API_URL}} \
+                      --build-arg VITE_API_URL= https://api.zotlease.org/ \
                       --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
                       --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
                        -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
