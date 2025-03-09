@@ -46,6 +46,23 @@
       </div>
     </div>
 
+    <transition name="slide-up">
+      <div
+        v-if="signupBanner"
+        class="fixed bottom-0 left-0 w-full bg-uciblue/90 text-white text-center py-4 z-50 shadow-lg"
+      >
+        <div class="container mx-auto px-4 flex items-center justify-between">
+          <p class="text-lg font-semibold">Please sign up to continue.</p>
+          <a
+            href="/signup"
+            class="bg-white text-uciblue px-6 py-2 text-lg font-semibold rounded-lg shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
+          >
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </transition>
+
     <div class="flex relative w-full h-[100dvh]">
       <Sidebar
         ref="sidebarRef"
@@ -63,13 +80,14 @@
         :messageRef="messageRef"
         :isSidebarOpen="isSidebarOpen"
         :toggleSidebar="toggleSidebar"
+        :promptSignup="promptSignup"
+        :userStore="userStore"
       />
       <!-- Filter Modal-->
       <FilterModal
         :filterform="filterForm"
         :showFilterModal="showFilterModal"
         :routerPass="router"
-        :token="userStore.userToken"
         :toggleFilterModal="toggleFilterModal"
         :resetFilters="resetFilters"
       />
@@ -80,7 +98,6 @@
         :chatStore="chatStore"
         :router="router"
         :userStore="userStore"
-        :userToken="userStore.userToken"
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :toggleMessageProfile="toggleMessageProfile"
         :messageProfileActive="messageProfileActive"
@@ -91,7 +108,6 @@
       <LeafletMap
         v-show="mapView && (!chatStore.chatRoomID || !isSmallScreen)"
         class="z-0 w-full h-full"
-        :userToken="userStore.userToken"
         :routerPass="router"
         :userID="userStore.userID"
         :turnOnSubleaseModal="turnOnSubleaseModal"
@@ -127,7 +143,6 @@
         :allLocations="allLocationsStore"
         :filterStore="filterStore"
         :turnOnSubleaseModal="turnOnSubleaseModal"
-        :userToken="userStore.userToken"
         :routerPass="router"
         :turnOffLoading="turnOffLoading"
       />
@@ -149,8 +164,8 @@
 
 <script>
 import { useRouter } from 'vue-router'
-import LeafletMap from '../components/LeafletMap.vue';
-import LeaseList from '@/components/LeaseList.vue';
+import LeafletMap from '../components/LeafletMap.vue'
+import LeaseList from '@/components/LeaseList.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useChatStore } from '@/stores/chatStore'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
@@ -169,7 +184,7 @@ import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
 import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { useWindowSize } from '@vueuse/core'
-
+import { API_URL } from '../../constants'
 
 export default {
   name: 'DashboardView',
@@ -187,9 +202,16 @@ export default {
   },
   methods: {},
   setup() {
-    onMounted(() => {
+    onMounted(async () => {
+      // used to check if user is logged in we can make an endpoint to do so in order to prevent unneccessary calls
+      turnOnLoading()
+      const { decoded, token } = await decodeToken()
+
       if (userStore.isLoggedIn) {
-        turnOnLoading()
+        userStore.setFirstname(decoded.fname)
+        userStore.setLastname(decoded.lname)
+        userStore.setEmail(decoded.email)
+        userStore.setUserID(decoded.userid)
         chatStore.onlineChats = []
         sequencialFetch()
       }
@@ -238,7 +260,7 @@ export default {
       room: '',
       city: '',
       postal_code: '',
-      state:'',
+      state: '',
       country: '',
       listerID: userStore.userID,
       price: '',
@@ -255,6 +277,7 @@ export default {
     const createSubleaseModal = ref(false)
 
     const messageBar = ref(false)
+    const signupBanner = ref(false)
     const checkMessage = ref(false)
     const sidebarRef = ref(null)
     const mapView = ref(true)
@@ -276,6 +299,38 @@ export default {
       console.log('Filtered Listings:', newVal)
     })
 
+    /// CHANGE TP CORRECT PORT
+    const decodeToken = async () => {
+      try {
+        const response = await fetch(`${API_URL}auth/decode`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+
+        if (!response.ok) {
+          userStore.setIsLoggedIn(false)
+          userStore.setFirstname(null)
+          userStore.setLastname(null)
+          userStore.setEmail(null)
+          userStore.setUserID(null)
+          chatStore.setChatRoomID(null)
+          chatStore.onlineChats = []
+          throw new Error(`HTTP error! Status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        console.log('Decoded Token Data:', data)
+        userStore.setIsLoggedIn(true)
+        return data
+      } catch (error) {
+        console.error('Failed to decode token:', error)
+        throw error
+      }
+    }
+
     const setEventPos = (e) => {
       const offset = 10
       const mouseX = e.originalEvent.clientX
@@ -288,12 +343,21 @@ export default {
     }
 
     const turnOffModal = () => {
-      console.log('modal off')
       createSubleaseModal.value = false
     }
     const turnOnModal = () => {
-      console.log('modal on')
-      createSubleaseModal.value = true
+      if (userStore.isLoggedIn) {
+        createSubleaseModal.value = true
+      } else {
+        promptSignup()
+      }
+    }
+
+    const promptSignup = () => {
+      signupBanner.value = true
+      setTimeout(() => {
+        signupBanner.value = false // Set it back to false after 5 seconds
+      }, 5000)
     }
 
     const turnOnLoading = () => {
@@ -330,7 +394,6 @@ export default {
           'chat/getChatRooms',
           { userID: userStore.userID },
           router,
-          userStore.userToken,
         )
         console.log('res', response)
         const result = await response.json()
@@ -356,6 +419,10 @@ export default {
 
     // creates chat room whenever user starts chat with new leaser
     async function createChatRoom() {
+      if (!userStore.isLoggedIn) {
+        promptSignup()
+        return
+      }
       if (
         !chatStore.chatRooms.some(
           (chat) => chat.partnerID === selectedSubleaseStore.selectedSublet.listerid,
@@ -363,12 +430,7 @@ export default {
       ) {
         const userID1 = userStore.userID
         const userID2 = selectedSubleaseStore.selectedSublet.listerid
-        const res = await makeAuthenticatedRequest(
-          `chat/createRoom`,
-          { userID1, userID2 },
-          router,
-          userStore.userToken,
-        )
+        const res = await makeAuthenticatedRequest(`chat/createRoom`, { userID1, userID2 }, router)
         const newRes = await res.json()
 
         const { chatRoomID, partnerID, partnerName } = newRes.newChatRoom
@@ -390,7 +452,6 @@ export default {
         `chat/chatRoomID`,
         {}, // change this to a dictionary
         router,
-        userStore.userToken,
       )
       const textRes = await response.json()
 
@@ -403,12 +464,7 @@ export default {
         console.log('creating listing', formData.value)
         formError.value.display = false
 
-        let response = await makeAuthenticatedRequest(
-          `sublease/create`,
-          formData.value,
-          router,
-          userStore.userToken,
-        )
+        let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
         console.log(response)
 
         if (response.status == 200) {
@@ -431,9 +487,7 @@ export default {
               listerid: userStore.userID,
             },
             router,
-            userStore.userToken,
           )
-          console.log(activityResponse)
 
           createSubleaseModal.value = false
           formData.value = {
@@ -441,8 +495,8 @@ export default {
             room: '',
             city: '',
             postal_code: '',
-            state:'',
-            country:'',
+            state: '',
+            country: '',
             listerID: userStore.userID,
             price: '',
             gender: '',
@@ -487,30 +541,30 @@ export default {
         }
       } catch (err) {
         console.log('Error creating listing: ', err)
-      }finally{
-        showLoadingScreen.value = false;
+      } finally {
+        showLoadingScreen.value = false
       }
     }
     const Logout = async () => {
+      if (!userStore.isLoggedIn) {
+        router.push('/signup')
+        return
+      }
       try {
-        console.log(userStore.userToken, 'token is here')
-        let response = await makeAuthenticatedRequest(
-          'auth/logout',
-          {},
-          router,
-          userStore.userToken,
-        )
+        let response = await makeAuthenticatedRequest('auth/logout', {}, router)
         console.log(response)
 
         if (response.status == 200) {
           handleSessionEnd()
           userStore.setIsLoggedIn(false)
-          userStore.setUserToken(null)
           userStore.setUserID(null)
           chatStore.setChatRoomID(null)
           chatStore.setActiveChatID(null)
           chatStore.setChatRooms([])
           chatStore.setOnlineChats([])
+          userStore.setFirstname(null)
+          userStore.setLastname(null)
+          userStore.setEmail(null)
           router.push('/login')
         } else {
           const resp = await response.json()
@@ -522,6 +576,9 @@ export default {
     }
 
     const handleSessionEnd = async (event) => {
+      if (!userStore.isLoggedIn) {
+        return
+      }
       event.preventDefault()
       try {
         console.log('in the end')
@@ -531,11 +588,9 @@ export default {
           'chat/updateUnreadCount',
           { userID: userStore.userID, chatRooms: chatStore.chatRooms },
           router,
-          userStore.userToken,
         )
 
         const data = await response.json()
-        console.log(data)
       } catch (error) {
         console.log('Failed to execute unread update:', error)
       }
@@ -543,7 +598,7 @@ export default {
 
     const callTestRoute = async () => {
       try {
-        let response = await makeAuthenticatedRequest('user/test', {}, router, userStore.userToken)
+        let response = await makeAuthenticatedRequest('user/test', {}, router)
         console.log(response)
       } catch (error) {
         console.log('Failed to call /test route:', error)
@@ -583,6 +638,10 @@ export default {
     }
 
     const toggleMessages = () => {
+      if (!userStore.isLoggedIn) {
+        promptSignup()
+        return
+      }
       //if filter is open, close it
       if (showFilterModal.value) {
         toggleFilterModal()
@@ -595,6 +654,10 @@ export default {
     }
 
     const toggleMessageProfile = () => {
+      if (!userStore.isLoggedIn) {
+        promptSignup()
+        return
+      }
       messageProfileActive.value = !messageProfileActive.value
     }
 
@@ -688,7 +751,25 @@ export default {
       setEventPos,
       cardPosition,
       housePlaceholder,
+      decodeToken,
+      promptSignup,
+      signupBanner,
     }
   },
 }
 </script>
+
+<style>
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition:
+    transform 0.5s ease,
+    opacity 0.5s ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+</style>

@@ -19,6 +19,7 @@
     "@aws-sdk/s3-request-presigner": "^3.717.0",
     "@btjspr/vue-typewriter": "^1.0.3",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",

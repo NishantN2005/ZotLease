@@ -3,6 +3,31 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config("api/.env");
+const { ORIGIN, IP, PORT, ENVIRONMENT } = require("../constants.js");
+
+console.log("AUTH ORIGIN", ORIGIN);
+
+const isProd = ORIGIN === "https://www.zotlease.org";
+
+console.log("PROD", isProd);
+
+const accessCookieOptions = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: "Lax",
+  domain: isProd ? "zotlease.org" : "localhost",
+  path: "/",
+  maxAge: 60 * 60 * 1000,
+};
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: "Lax",
+  domain: isProd ? "zotlease.org" : "localhost",
+  path: "/",
+  maxAge: 24 * 60 * 60 * 1000,
+};
 
 async function hashPassword(plainTextPassword) {
   // The saltRounds parameter controls how much time is needed to calculate a single hash.
@@ -14,7 +39,6 @@ async function hashPassword(plainTextPassword) {
 async function verifyPassword(plainTextPassword, hashedPassword) {
   try {
     const isMatch = await bcrypt.compare(plainTextPassword, hashedPassword);
-    console.log("matchhhchhchchhed", isMatch);
     return isMatch; // true if passwords match, false otherwise
   } catch (error) {
     console.error("Error verifying password:", error);
@@ -64,20 +88,61 @@ const loginController = async (req, res) => {
   );
 
   // stores jwt as a cookie for security
-  res.cookie("token", refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    maxAge: 24 * 60 * 60 * 1000,
+  res.cookie("token", refreshToken, refreshCookieOptions);
+
+  // stores access jwt as a cookie for security
+  res.cookie("accesstoken", accessToken, accessCookieOptions);
+
+  return res.status(200).send({ message: "Logged in!" });
+};
+
+const googleAuthController = async (email, fname, lname, res) => {
+  const checkUserQuery = `SELECT * FROM users WHERE email = $1`;
+  const checkUserValues = [email];
+  const checkUserRes = await pool.query(checkUserQuery, checkUserValues);
+
+  let userid;
+  if (!lname) lname = "";
+
+  if (checkUserRes.rowCount === 0) {
+    userid = uuidv4();
+    const defaultPassword = uuidv4();
+    const insertUserQuery = `INSERT INTO users (userID, email, fname, lname, password) VALUES ($1, $2, $3, $4, $5)`;
+    const insertUserValues = [userid, email, fname, lname, defaultPassword];
+    await pool.query(insertUserQuery, insertUserValues);
+  } else {
+    console.log(checkUserRes.rows[0]);
+    userid = checkUserRes.rows[0].userid;
+  }
+
+  const user = {
+    fname: fname,
+    lname: lname,
+    email: email,
+    userid: userid,
+  };
+
+  console.log("IN GOOGLE TOKEN");
+
+  const accessToken = jwt.sign(user, process.env.MY_SECRET, {
+    expiresIn: "1h",
   });
 
-  return res.json({
-    accessToken,
-    id: user.userid,
-    fname: user.fname,
-    lname: user.lname,
-    email: user.email,
-  });
+  const refreshToken = jwt.sign(
+    { email: email, jti: uuidv4() },
+    process.env.MY_SECRET,
+    {
+      expiresIn: "8h",
+    }
+  );
+
+  // stores jwt as a cookie for security
+  res.cookie("token", refreshToken, refreshCookieOptions);
+
+  // stores access jwt as a cookie for security
+  res.cookie("accesstoken", accessToken, accessCookieOptions);
+
+  return { accessToken, id: userid };
 };
 
 const refreshController = async (req, res) => {
@@ -150,6 +215,7 @@ const signupController = async (req, res) => {
       fname: fname,
       lname: lname,
       email: email,
+      userid: userID,
     };
 
     // creates json web token that allows access to api
@@ -170,17 +236,13 @@ const signupController = async (req, res) => {
     );
 
     // stores jwt as a cookie for security
-    res.cookie("token", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", refreshToken, refreshCookieOptions);
+
+    // stores access jwt as a cookie for security
+    res.cookie("accesstoken", accessToken, accessCookieOptions);
 
     return res.status(200).send({
       message: "Successfully created user profile",
-      id: userID,
-      accessToken,
     });
   } catch (err) {
     // TODO: need to check if they tried to signup after already having an account
@@ -217,6 +279,7 @@ const logoutController = async (req, res) => {
     console.log(response);
 
     res.clearCookie("token");
+    res.clearCookie("accesstoken");
     return res.status(200).send({
       message: "Successfully added token to blacklist",
       success: true,
@@ -226,9 +289,28 @@ const logoutController = async (req, res) => {
     .status(400)
     .send({ message: "Refresh token was already cleared", success: false });
 };
+
+const decoderController = (req, res) => {
+  console.log("inside decoder", req.cookies);
+  const token = req.cookies.accesstoken;
+  console.log("token here", token);
+
+  if (!token) {
+    return res.status(400).json({ message: "Token is required" });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.MY_SECRET);
+    return res.status(200).json({ decoded, token });
+  } catch (ex) {
+    res.status(400).json({ message: "Invalid token" });
+  }
+};
+
 module.exports = {
   loginController,
   signupController,
   refreshController,
   logoutController,
+  googleAuthController,
+  decoderController,
 };

@@ -214,12 +214,24 @@ export default {
       type: Object,
       required: true,
     },
+    promptSignup: {
+      type: Function,
+      required: true,
+    },
+    userStore: {
+      type: Object,
+      required: true,
+    },
   },
   components: {
     Messages,
   },
   methods: {
     redirectToProfile() {
+      if (!this.userStore.isLoggedIn) {
+        this.promptSignup()
+        return
+      }
       this.router.push('/profile')
     },
     Logout() {
@@ -238,6 +250,10 @@ export default {
     },
 
     toggleDashMessage(chatroomID, partnerName, partnerID) {
+      if (!this.userStore.isLoggedIn) {
+        this.promptSignup()
+        return
+      }
       if (!this.messagesOpen) this.toggleMessages()
 
       if (this.messagesOpen && this.filterOpen) {
@@ -258,6 +274,10 @@ export default {
     const userStore = useUserStore()
 
     const redirectToProfile = () => {
+      if (!props.userStore.isLoggedIn) {
+        props.promptSignup()
+        return
+      }
       props.router.push('/profile')
     }
 
