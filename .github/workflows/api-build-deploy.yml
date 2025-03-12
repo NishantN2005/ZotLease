@@ -95,6 +95,12 @@ jobs:
           secret=$(aws secretsmanager get-secret-value --secret-id CLIENT_ID_OAUTH --query SecretString --output text)
           echo "CLIENT_ID=$(echo $secret)" >> $GITHUB_ENV
 
+      - name: Retrieve MAILGUN_API_KEY from Secrets Manager
+        id: get_mailgun_api_key
+        run: |
+            secret=$(aws secretsmanager get-secret-value --secret-id MAILGUN_API_KEY --query SecretString --output text)
+            echo "MAILGUN_API_KEY=$(echo $secret)" >> $GITHUB_ENV
+
       - name: Retrieve Frontend URL from Lightsail
         id: get_frontend_url
         run: |
@@ -125,11 +131,12 @@ jobs:
           MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
           CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
           CLIENT_ID: ${{ env.CLIENT_ID }}
+          MAILGUN_API_KEY: ${{ env.MAILGUN_API_KEY }}
           ENV: ${{github.event.inputs.environ}}
           ORIGIN: https://www.zotlease.org/
           SSL_PATH: /app/rds-combined-ca-bundle.pem
         run: |
           aws lightsail create-container-service-deployment \
           --service-name zotlease-api \
-          --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={CLIENT_ID=\"$CLIENT_ID\",CLIENT_SECRET=\"$CLIENT_SECRET\", SSL_PATH=\"$SSL_PATH\",ORIGIN=\"$ORIGIN\",DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\", ENV=\"$ENV\"}}" \
+          --containers "api={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5555=HTTP},environment={MAILGUN_API_KEY=\"$MAILGUN_API_KEY\",CLIENT_ID=\"$CLIENT_ID\",CLIENT_SECRET=\"$CLIENT_SECRET\", SSL_PATH=\"$SSL_PATH\",ORIGIN=\"$ORIGIN\",DB_HOST=\"$DB_HOST\",DB_PORT=\"$DB_PORT\",DB_USER=\"$DB_USER\",DB_PASSWORD=\"$DB_PASSWORD\",MY_SECRET=\"$MY_SECRET\",MAPBOX_KEY=\"$MAPBOX_KEY\", ENV=\"$ENV\"}}" \
           --public-endpoint "containerName=api,containerPort=5555, healthCheck={path=/health, healthyThreshold=2, unhealthyThreshold=2, timeoutSeconds=5, intervalSeconds=10}" \
