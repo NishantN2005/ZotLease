@@ -20,7 +20,7 @@ const generateEmailTemplate = (type, data) => {
   switch (type) {
     case 'unread_messages':
       return {
-        subject: "ZotLease",
+        subject: `ZotLease - ${data.unread_count} Unread Messages`,
         text: `Hey ${data.fname}, you have unread messages waiting for you.`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
@@ -75,9 +75,15 @@ const sendEmail = async (userId, toEmail, templateType, templateData) => {
   }
 };
 
-const sendUnreadMessagesNotification = async (userid) => {
+const sendUnreadMessagesNotification = async (userid, email, fname, unread_count) => {
   try {
-    const userQuery = `
+    await sendEmail(
+      userid,
+      email,
+      'unread_messages',
+      { fname, unread_count }
+    );
+    /*const userQuery = `
       SELECT email, fname 
       FROM users 
       WHERE userid = $1
@@ -92,7 +98,7 @@ const sendUnreadMessagesNotification = async (userid) => {
         'unread_messages',
         { fname }
       );
-    }
+    }*/
     return true;
   } catch (error) {
     console.error("Error in sendUnreadMessagesNotification:", error);
