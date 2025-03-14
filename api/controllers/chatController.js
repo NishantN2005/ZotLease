@@ -129,15 +129,6 @@ const createNewChat = async (req, res) => {
 
     response = await pool.query(incrementQuery2);
 
-    await sendUnreadMessagesNotification(recipient);
-    const messageData = {
-      id,
-      chatRoomID,
-      sender,
-      content,
-      timestamp,
-      status,
-    };
 
     return res.status(200).json({ messageData, success: true });
   } catch (err) {
