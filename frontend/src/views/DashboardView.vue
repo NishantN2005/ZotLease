@@ -685,7 +685,6 @@ export default {
           props.toggleFilterModal()
         }
       }
-      console.log('Sidebar open:', isSidebarOpen.value)
     }
 
     return {

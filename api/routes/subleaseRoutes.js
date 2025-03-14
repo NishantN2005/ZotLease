@@ -9,6 +9,7 @@ const {
   deleteSubleaseController,
   getSubleaseFromController,
   getLandingLocationsController,
+  editSubleaseController,
 } = require("../controllers/subleaseController.js");
 
 router.post("/create", cookieJwtAuth, createSubleaseController);
@@ -17,5 +18,7 @@ router.post("/fromUser", cookieJwtAuth, getSubleaseFromController);
 router.post("/selectedInfo", getSubleaseInfoController);
 router.post("/filter", getSubleaseFilterController);
 router.post("/delete", cookieJwtAuth, deleteSubleaseController);
+router.post("/edit", cookieJwtAuth, editSubleaseController);
 router.get("/getLandingLocations", getLandingLocationsController);
+
 module.exports = router;

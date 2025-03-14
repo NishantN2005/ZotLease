@@ -103,8 +103,9 @@ const googleAuthController = async (email, fname, lname, res) => {
   if (checkUserRes.rowCount === 0) {
     userid = uuidv4();
     const defaultPassword = uuidv4();
+    const hashedPassword = await hashPassword(defaultPassword);
     const insertUserQuery = `INSERT INTO users (userID, email, fname, lname, password) VALUES ($1, $2, $3, $4, $5)`;
-    const insertUserValues = [userid, email, fname, lname, defaultPassword];
+    const insertUserValues = [userid, email, fname, lname, hashedPassword];
     await pool.query(insertUserQuery, insertUserValues);
   } else {
     userid = checkUserRes.rows[0].userid;

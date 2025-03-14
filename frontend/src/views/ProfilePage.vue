@@ -67,17 +67,31 @@
             </div>
           </div>
           <div class="flex justify-between mt-4">
-            <button
-              class="text-sm text-white bg-red-700 hover:bg-red-800 px-4 py-2 rounded transition duration-300"
-              @click="removeListing(listing)"
-            >
-              Remove Listing
-            </button>
+            <div>
+              <button
+                class="text-sm text-white bg-uciblue hover:bg-uciblue-dark px-4 py-2 rounded transition duration-300 mr-6"
+                @click="() => activateEditSubleaseModal(listing)"
+              >
+                Edit
+              </button>
+              <button
+                class="text-sm text-white bg-red-700 hover:bg-red-800 px-4 py-2 rounded transition duration-300"
+                @click="removeListing(listing)"
+              >
+                Remove Listing
+              </button>
+            </div>
             <p v-if="listing.viewcount > 0" class="text-white font-medium flex items-center gap-1">
               🔥 <span>{{ listing.viewcount }}</span>
               {{ listing.viewcount === 1 ? 'view' : 'views' }}
             </p>
           </div>
+          <EditSubleaseModal
+            v-model:show="editModalOpen"
+            :sublease="selectedSublease"
+            :router="router"
+            :updateListings="updateListings"
+          />
         </div>
       </div>
     </div>
@@ -114,19 +128,36 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { makeAuthenticatedRequest } from '@/services/authService'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
+import EditSubleaseModal from '@/components/EditSubleaseModal.vue'
 
 export default {
   name: 'ProfilePage',
+  components: { EditSubleaseModal },
   setup() {
     const router = useRouter()
     const userStore = useUserStore()
     const activeListings = ref([])
     const leaseActivity = ref([])
     const isLoading = ref(true)
+    const editModalOpen = ref(false)
+    const selectedSublease = ref({})
 
     // Return to dashboard
     function goBack() {
       router.push('/dashboard')
+    }
+
+    const updateListings = (listing) => {
+      const index = activeListings.value.findIndex((l) => l.subleaseid === listing.subleaseid)
+      if (index !== -1) {
+        activeListings.value[index] = listing
+      }
+    }
+
+    const activateEditSubleaseModal = (listing) => {
+      console.log(listing)
+      selectedSublease.value = { ...listing }
+      editModalOpen.value = true
     }
 
     const fetchUserLocations = async () => {
@@ -182,10 +213,15 @@ export default {
     return {
       goBack,
       formatDate,
+      activateEditSubleaseModal,
+      updateListings,
       userStore,
       activeListings,
       leaseActivity, // <-- expose to template
       isLoading,
+      editModalOpen,
+      selectedSublease,
+      router,
     }
   },
   methods: {

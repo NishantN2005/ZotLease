@@ -228,6 +228,91 @@ const getSubleaseFilterController = async (req, res) => {
   res.status(200).json({ parsedSubleases: acceptedSubleases });
 };
 
+const editSubleaseController = async (req, res) => {
+  const {
+    price,
+    gender,
+    street_name,
+    room,
+    roomcount,
+    bathroomcount,
+    city,
+    postal_code,
+    state,
+    country,
+    startterm,
+    endterm,
+    description,
+    subleaseid,
+    latitude,
+    longitude,
+    listerid,
+  } = req.body;
+  console.log(
+    price,
+    gender,
+    street_name,
+    room,
+    city,
+    postal_code,
+    state,
+    country,
+    startterm,
+    endterm,
+    description,
+    subleaseid,
+    latitude,
+    longitude,
+    listerid
+  );
+  try {
+    const editQuery = {
+      text: `UPDATE sublease SET 
+        price = $1,
+        gender = $2,
+        roomCount = $3,
+        bathroomCount = $4,
+        street_name = $5,
+        city = $6,
+        room = $7,
+        postal_code = $8,
+        state = $9,
+        country = $10,
+        startTerm = $11,
+        endTerm = $12,
+        description = $13,
+        latitude = $14,
+        longitude = $15
+        WHERE subleaseid = $16 
+        RETURNING *`,
+      values: [
+        price,
+        gender,
+        roomcount,
+        bathroomcount,
+        street_name,
+        city,
+        room,
+        postal_code,
+        state,
+        country,
+        startterm,
+        endterm,
+        description,
+        latitude,
+        longitude,
+        subleaseid,
+      ],
+    };
+    const response = await pool.query(editQuery);
+    console.log(response.rows);
+    res.status(200).json(response.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error updating sublease" });
+  }
+};
+
 const deleteSubleaseController = async (req, res) => {
   const { id } = req.body;
   const query = {
@@ -264,4 +349,5 @@ module.exports = {
   deleteSubleaseController,
   getSubleaseFromController,
   getLandingLocationsController,
+  editSubleaseController,
 };
