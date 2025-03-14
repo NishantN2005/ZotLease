@@ -23,6 +23,7 @@ require("dotenv").config("api/.env");
 const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
 const { googleAuthController } = require("../controllers/authController.js");
+const { sendUnreadMessagesNotification } = require('../controllers/notificationController');
 
 const app = express();
 app.use(compression());
@@ -151,6 +152,48 @@ cron.schedule(
     timezone: "PST",
   }
 );
+
+// Daily check at 9 AM for unread messages
+cron.schedule('0 12 * * *', async () => {
+  try {
+    console.log('Running daily unread messages check...');
+    
+    // Query unread messages and user info
+    const query = `
+      SELECT 
+        u.userid,
+        u.fname,
+        u.email,
+        SUM(
+          CASE 
+            WHEN u.userid = c.userID1 THEN c.unreadCount1
+            ELSE c.unreadCount2
+          END
+        ) as total_unread_count
+      FROM users u
+      JOIN chatRooms c 
+      ON u.userid = c.userID1 OR u.userid = c.userID2
+      WHERE (u.userid = c.userID1 AND c.unreadCount1 > 0)
+         OR (u.userid = c.userID2 AND c.unreadCount2 > 0)
+      GROUP BY u.userid, u.fname, u.email
+    `;
+    
+    const { rows } = await pool.query(query);
+    
+    // Send notifications to each user with unread messages
+    for (const user of rows) {
+     await sendUnreadMessagesNotification(user.userid, user.email, user.fname, user.total_unread_count);
+     //console.log(user)
+    }
+    
+    console.log(`Sent notifications to ${rows.length} users`);
+  } catch (error) {
+    console.error('Error in daily unread messages check:', error);
+  }
+}, {
+  scheduled: true,
+  timezone:'PST'
+});
 
 const userSockets = new Map();
 

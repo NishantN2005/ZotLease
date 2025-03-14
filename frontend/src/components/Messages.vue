@@ -267,7 +267,6 @@ export default {
         'chat/updateUnreadCount',
         { userID: this.userStore.userID, chatRooms: this.chatStore.chatRooms },
         this.router,
-        this.userStore.userToken,
       )
 
       const data = await response.json()
