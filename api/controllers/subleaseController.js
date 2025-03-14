@@ -228,6 +228,54 @@ const getSubleaseFilterController = async (req, res) => {
   res.status(200).json({ parsedSubleases: acceptedSubleases });
 };
 
+const editSubleaseController = async (req, res) => {
+  const { id } = req.params;
+  const {
+    price,
+    gender,
+    street_name,
+    room,
+    city,
+    postal_code,
+    state,
+    country,
+    startTerm,
+    endTerm,
+    description,
+    subleaseID,
+    latitude,
+    longitude,
+  } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE sublease SET price=$1, gender=$2, street_name=$3, room=$4, city=$5,
+       postal_code=$6, state=$7, country=$8, startTerm=$9, endTerm=$10, description=$11,
+       subleaseID=$12, latitude=$13, longitude=$14 WHERE id=$15 RETURNING *`,
+      [
+        price,
+        gender,
+        street_name,
+        room,
+        city,
+        postal_code,
+        state,
+        country,
+        startTerm,
+        endTerm,
+        description,
+        subleaseID,
+        latitude,
+        longitude,
+        id,
+      ]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error updating sublease" });
+  }
+};
+
 const deleteSubleaseController = async (req, res) => {
   const { id } = req.body;
   const query = {
@@ -264,4 +312,5 @@ module.exports = {
   deleteSubleaseController,
   getSubleaseFromController,
   getLandingLocationsController,
+  editSubleaseController,
 };

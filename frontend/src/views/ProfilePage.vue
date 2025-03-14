@@ -68,6 +68,10 @@
           </div>
           <div class="flex justify-between mt-4">
             <button
+              class="text-sm text-white bg-uciblue hover:bg-uciblue-dark px-4 py-2 rounded transition duration-300"
+              @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
+            ></button>
+            <button
               class="text-sm text-white bg-red-700 hover:bg-red-800 px-4 py-2 rounded transition duration-300"
               @click="removeListing(listing)"
             >
