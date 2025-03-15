@@ -36,10 +36,6 @@ export default {
       type: Object,
       required: true,
     },
-    toggleMapCard: {
-      type: Function,
-      required: true,
-    },
     setEventPos: {
       type: Function,
       required: true,
@@ -75,27 +71,16 @@ export default {
     }
 
     // 2. Create a custom marker icon
-    const createHexMarker = (hexColor) => {
+    const createHexMarker = (price) => {
       return L.divIcon({
-        className: 'custom-icon',
+        className: 'custom-price-icon',
         html: `
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 24 24" fill="none">
-            <!-- Outer Pin Shape -->
-            <path
-              d="M12 0C7.03 0 3 4.03 3 9C3 15 12 24 12 24S21 15 21 9C21 4.03 16.97 0 12 0Z"
-              fill=${hexColor}
-            />
-            <!-- Inner Circle -->
-            <circle
-              cx="12"
-              cy="9"
-              r="3"
-              fill="#FFFFFF"
-            />
-          </svg>
+          <div class="price-bar inline-flex items-center bg-[#0096FF] rounded-full shadow-md px-2 py-1 transition-transform duration-200 hover:scale-[1.15]">
+            <div class="text-md font-semibold text-white">$${price}</div>
+          </div>
         `,
-        iconSize: [25, 41],
-        iconAnchor: [12.5, 41],
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
       })
     }
 
@@ -116,7 +101,7 @@ export default {
           addedLeases.add(location.subleaseid)
           const isUserLeaser = String(location.listerid).trim() === String(props.userID).trim()
           const markerColor = isUserLeaser ? '#FFD700' : '#007BFF'
-          const markerIcon = createHexMarker(markerColor)
+          const markerIcon = createHexMarker(location.price)
 
           // Add marker to the markersLayer (not directly to the map)
           const marker = L.marker([location.latitude, location.longitude], {
@@ -126,16 +111,6 @@ export default {
           // Store subleaseID so we can fetch details on click
           marker.subleaseID = location.subleaseid
           marker.id = location.id
-
-          marker.on('mouseover', (event) => {
-            const uniqueid = marker.id // uses markers unique id
-            props.setEventPos(event)
-            props.toggleMapCard(uniqueid)
-          })
-          marker.on('mouseout', (event) => {
-            const uniqueid = null
-            props.toggleMapCard(uniqueid)
-          })
 
           marker.on('click', async () => {
             const subid = marker.subleaseID
