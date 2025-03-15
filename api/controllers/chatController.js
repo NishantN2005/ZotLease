@@ -129,6 +129,15 @@ const createNewChat = async (req, res) => {
 
     response = await pool.query(incrementQuery2);
 
+    const messageData = {
+      id,
+      chatRoomID,
+      sender,
+      content,
+      timestamp,
+      status,
+    };
+
     return res.status(200).json({ messageData, success: true });
   } catch (err) {
     return res.status(500).json({ message: err });
