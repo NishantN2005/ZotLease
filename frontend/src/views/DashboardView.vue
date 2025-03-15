@@ -135,6 +135,18 @@
       />
 
       <PhotoGalleryModal v-if="showPhotoGallery" :togglePhotoGallery="togglePhotoGallery" />
+
+      <!-- DashView Button -->
+      <div
+        class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-50 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
+      >
+        <button @click="toggleDashView(false)" v-if="mapView" class="text-[#0096FF]">
+          ListView <i class="fas fa-list ml-2 text-sm"></i>
+        </button>
+        <button @click="toggleDashView" v-else class="text-[#0096FF]">
+          MapView <i class="fas fa-map-location-dot ml-2 text-sm"></i>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -330,6 +342,7 @@ export default {
       await fetchChatRooms()
     }
     const toggleDashView = (mapOn = true) => {
+      console.log(mapOn)
       if (mapOn) {
         // turn off list view, turn on mapview
         listView.value = false
