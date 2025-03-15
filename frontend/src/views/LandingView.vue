@@ -211,27 +211,16 @@ export default {
       isMenuOpen.value = !isMenuOpen.value
     }
     // 2. Create a custom marker icon
-    const createHexMarker = () => {
+    const createHexMarker = (price) => {
       return L.divIcon({
-        className: 'custom-icon',
+        className: 'custom-price-icon',
         html: `
-          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="50" viewBox="0 0 24 24" fill="none">
-            <!-- Outer Pin Shape -->
-            <path 
-              d="M12 0C7.03 0 3 4.03 3 9C3 15 12 24 12 24S21 15 21 9C21 4.03 16.97 0 12 0Z" 
-              fill=#007BFF 
-            />
-            <!-- Inner Circle -->
-            <circle 
-              cx="12" 
-              cy="9" 
-              r="3" 
-              fill="#FFFFFF" 
-            />
-          </svg>
+          <div class="price-bar inline-flex items-center bg-[#0096FF] rounded-full shadow-md px-2 py-1 transition-transform duration-200 hover:scale-[1.15]">
+            <div class="text-md font-semibold text-white">$${price}</div>
+          </div>
         `,
-        iconSize: [25, 41],
-        iconAnchor: [12.5, 41],
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
       })
     }
     const addMarkers = (locations, map) => {
@@ -239,7 +228,7 @@ export default {
 
       locations.forEach((location) => {
         const marker = L.marker([location.latitude, location.longitude], {
-          icon: createHexMarker(),
+          icon: createHexMarker(location.price),
         }).addTo(markersLayer)
       })
 
