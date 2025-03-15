@@ -335,7 +335,7 @@ const getSubleaseFromController = async (req, res) => {
 
 const getLandingLocationsController = async (req, res) => {
   const query = {
-    text: `SELECT latitude, longitude FROM sublease`,
+    text: `SELECT latitude, longitude, price FROM sublease`,
   };
   const response = await pool.query(query);
   res.status(200).json(response.rows);
