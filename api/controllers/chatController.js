@@ -129,7 +129,6 @@ const createNewChat = async (req, res) => {
 
     response = await pool.query(incrementQuery2);
 
-
     return res.status(200).json({ messageData, success: true });
   } catch (err) {
     return res.status(500).json({ message: err });
