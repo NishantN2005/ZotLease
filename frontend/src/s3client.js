@@ -3,6 +3,8 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   ListObjectsV2Command,
+  DeleteObjectsCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { PHOTO_BUCKET } from '../constants'
@@ -123,3 +125,79 @@ export async function getFirstPhoto(prefix) {
     return null
   }
 }
+
+export async function deletePhotos(path) {
+  try {
+    // List all objects with the given prefix (path)
+    const listParams = {
+      Bucket: PHOTO_BUCKET,
+      Prefix: path
+    };
+    
+    const listedObjects = await s3Client.send(new ListObjectsV2Command(listParams));
+    
+    if (!listedObjects.Contents || listedObjects.Contents.length === 0) {
+      console.log('No objects found to delete');
+      return true;
+    }
+
+    // Create delete parameters
+    const deleteParams = {
+      Bucket: PHOTO_BUCKET,
+      Delete: {
+        Objects: listedObjects.Contents.map(({ Key }) => ({ Key })),
+        Quiet: false
+      }
+    };
+
+    // Delete all listed objects
+    await s3Client.send(new DeleteObjectsCommand(deleteParams));
+    console.log(`Successfully deleted ${listedObjects.Contents.length} objects from ${path}`);
+    return true;
+
+  } catch (error) {
+    console.error('Error deleting photos from S3:', error);
+    return false;
+  }
+}
+
+export async function deletePhoto(photoPath) {
+  try {
+    const deleteParams = {
+      Bucket: PHOTO_BUCKET,
+      Key: photoPath
+    };
+    
+    await s3Client.send(new DeleteObjectCommand(deleteParams));
+    console.log(`Successfully deleted photo: ${photoPath}`);
+    return true;
+  } catch (error) {
+    console.error('Error deleting photo from S3:', error);
+    return false;
+  }
+}
+
+export async function listObjects(path) {
+  try {
+    const params = {
+      Bucket: PHOTO_BUCKET,
+      Prefix: path
+    };
+    
+    const command = new ListObjectsV2Command(params);
+    const data = await s3Client.send(command);
+
+    if (!data.Contents || data.Contents.length === 0) {
+      console.log('No objects found in the directory');
+      return [];
+    }
+
+    // Return array of object keys
+    return data.Contents.map(item => item.Key);
+    
+  } catch (error) {
+    console.error('Error listing objects from S3:', error);
+    return [];
+  }
+}
+
