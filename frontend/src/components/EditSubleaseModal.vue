@@ -172,6 +172,48 @@
             />
           </div>
         </div>
+
+        <!-- Photos Section -->
+        <div class="space-y-4 mt-6">
+          <h4 class="font-semibold text-lg text-black">Current Photos</h4>
+          <li
+              v-for="(file, index) in photos"
+              :key="index"
+              class="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200"
+            >
+              <!-- File Name -->
+              <span class="text-sm text-gray-700">
+                {{ file.split('/').pop() }}
+              </span>
+              
+              <!-- Remove Button (uncomment if needed) -->
+              <button
+                  @click="queuePhotoForDeletion(file)"
+                  class="text-red-500 hover:text-red-700 text-sm font-semibold"
+              >
+                  Remove
+              </button>
+            </li>
+
+          <!-- Upload New Photos -->
+          <div class="mt-4">
+            <input
+              type="file"
+              ref="fileInput"
+              @change="handleNewPhotos"
+              multiple
+              accept="image/*"
+              class="hidden"
+            />
+            <button 
+              type="button"
+              @click="$refs.fileInput.click()"
+              class="bg-uciblue text-white px-4 py-2 rounded-lg"
+            >
+              Add New Photos
+            </button>
+          </div>
+        </div>
       </form>
 
       <!-- Sticky Footer -->
@@ -200,6 +242,9 @@
 <script>
 import router from '@/router'
 import { makeAuthenticatedRequest } from '@/services/authService'
+import { ref, onMounted } from 'vue'
+import { listObjects, deletePhoto, uploadPhotos } from '../s3client.js'
+
 export default {
   name: 'EditSubleaseModal',
   props: {
@@ -224,16 +269,27 @@ export default {
     return {
       formData: {},
       MAPBOX_ACCESS_TOKEN: import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || '',
+      photos: ref([]),
+      fileInput: ref(null),
+      photosToUpload: [],
+      photosToDelete: [],
+      photoKeys: [],
     }
   },
   watch: {
     sublease: {
       immediate: true,
-      handler(newVal) {
-        if (newVal) {
-          this.formData = { ...newVal }
+      async handler(newSublease) {
+        if (newSublease && newSublease.listerid) {
+          console.log('Fetching photos for:', newSublease.listerid);
+          const path = `${newSublease.listerid}/${newSublease.subleaseid}`;
+          const existingPhotos = await listObjects(path);
+          this.photos = existingPhotos;
         }
-      },
+        if (newSublease) {
+          this.formData = {...newSublease}
+        }
+      }
     },
     show(newVal) {
       if (newVal) {
@@ -246,17 +302,18 @@ export default {
   methods: {
     async submitForm() {
       try {
-        // Call makeAuthenticatedRequest with correct parameters
-        const response = await makeAuthenticatedRequest('sublease/edit', this.formData, this.router)
-
-        // Check if response exists and is valid
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
+        // First update sublease info
+        await makeAuthenticatedRequest('sublease/edit', this.formData, this.router)
+        
+        // Then handle photo changes
+        if (this.photosToDelete.length) {
+          await Promise.all(this.photosToDelete.map(key => deletePhoto(key)))
+        }
+        
+        if (this.photosToUpload.length) {
+          await uploadPhotos(`${this.sublease.listerid}/${this.sublease.subleaseid}`, this.photosToUpload)
         }
 
-        const data = await response.json()
-        console.log(data)
-        this.updateListings(data)
         this.$emit('update:show', false)
       } catch (error) {
         console.error('Error updating sublease:', error)
@@ -272,6 +329,28 @@ export default {
     closeModal() {
       this.$emit('update:show', false)
     },
+    async deletePhoto(index) {
+      try {
+        const photoUrl = this.photos[index]
+        await deletePhoto(photoUrl)
+        this.photos.splice(index, 1)
+      } catch (error) {
+        console.error('Failed to delete photo:', error)
+      }
+    },
+    handleNewPhotos(event) {
+      const newPhotos = Array.from(event.target.files)
+      this.photosToUpload = [...this.photosToUpload, ...newPhotos]
+      this.photos = [...this.photos, ...newPhotos.map(photo => photo.name)]
+    },
+    queuePhotoForDeletion(key) {
+      this.photosToDelete.push(key)
+      this.photoKeys = this.photoKeys.filter(k => k !== key)
+      this.photos = this.photos.filter(photo => photo !== key)
+    },
+  },
+  async mounted() {
+    // Other mounted logic if needed
   },
   beforeUnmount() {
     document.body.classList.remove('overflow-hidden')

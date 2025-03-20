@@ -129,6 +129,7 @@ import { useUserStore } from '@/stores/userStore'
 import { makeAuthenticatedRequest } from '@/services/authService'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
 import EditSubleaseModal from '@/components/EditSubleaseModal.vue'
+import { deletePhotos } from '@/s3client';
 
 export default {
   name: 'ProfilePage',
@@ -240,6 +241,10 @@ export default {
         { id: listingToDelete.id },
         this.$router,
       )
+
+      //Delete photos from s2
+      console.log('Deleting rn', `${listingToDelete.listerid}/${listingToDelete.subleaseid}`)
+      const resp  = await deletePhotos(`${listingToDelete.listerid}/${listingToDelete.subleaseid}`)
 
       // Add activity
       const responseForActivity = await makeAuthenticatedRequest(
