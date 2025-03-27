@@ -1,9 +1,9 @@
 <template>
-  <div v-if="messagesOpen" class="sidebar">
-    <div class="content relative z-20">
+  <div v-if="messagesOpen" class="sidebar h-[100dvh] w-full mt-12">
+    <div class="content">
       <!-- Chat List -->
       <div class="chat-list">
-        <h3 class="text-white border-b border-b-stone-500 py-3">Chats</h3>
+        <h3 class="text-white py-3">Chats</h3>
         <ul class="overflow-auto">
           <li
             v-for="chat in chatStore.chatRooms"
@@ -281,8 +281,7 @@ export default {
 }
 
 .sidebar {
-  background: rgb(23 23 23);
-  border-left: 1px solid rgb(120 113 108 / var(--tw-bg-opacity, 1));
+  background: whitesmoke;
   transition: width 0.3s ease;
   overflow: hidden;
   display: flex;
@@ -325,7 +324,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding-right: 10px;
-  background-color: rgb(23 23 23);
+  background-color: whitesmoke;
 }
 
 .chat-list ul {

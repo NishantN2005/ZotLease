@@ -1,32 +1,5 @@
 <template>
-  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative">
-    <div class="relative w-5/6 flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
-      <!-- Input box with search icon inside -->
-      <div class="flex-grow relative">
-        <mapbox-address-autofill
-          :accessToken="MAPBOX_ACCESS_TOKEN"
-          :options="{ countries: ['us'] }"
-          confirm-on-blur
-          confirm-on-browser-autofill
-          @retrieve="onRetrieve"
-        >
-          <!-- Input box with search icon inside -->
-          <div class="flex-grow relative">
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Address, city, ZIP"
-              class="w-full pl-10 pr-4 py-2 mt-6 md:mt-0 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
-              @input="filterAddress($event.target.value)"
-            />
-            <i
-              class="fas fa-search absolute left-3 top-2/3 md:top-1/2 transform -translate-y-1/2 text-gray-400"
-            ></i>
-          </div>
-        </mapbox-address-autofill>
-      </div>
-    </div>
-
+  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-12">
     <div class="w-5/6 h-full mt-4 overflow-y-auto scrollbar-hide">
       <div v-if="listings.length > 0" class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4">
         <div

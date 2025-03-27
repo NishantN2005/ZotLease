@@ -63,7 +63,7 @@
       </div>
     </transition>
 
-    <div class="flex relative w-full h-[100dvh]">
+    <div class="flex flex-col relative w-full h-[100dvh]">
       <Sidebar
         ref="sidebarRef"
         :Logout="Logout"
@@ -106,7 +106,7 @@
 
       <!-- The Leaflet map -->
       <LeafletMap
-        v-show="mapView && (!chatStore.chatRoomID || !isSmallScreen)"
+        v-show="mapView && !messagesOpen && (!chatStore.chatRoomID || !isSmallScreen)"
         class="z-0 w-full h-full"
         :routerPass="router"
         :userID="userStore.userID"
@@ -138,7 +138,7 @@
 
       <!-- DashView Button -->
       <div
-        class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-50 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
+        class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-45 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
       >
         <button @click="toggleDashView(false)" v-if="mapView" class="text-[#0096FF]">
           ListView <i class="fas fa-list ml-2 text-sm"></i>
