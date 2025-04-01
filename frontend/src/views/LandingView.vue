@@ -215,7 +215,7 @@ export default {
       return L.divIcon({
         className: 'custom-price-icon',
         html: `
-          <div class="price-bar inline-flex items-center bg-[#0096FF] rounded-full shadow-md px-2 py-1 transition-transform duration-200 hover:scale-[1.15]">
+          <div class="price-bar inline-flex items-center bg-[#042553] rounded-full shadow-md px-2 py-1 transition-transform duration-200 hover:scale-[1.15]">
             <div class="text-md font-semibold text-white">$${price}</div>
           </div>
         `,

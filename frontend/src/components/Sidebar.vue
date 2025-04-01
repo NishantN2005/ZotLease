@@ -2,7 +2,7 @@
   <!-- Header (replacing vertical sidebar) -->
   <div @mouseenter="secondBarOn" @mouseleave="secondBarOff">
     <header
-      class="fixed top-0 left-0 right-0 flex items-center justify-between bg-gray-100 text-[#0096FF] h-16 z-40 px-4"
+      class="fixed top-0 left-0 right-0 flex items-center justify-between bg-gray-100 text-[#042553] h-16 z-40 px-4"
     >
       <div class="hidden sm:flex items-center">
         <!-- Hide completely on mobile -->
@@ -40,7 +40,7 @@
           Search..
         </span>
         <i
-          class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#0096FF] text-white p-3 rounded-full cursor-pointer hover:bg-blue-600 transition-all"
+          class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#042553] text-white p-3 rounded-full cursor-pointer hover:bg-blue-600 transition-all"
         ></i>
       </div>
 
@@ -164,16 +164,14 @@
             </div>
           </div>
 
-          <!-- Fixed Filter Button -->
-          <div class="flex-shrink-0 ml-2">
-            <button
-              @click="toggleFilterModals"
-              :class="{ 'bg-gray-300': showFilterModal }"
-              class="border border-gray-300 rounded-md flex items-center justify-center text-sm gap-1 px-3 py-2 text-[#0096FF] hover:bg-gray-200 whitespace-nowrap"
-            >
-              <i class="fas fa-filter text-md"></i>Filters
-            </button>
-          </div>
+          <!-- Right: Filter Button -->
+          <button
+            @click="toggleFilterModals"
+            :class="{ 'bg-stone-500': showFilterModal }"
+            class="border border-1 border-gray-300 rounded-md flex items-center justify-center text-sm gap-1 mr-2 px-3 py-2 text-[#042553] hover:bg-gray-200"
+          >
+            <i class="fas fa-filter text-md"></i>Filters
+          </button>
         </div>
       </div>
     </transition>
@@ -493,7 +491,7 @@ export default {
 
 /* Style the query and overall look */
 .pac-item-query {
-  color: #0096ff;
+  color: #042553;
   font-size: 15px;
 }
 

@@ -140,10 +140,10 @@
       <div
         class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-45 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
       >
-        <button @click="toggleDashView(false)" v-if="mapView" class="text-[#0096FF]">
+        <button @click="toggleDashView(false)" v-if="mapView" class="text-[#042553]">
           ListView <i class="fas fa-list ml-2 text-sm"></i>
         </button>
-        <button @click="toggleDashView" v-else class="text-[#0096FF]">
+        <button @click="toggleDashView" v-else class="text-[#042553]">
           MapView <i class="fas fa-map-location-dot ml-2 text-sm"></i>
         </button>
       </div>
@@ -247,7 +247,7 @@ export default {
       postal_code: '',
       state: '',
       country: '',
-      listerID: userStore.userID,
+      listerID: '',
       price: '',
       gender: '',
       roomCount: '',
@@ -428,7 +428,7 @@ export default {
         showLoadingScreen.value = true
         console.log('creating listing', formData.value)
         formError.value.display = false
-
+        formData.value.listerID = userStore.userID // ensure listerID is set to the current user's ID
         let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
 
         if (response.status == 200) {
