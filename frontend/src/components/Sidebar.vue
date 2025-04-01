@@ -4,27 +4,8 @@
     <header
       class="fixed top-0 left-0 right-0 flex items-center justify-between bg-gray-100 text-[#0096FF] h-16 z-40 px-4"
     >
-      <!-- Left Section: Mobile toggle (if needed) or logo -->
-      <div class="flex items-center">
-        <button
-          @click="toggleSidebar"
-          :class="['md:hidden p-4', isSidebarOpen ? 'text-white' : 'text-neutral-900']"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            ></path>
-          </svg>
-        </button>
+      <div class="hidden sm:flex items-center">
+        <!-- Hide completely on mobile -->
         <div
           class="flex ml-4 text-2xl font-bold items-center gap-2 font-Sriracha cursor-pointer"
           @click="redirectToLanding"
@@ -44,14 +25,20 @@
         <i class="fas fa-filter text-xl"></i>
       </button>
     </div> -->
-      <div class="w-1/2 relative">
+      <div class="w-full sm:w-1/2 relative">
         <input
           id="gmaps-autocomplete"
           type="text"
           v-model="searchQuery"
           placeholder="Find Leases Near You..."
-          class="w-full py-3 pr-12 pl-5 rounded-full border border-gray-300 shadow-md text-black focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder-gray-400"
+          class="w-full py-3 pr-12 pl-5 rounded-full border border-gray-300 shadow-md text-black focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder-gray-400 sm:placeholder-opacity-100"
         />
+        <!-- Overlay text for mobile -->
+        <span
+          class="sm:hidden absolute left-5 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400 bg-white w-2/3"
+        >
+          Search..
+        </span>
         <i
           class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#0096FF] text-white p-3 rounded-full cursor-pointer hover:bg-blue-600 transition-all"
         ></i>
@@ -109,7 +96,7 @@
               <button
                 v-if="userStore.isLoggedIn"
                 @click="redirectToProfile"
-                class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+                class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-t-lg focus:outline-none flex items-center"
               >
                 <i class="fas fa-user text-md mr-3"></i>
                 Profile
@@ -129,7 +116,7 @@
               <button
                 v-if="userStore.isLoggedIn"
                 @click="Logout"
-                class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-b-lg focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center"
+                class="w-full px-4 py-2 text-left hover:bg-gray-100 rounded-b-lg focus:outline-none flex items-center"
               >
                 <i class="fas fa-sign-out-alt text-md mr-3"></i>
                 Logout
@@ -141,49 +128,52 @@
     </header>
 
     <transition name="slide-down">
-      <div v-show="showSecondBar" class="fixed top-16 left-0 right-0 z-30">
+      <div v-show="showSecondBar" class="fixed top-16 left-0 right-0 z-30 bg-gray-100">
         <!-- Separator Line -->
         <div class="border-t border-gray-300"></div>
 
-        <div
-          class="second-bar flex justify-between items-center px-8 py-2 border-gray-300 bg-gray-100"
-        >
-          <!-- Left: Icons -->
-          <div class="flex space-x-4 text-gray-600 gap-6">
-            <img
-              src="/ucilogo.png"
-              alt="uci logo"
-              class="w-12 h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
-              @click="zoomToLocation(33.6405, -117.8443)"
-            />
-            <img
-              src="/ucrlogo.png"
-              alt="ucr logo"
-              class="w-12 h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
-              @click="zoomToLocation(33.9737, -117.3281)"
-            />
-            <img
-              src="/uclalogo.png"
-              alt="ucla logo"
-              class="w-12 h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
-              @click="zoomToLocation(34.0689, -118.4452)"
-            />
-            <img
-              src="/ucsdlogo.png"
-              alt="ucsd logo"
-              class="w-12 h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
-              @click="zoomToLocation(32.8801, -117.234)"
-            />
+        <div class="second-bar flex items-center px-4 py-2">
+          <!-- Scrollable University Logos -->
+          <div class="flex-1 overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
+            <div class="inline-flex space-x-4 text-gray-600">
+              <img
+                src="/ucilogo.png"
+                alt="uci logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(33.6405, -117.8443)"
+              />
+              <img
+                src="/ucrlogo.png"
+                alt="ucr logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(33.9737, -117.3281)"
+              />
+              <img
+                src="/uclalogo.png"
+                alt="ucla logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(34.0689, -118.4452)"
+              />
+              <img
+                src="/ucsdlogo.png"
+                alt="ucsd logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(32.8801, -117.234)"
+              />
+              <!-- Add more logos if needed -->
+            </div>
           </div>
 
-          <!-- Right: Filter Button -->
-          <button
-            @click="toggleFilterModals"
-            :class="{ 'bg-stone-500': showFilterModal }"
-            class="border border-1 border-gray-300 rounded-md flex items-center justify-center text-sm gap-1 mr-2 px-3 py-2 text-[#0096FF] hover:bg-gray-200"
-          >
-            <i class="fas fa-filter text-md"></i>Filters
-          </button>
+          <!-- Fixed Filter Button -->
+          <div class="flex-shrink-0 ml-2">
+            <button
+              @click="toggleFilterModals"
+              :class="{ 'bg-stone-500': showFilterModal }"
+              class="border border-gray-300 rounded-md flex items-center justify-center text-sm gap-1 px-3 py-2 text-[#0096FF] hover:bg-gray-200 whitespace-nowrap"
+            >
+              <i class="fas fa-filter text-md"></i>Filters
+            </button>
+          </div>
         </div>
       </div>
     </transition>
@@ -261,7 +251,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useChatStore } from '@/stores/chatStore'
 import { useUserStore } from '@/stores/userStore'
 import { useMapStore } from '@/stores/mapStore.js'
@@ -391,46 +381,57 @@ export default {
     const showSecondBar = ref(false)
     const searchQuery = ref('')
 
-    // Function returns a promise that resolves when window.google is available.
-    const waitForGoogle = () => {
-      return new Promise((resolve) => {
-        if (window.google) {
-          resolve(window.google)
-        } else {
-          const interval = setInterval(() => {
-            if (window.google) {
-              clearInterval(interval)
-              resolve(window.google)
-            }
-          }, 100)
-        }
-      })
+    const checkScreenWidth = () => {
+      if (window.innerWidth < 640) {
+        showSecondBar.value = true
+      }
     }
 
-    onMounted(async () => {
-      await waitForGoogle() // wait until Google API is loaded
+    onMounted(() => {
+      checkScreenWidth()
+      window.addEventListener('resize', checkScreenWidth)
 
-      const input = document.getElementById('gmaps-autocomplete')
-      if (!input) return
+      const waitForGoogle = () => {
+        return new Promise((resolve) => {
+          if (window.google) {
+            resolve(window.google)
+          } else {
+            const interval = setInterval(() => {
+              if (window.google) {
+                clearInterval(interval)
+                resolve(window.google)
+              }
+            }, 100)
+          }
+        })
+      }
 
-      const autocomplete = new google.maps.places.Autocomplete(input, {})
+      waitForGoogle().then(() => {
+        const input = document.getElementById('gmaps-autocomplete')
+        if (!input) return
 
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace()
-        if (place.geometry && place.geometry.location) {
-          const lat = place.geometry.location.lat()
-          const lng = place.geometry.location.lng()
-          mapStore.setMapCenter({ lat, lng, zoom: 13 })
-          searchQuery.value = ''
-        } else {
-          console.error('Place details not available for:', place.name)
-        }
+        const autocomplete = new google.maps.places.Autocomplete(input, {})
+
+        autocomplete.addListener('place_changed', () => {
+          const place = autocomplete.getPlace()
+          if (place.geometry && place.geometry.location) {
+            const lat = place.geometry.location.lat()
+            const lng = place.geometry.location.lng()
+            mapStore.setMapCenter({ lat, lng, zoom: 13 })
+            searchQuery.value = ''
+          } else {
+            console.error('Place details not available for:', place.name)
+          }
+        })
       })
+    })
+
+    onBeforeUnmount(() => {
+      window.removeEventListener('resize', checkScreenWidth)
     })
 
     const clearSearch = () => {
       searchQuery.value = ''
-      // Clear the input field's native value in case autocomplete doesn't update it
       const input = document.getElementById('gmaps-autocomplete')
       if (input) {
         input.value = ''
@@ -442,10 +443,10 @@ export default {
     }
 
     const secondBarOn = () => {
-      showSecondBar.value = true
+      if (window.innerWidth >= 640) showSecondBar.value = true
     }
     const secondBarOff = () => {
-      showSecondBar.value = false
+      if (window.innerWidth >= 640) showSecondBar.value = false
     }
 
     const redirectToProfile = () => {
@@ -456,7 +457,6 @@ export default {
       props.router.push('/profile')
     }
 
-    // Wrapper functions to call the passed-in props.
     const turnOnModal = () => {
       props.turnOnModal()
     }
@@ -476,7 +476,7 @@ export default {
       showProfileModal.value = !showProfileModal.value
     }
     const zoomToLocation = (lat, lng) => {
-      mapStore.setMapCenter({ lat, lng, zoom: 15 })
+      mapStore.setMapCenter({ lat, lng, zoom: 14 })
     }
 
     return {
@@ -574,5 +574,13 @@ export default {
   color: #aaa;
   text-align: right;
   padding: 4px 8px;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>

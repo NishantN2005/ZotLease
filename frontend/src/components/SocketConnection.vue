@@ -129,13 +129,13 @@ onMounted(() => {
       v-model="message"
       type="text"
       placeholder="Message"
-      class="placeholder-stone-500 text-stone-300 border border-stone-500 bg-neutral-900 w-full pr-16 pl-4 py-2 rounded-lg focus:outline-none"
+      class="placeholder-[#b2afad] text-stone-800 border border-stone-500 bg-white w-full pr-16 pl-4 py-2 rounded-lg focus:outline-none"
       @keydown.enter.prevent="sendMessage"
     />
     <FontAwesomeIcon
       @click="sendMessage"
       :icon="faPaperPlane"
-      class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-stone-500 text-white px-4 py-1 rounded-lg hover:bg-stone-600"
+      class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#0096ff] text-white px-4 py-1 rounded-lg hover:bg-stone-600"
     />
   </div>
 </template>
