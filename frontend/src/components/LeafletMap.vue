@@ -133,8 +133,8 @@ export default {
             /**
              * If it is a new sublease the user clicked on then load data
              */
-            console.log(subleaseData[0])
             if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
+              console.log(subleaseData[0].subleaseid)
               selectedSubleaseStore.resetSelectedSublease()
               selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
               subleaseData.forEach((subletter) => {

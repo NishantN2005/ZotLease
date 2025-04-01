@@ -151,6 +151,7 @@ const getSubleaseInfoController = async (req, res) => {
   };
   try {
     const response = await pool.query(query);
+    console.log('HERE:',response.rows);
     // we need to increment view count by 1 now that it has been view
     const updateviewcount = {
       text: `UPDATE sublease SET viewcount = viewcount + 1 WHERE id = $1 AND listerid <> $2;`,

@@ -12,6 +12,8 @@ const router = useRouter()
 
 const userStore = useUserStore()
 
+const isLoading = ref(false);
+
 const formData = ref({
   fname: '',
   lname: '',
@@ -33,6 +35,7 @@ function loginWithGoogle() {
 
 function handleSignup() {
   console.log(formData.value)
+  isLoading.value = true
   if (
     formData.value.fname == '' ||
     formData.value.lname == '' ||
@@ -66,6 +69,7 @@ function handleSignup() {
   } catch (err) {
     console.log('ERROR: ', err)
   }
+  //isLoading.value = false
 }
 </script>
 
@@ -185,6 +189,8 @@ function handleSignup() {
             </div>
             <button
               type="submit"
+              :class="{'bg-gray-400 cursor-not-allowed': isLoading}"
+              :disabled="isLoading"
               class="w-full mb-2 text-white bg-[#25569a] hover:bg-[#1f4e7c] focus:ring-2 focus:outline-none focus:ring-red-300 font-bold rounded-lg text-md px-5 py-2.5 text-center dark:focus:ring-white mt-6"
             >
               Create Account
