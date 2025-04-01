@@ -29,13 +29,7 @@
         <!-- Price Range Double Slider -->
         <div>
           <label class="block mb-1 font-semibold text-black pb-3">Price:</label>
-          <Slider 
-            v-model="priceRange" 
-            :range="true" 
-            :min="0" 
-            :max="10000" 
-            :tooltips="false"
-          />
+          <Slider v-model="priceRange" :range="true" :min="0" :max="10000" :tooltips="false" />
           <div class="flex justify-between text-black text-sm mt-2">
             <span>Min: {{ priceRange[0] }}</span>
             <span>Max: {{ priceRange[1] }}</span>
@@ -44,7 +38,9 @@
 
         <!-- Room Count -->
         <div>
-          <label for="filterRoomCount" class="block mb-1 font-semibold text-black">Room Count:</label>
+          <label for="filterRoomCount" class="block mb-1 font-semibold text-black"
+            >Room Count:</label
+          >
           <input
             type="number"
             id="filterRoomCount"
@@ -56,7 +52,9 @@
 
         <!-- Start Date -->
         <div>
-          <label for="filterStartDate" class="block mb-1 font-semibold text-black">Start Date:</label>
+          <label for="filterStartDate" class="block mb-1 font-semibold text-black"
+            >Start Date:</label
+          >
           <input
             type="date"
             id="filterStartDate"
@@ -79,14 +77,14 @@
         <!-- Buttons -->
         <button
           type="submit"
-          class="w-full py-2 rounded border border-stone-500 text-black font-semibold hover:bg-stone-500"
+          class="w-full py-2 rounded border border-stone-500 text-black font-semibold hover:bg-gray-200"
         >
           Apply Filters
         </button>
         <button
           type="button"
           @click="resetFilters"
-          class="w-full py-2 rounded border border-stone-500 text-black font-semibold hover:bg-stone-500"
+          class="w-full py-2 rounded border border-stone-500 text-black font-semibold hover:bg-gray-200"
         >
           Remove Filters
         </button>
@@ -137,7 +135,7 @@ export default {
         let response = await makeAuthenticatedRequest(
           'sublease/filter',
           props.filterform,
-          props.routerPass
+          props.routerPass,
         )
         const data = await response.json()
         const parsedSubleases = data.parsedSubleases
@@ -163,13 +161,13 @@ export default {
 </script>
 
 <style src="@vueform/slider/themes/default.css">
-:root{
+:root {
   --slider-connect-bg: #a594fe;
   --slider-bg: #252525;
   --slider-height: 20px;
   --slider-handle-width: 20px;
   --slider-handle-height: 20px;
-  --slider-handle-bg: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(165,148,254,1) 60%);
+  --slider-handle-bg: radial-gradient(circle, rgba(0, 0, 0, 1) 40%, rgba(165, 148, 254, 1) 60%);
   --slider-tooltip-bg: #a594fe;
 
   --slider-handle-ring-width: 3px;
@@ -182,12 +180,12 @@ export default {
 
 /* Custom slider colors */
 .slider-connect {
-  background-color: #0064A4 !important;
+  background-color: #0064a4 !important;
 }
 
 .slider-handle {
-  background-color: #0064A4 !important;
-  border-color: #0064A4 !important;
+  background-color: #0064a4 !important;
+  border-color: #0064a4 !important;
 }
 
 .slider-horizontal .slider-handle:hover {

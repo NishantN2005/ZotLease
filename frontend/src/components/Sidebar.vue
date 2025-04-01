@@ -168,7 +168,7 @@
           <div class="flex-shrink-0 ml-2">
             <button
               @click="toggleFilterModals"
-              :class="{ 'bg-stone-500': showFilterModal }"
+              :class="{ 'bg-gray-300': showFilterModal }"
               class="border border-gray-300 rounded-md flex items-center justify-center text-sm gap-1 px-3 py-2 text-[#0096FF] hover:bg-gray-200 whitespace-nowrap"
             >
               <i class="fas fa-filter text-md"></i>Filters
@@ -178,76 +178,6 @@
       </div>
     </transition>
   </div>
-
-  <!-- Mobile Sidebar -->
-  <transition name="slide">
-    <div
-      v-if="isSidebarOpen"
-      class="md:hidden pt-12 w-1/3 h-full bg-neutral-900 text-white z-40 transform transition-transform"
-    >
-      <div class="flex flex-col items-center space-y-6 py-4">
-        <button
-          class="w-12 h-12 border border-stone-500 rounded-full flex items-center justify-center hover:cursor-pointer"
-          @click="redirectToProfile"
-        >
-          <i class="fas fa-user text-white text-2xl"></i>
-        </button>
-        <div class="flex flex-col w-full">
-          <button
-            @click="turnOnModal"
-            class="w-full h-12 border-y border-stone-500 hover:bg-stone-500 text-white flex items-center justify-center"
-          >
-            <i class="fas fa-plus text-xl"></i>
-          </button>
-          <button
-            @click="toggleFilterModals"
-            :class="{ 'bg-stone-500': showFilterModal }"
-            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
-          >
-            <i class="fas fa-filter"></i>
-          </button>
-          <button
-            @click="toggleMessages"
-            :class="{ 'bg-stone-500': messagesOpen }"
-            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
-          >
-            <i class="fas fa-comments"></i>
-          </button>
-          <button
-            @click="toggleView"
-            :class="{ 'bg-stone-500': mapView }"
-            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
-          >
-            <i class="fas fa-map-location-dot"></i>
-          </button>
-          <button
-            @click="toggleView(false)"
-            :class="{ 'bg-stone-500': !mapView }"
-            class="w-full border-y border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
-          >
-            <i class="fas fa-list"></i>
-          </button>
-        </div>
-      </div>
-      <div class="absolute bottom-0 left-0 right-0">
-        <button
-          @click="Logout"
-          class="w-full border-t border-stone-500 hover:bg-stone-500 text-white py-2 flex items-center justify-center"
-        >
-          <i class="fas fa-sign-out-alt"></i>
-        </button>
-      </div>
-    </div>
-  </transition>
-
-  <!-- Mobile Overlay -->
-  <transition name="fade">
-    <div
-      v-if="isSidebarOpen"
-      @click="toggleSidebar"
-      class="md:hidden fixed inset-0 bg-black opacity-50 z-30"
-    ></div>
-  </transition>
 </template>
 
 <script>
