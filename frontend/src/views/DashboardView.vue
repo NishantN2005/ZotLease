@@ -202,7 +202,10 @@ export default {
         userStore.setEmail(decoded.email)
         userStore.setUserID(decoded.userid)
         chatStore.onlineChats = []
+        console.log('fname', decoded.fname, decoded.lname, decoded.email, decoded.userid)
         sequencialFetch()
+      } else {
+        console.log('noooooooo')
       }
 
       // Detect page refresh or tab close
