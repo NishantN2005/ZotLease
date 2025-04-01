@@ -24,6 +24,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "@mapbox/search-js-web": "^1.0.0",
+    "@vueform/slider": "^2.1.10",
     "@vueuse/core": "^12.5.0",
     "aws-sdk": "^2.1692.0",
     "browser-image-compression": "^2.0.2",
@@ -40,6 +41,7 @@
     "vanilla-cookieconsent": "^3.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.4.5",
+    "vue-slider-component": "^3.2.24",
     "vue-typer": "^1.2.0",
     "vue-typewriter-effect": "^1.0.1"
   },

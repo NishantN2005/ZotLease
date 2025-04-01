@@ -1,116 +1,112 @@
 <template>
   <div
     v-if="showFilterModal"
-    class="h-full w-80 bg-neutral-900 shadow-lg border-l border-stone-500 p-6 z-30"
+    class="fixed inset-0 flex items-center justify-center z-40 bg-white bg-opacity-50"
   >
-    <h1 class="font-bold text-xl text-center mb-4 text-white">Filter by:</h1>
+    <div class="w-80 bg-white shadow-lg border border-stone-500 p-6 z-50">
+      <h1 class="font-bold text-xl text-center mb-4 text-black">Filter by:</h1>
 
-    <!-- Use @submit.prevent + composition API's applyFilters method -->
-    <form class="space-y-4 text-white" @submit.prevent="applyFilters">
-      <!-- Gender -->
-      <div>
-        <label>Gender:</label>
-        <div class="flex space-x-4">
-          <!-- Male -->
-          <label class="inline-flex items-center">
-            <input type="radio" value="Male" v-model="filterform.gender" class="mr-1" />
-            Male
-          </label>
-          <!-- Female -->
-          <label class="inline-flex items-center">
-            <input type="radio" value="Female" v-model="filterform.gender" class="mr-1" />
-            Female
-          </label>
-          <!-- Other -->
-          <label class="inline-flex items-center">
-            <input type="radio" value="Other" v-model="filterform.gender" class="mr-1" />
-            Other
-          </label>
+      <form class="space-y-4 text-black" @submit.prevent="applyFilters">
+        <!-- Gender -->
+        <div>
+          <label class="text-black">Gender:</label>
+          <div class="flex space-x-4">
+            <label class="inline-flex items-center">
+              <input type="radio" value="Male" v-model="filterform.gender" class="mr-1" />
+              Male
+            </label>
+            <label class="inline-flex items-center">
+              <input type="radio" value="Female" v-model="filterform.gender" class="mr-1" />
+              Female
+            </label>
+            <label class="inline-flex items-center">
+              <input type="radio" value="Other" v-model="filterform.gender" class="mr-1" />
+              Other
+            </label>
+          </div>
         </div>
-      </div>
 
-      <!-- Price Range -->
-      <div class="text-black">
-        <label class="block mb-1 font-semibold text-white">Price:</label>
-        <div class="flex space-x-2">
+        <!-- Price Range Double Slider -->
+        <div>
+          <label class="block mb-1 font-semibold text-black pb-3">Price:</label>
+          <Slider 
+            v-model="priceRange" 
+            :range="true" 
+            :min="0" 
+            :max="10000" 
+            :tooltips="false"
+          />
+          <div class="flex justify-between text-black text-sm mt-2">
+            <span>Min: {{ priceRange[0] }}</span>
+            <span>Max: {{ priceRange[1] }}</span>
+          </div>
+        </div>
+
+        <!-- Room Count -->
+        <div>
+          <label for="filterRoomCount" class="block mb-1 font-semibold text-black">Room Count:</label>
           <input
             type="number"
-            id="filterMinPrice"
-            placeholder="0"
-            v-model="filterform.minPrice"
-            class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="number"
-            id="filterMaxPrice"
-            placeholder="1200"
-            v-model="filterform.maxPrice"
+            id="filterRoomCount"
+            placeholder="3"
+            v-model="filterform.roomCount"
             class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-      </div>
 
-      <!-- Room Count -->
-      <div class="text-black">
-        <label for="filterRoomCount" class="block mb-1 font-semibold text-white">Room Count:</label>
-        <input
-          type="number"
-          id="filterRoomCount"
-          placeholder="3"
-          v-model="filterform.roomCount"
-          class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+        <!-- Start Date -->
+        <div>
+          <label for="filterStartDate" class="block mb-1 font-semibold text-black">Start Date:</label>
+          <input
+            type="date"
+            id="filterStartDate"
+            v-model="filterform.startdate"
+            class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-      <!-- Start Date-->
-      <div class="text-black">
-        <label for="filterStartDate" class="block mb-1 font-semibold text-white">
-          Start Date:</label
+        <!-- End Date -->
+        <div>
+          <label for="filterEndDate" class="block mb-1 font-semibold text-black">End Date:</label>
+          <input
+            type="date"
+            id="filterEndDate"
+            v-model="filterform.enddate"
+            class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- Buttons -->
+        <button
+          type="submit"
+          class="w-full py-2 rounded border border-stone-500 text-black font-semibold hover:bg-stone-500"
         >
-        <input
-          type="date"
-          id="filterStartDate"
-          placeholder="4"
-          v-model="filterform.startdate"
-          class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <!-- End Date-->
-      <div class="text-black">
-        <label for="filterEndDate" class="block mb-1 font-semibold text-white"> End Date:</label>
-        <input
-          type="date"
-          id="filterEndDate"
-          placeholder="4"
-          v-model="filterform.enddate"
-          class="border rounded px-2 py-1 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="w-full py-2 rounded border border-stone-500 text-white font-semibold hover:bg-stone-500"
-      >
-        Apply Filters
-      </button>
-      <button
-        @click="resetFilters"
-        class="w-full py-2 rounded border border-stone-500 text-white font-semibold hover:bg-stone-500"
-      >
-        Remove Filters
-      </button>
-    </form>
+          Apply Filters
+        </button>
+        <button
+          type="button"
+          @click="resetFilters"
+          class="w-full py-2 rounded border border-stone-500 text-black font-semibold hover:bg-stone-500"
+        >
+          Remove Filters
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
+import { ref, watch } from 'vue'
+import Slider from '@vueform/slider'
+import '@vueform/slider/themes/default.css'
 import { makeAuthenticatedRequest } from '../services/authService.js'
 import { useFilterStore } from '@/stores/filterStore'
 
 export default {
   name: 'FilterModal',
+  components: {
+    Slider,
+  },
   props: {
     filterform: {
       type: Object,
@@ -133,36 +129,68 @@ export default {
       required: true,
     },
   },
-
-  // Composition API setup
   setup(props) {
-    // Access your Pinia store
     const filterStore = useFilterStore()
 
-    // Define the submit handler in setup
     const applyFilters = async () => {
       try {
         let response = await makeAuthenticatedRequest(
           'sublease/filter',
           props.filterform,
-          props.routerPass,
+          props.routerPass
         )
-        // parse the JSON from the response
         const data = await response.json()
         const parsedSubleases = data.parsedSubleases
-
-        // Store results in Pinia
         filterStore.setFilter(parsedSubleases)
-
-        // Close the modal
         props.toggleFilterModal()
       } catch (err) {
         console.log(`Error applying filters: ${err}`)
       }
     }
 
-    // Return anything you want to use in the template
-    return { applyFilters }
+    // Create a reactive price range for double slider: [minPrice, maxPrice]
+    const priceRange = ref([props.filterform.minPrice || 0, props.filterform.maxPrice || 1200])
+
+    // Keep the filter form in sync with the slider values
+    watch(priceRange, (newVal) => {
+      props.filterform.minPrice = newVal[0]
+      props.filterform.maxPrice = newVal[1]
+    })
+
+    return { applyFilters, priceRange }
   },
 }
 </script>
+
+<style src="@vueform/slider/themes/default.css">
+:root{
+  --slider-connect-bg: #a594fe;
+  --slider-bg: #252525;
+  --slider-height: 20px;
+  --slider-handle-width: 20px;
+  --slider-handle-height: 20px;
+  --slider-handle-bg: radial-gradient(circle, rgba(0,0,0,1) 40%, rgba(165,148,254,1) 60%);
+  --slider-tooltip-bg: #a594fe;
+
+  --slider-handle-ring-width: 3px;
+  --slider-handle-ring-color: #a594fe30;
+}
+</style>
+
+<style>
+@import '@vueform/slider/themes/default.css';
+
+/* Custom slider colors */
+.slider-connect {
+  background-color: #0064A4 !important;
+}
+
+.slider-handle {
+  background-color: #0064A4 !important;
+  border-color: #0064A4 !important;
+}
+
+.slider-horizontal .slider-handle:hover {
+  box-shadow: 0 0 0 10px rgba(0, 100, 164, 0.1) !important;
+}
+</style>
