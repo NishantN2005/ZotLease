@@ -468,7 +468,7 @@ export default {
             postal_code: '',
             state: '',
             country: '',
-            listerID: userStore.userID,
+            listerID: '',
             price: '',
             gender: '',
             roomCount: '',

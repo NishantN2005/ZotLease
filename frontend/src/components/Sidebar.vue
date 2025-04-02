@@ -25,38 +25,37 @@
         <i class="fas fa-filter text-xl"></i>
       </button>
     </div> -->
-      <div v-if="!listView" class="w-full sm:w-1/2 relative">
+      <div v-show="!listView" class="w-full sm:w-1/2 relative">
         <input
           id="gmaps-autocomplete"
           type="text"
           v-model="searchQuery"
-          placeholder="Find Leases Near You..."
+          :placeholder="showSecondBar ? 'Search..' : 'Find Leases Near You...'"
           class="w-full py-3 pr-12 pl-5 rounded-full border border-gray-300 shadow-md text-black focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder-gray-400 sm:placeholder-opacity-100"
         />
-        <!-- Overlay text for mobile -->
+
+        <!-- Overlay text for mobile (Hidden when typing) -->
         <span
-          class="sm:hidden absolute left-5 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400 bg-white w-2/3"
+          v-show="!searchQuery"
+          class="sm:hidden absolute left-5 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400 bg-white px-2"
         >
           Search..
         </span>
+
         <i
           class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#042553] text-white p-3 rounded-full cursor-pointer hover:bg-blue-600 transition-all"
         ></i>
       </div>
-      <div v-else class="w-full sm:w-1/2 relative">
+
+      <div v-show="listView" class="w-full sm:w-1/2 relative">
         <input
           type="text"
           v-model="searchQuery"
-          placeholder="Find Leases Near You..."
+          :placeholder="showSecondBar ? 'Search..' : 'Find Leases Near You...'"
           class="w-full py-3 pr-12 pl-5 rounded-full border border-gray-300 shadow-md text-black focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder-gray-400 sm:placeholder-opacity-100"
           @input="updateFilterText(searchQuery)"
         />
-        <!-- Overlay text for mobile -->
-        <span
-          class="sm:hidden absolute left-5 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-400 bg-white w-2/3"
-        >
-          Search..
-        </span>
+
         <i
           class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#042553] text-white p-3 rounded-full cursor-pointer hover:bg-blue-600 transition-all"
         ></i>

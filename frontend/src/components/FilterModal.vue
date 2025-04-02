@@ -147,7 +147,7 @@ export default {
     }
 
     // Create a reactive price range for double slider: [minPrice, maxPrice]
-    const priceRange = ref([props.filterform.minPrice || 0, props.filterform.maxPrice || 1200])
+    const priceRange = ref([props.filterform.minPrice || 0, props.filterform.maxPrice || 10000])
 
     // Keep the filter form in sync with the slider values
     watch(priceRange, (newVal) => {

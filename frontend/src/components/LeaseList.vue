@@ -1,17 +1,17 @@
 <template>
-  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-28">
+  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-28 md:pt-12">
     <div class="w-5/6 h-full mt-4 overflow-y-auto scrollbar-hide">
       <div v-if="listings.length > 0" class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4">
         <div
           v-for="listing in listings"
-          :key="listing.subleaseid"
+          :key="listing.listerid"
           class="listing-card bg-transparent rounded-xl cursor-pointer overflow-hidden"
           @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
         >
           <!-- Image Section -->
           <div class="relative w-full h-64 overflow-hidden">
             <img
-              :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
+              :src="photos[listing.id] ? photos[listing.id] : housePlaceholder"
               alt="Property Image"
               class="w-full h-full object-cover rounded-xl transition-transform duration-300 hover:scale-105"
             />
@@ -151,7 +151,7 @@ export default {
 
             if (response) {
               console.log('Adding first photo to photos:', response)
-              photos.value[listing.subleaseid] = response
+              photos.value[listing.id] = response
             } else {
               console.log('No photo found for key:', key)
             }
@@ -175,8 +175,7 @@ export default {
       const query = String(text || '').toLowerCase()
 
       if (!query) {
-        // Reset listings when input is cleared
-        listings.value = allLocations.allLocations
+        listings.value = [...allLocations.allLocations] // Reset properly
         props.filterStore.resetFilter()
         filterActive.value = false
         return
@@ -186,6 +185,8 @@ export default {
         [listing.street_name, listing.city].join(', ').toLowerCase().includes(query),
       )
 
+      console.log(listings.value)
+      console.log(photos.value)
       filterActive.value = true
     }
 
@@ -202,7 +203,7 @@ export default {
     watch(
       () => allLocations.allLocations,
       (newListings) => {
-        listings.value = newListings
+        listings.value = [...newListings]
         fetchPhotos()
       },
       { deep: true },
@@ -215,16 +216,12 @@ export default {
       (newValue) => {
         if (newValue.length) {
           filterActive.value = true
-          listings.value = listings.value.filter((listing) =>
-            props.filterStore.acceptedSubleases.includes(listing.subleaseid),
+          listings.value = allLocations.allLocations.filter((listing) =>
+            newValue.includes(listing.subleaseid),
           )
         } else {
-          if (props.filterStore.isFiltered) {
-            listings.value = newValue // Clear listings if filter is active
-          } else {
-            listings.value = [...allLocations.allLocations] // Reset to all locations if filter is not active
-            filterActive.value = false
-          }
+          listings.value = [...allLocations.allLocations] // Reset when filter is inactive
+          filterActive.value = false
         }
       },
       { deep: true },
