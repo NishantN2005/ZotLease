@@ -58,10 +58,14 @@ export default {
 
     // 1. Fetch location data from your backend
     const fetchLocations = async () => {
+      const bounds = map.getBounds()
+      const sw = bounds.getSouthWest()
+      const ne = bounds.getNorthEast()
+      console.log('sw here', sw)
       try {
         const response = await makeAuthenticatedRequest(
           'sublease/retrieve',
-          {}, // any payload if needed
+          {swLat:sw.lat, swLng:sw.lng, neLat: ne.lat, neLng:ne.lng}, // any payload if needed
           props.routerPass,
         )
         // Return the parsed JSON array of subleases
@@ -181,8 +185,15 @@ export default {
       // Fetch all locations once
       allLocationsStore.setAllLocations(await fetchLocations())
 
-      // Add markers for the initial (unfiltered) load
+      // Add markers for the initial load
       addMarkers(allLocationsStore.allLocations)
+
+      map.on('moveend', async () => {
+      let updatedLocations = await fetchLocations()
+      allLocationsStore.setAllLocations(updatedLocations)
+      markersLayer.clearLayers()
+      addMarkers(updatedLocations)
+      })
 
       // Only locate if we haven't already done so.
       if (!hasLocatedUser) {

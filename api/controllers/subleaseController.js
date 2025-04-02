@@ -128,9 +128,16 @@ const createSubleaseController = async (req, res) => {
 };
 
 const getSubleasesController = async (req, res) => {
+  const {swLat, swLng, neLat, neLng} = req.body;
   const query =
     "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount FROM sublease";
-  const response = await pool.query(query);
+  const new_query_string = "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount\
+  FROM sublease\
+  WHERE latitude BETWEEN $1 AND $2\
+  AND longitude BETWEEN $3 AND $4;"
+
+  const new_query = {text: new_query_string, values: [swLat, neLat, swLng, neLng]}
+    const response = await pool.query(new_query);
   return res.status(200).json(response.rows);
 };
 
