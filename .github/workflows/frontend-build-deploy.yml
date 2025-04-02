@@ -84,11 +84,12 @@ jobs:
                        --build-arg VITE_AWS_REGION=us-east-1 \
                        --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                        --build-arg VITE_ENV=beta \
-                      --build-arg VITE_API_URL=${{env.API_URL}} \
-                      --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
-                      --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
-                      --build-arg VITE_GOOGLE_MAP_URL=${{env.GOOGLE_MAP_URL}} \
-                       -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                       --build-arg VITE_API_URL=${{env.API_URL}} \
+                       --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
+                       --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
+                       --build-arg VITE_GOOGLE_MAP_URL=${{env.GOOGLE_MAP_URL}} \
+                       -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+                       .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
     runs-on: ubuntu-latest
