@@ -57,8 +57,8 @@ jobs:
           echo "$client_secret"
           echo "CLIENT_SECRET=$client_secret" >> $GITHUB_ENV
 
-      - name: Retrieve GOOGLE_MAP_URL from Secrets Manager
-        id: get_google_map_url
+      - name: Retrieve GOOGLE_MAPS from Secrets Manager
+        id: get_google_maps
         run: |
           google_maps=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAPS --query SecretString --output text)
           echo "$google_maps"
@@ -73,7 +73,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
           IMAGE_TAG: ${{ github.event.inputs.environ == 'beta' && 'latest' || github.sha }}
           MAPBOX_KEY: ${{ env.MAPBOX_KEY }}
-          API_URL: ${{ env.API_URL }}
+          API_URL: "https://api.zotlease.org/"
           CLIENT_ID: ${{ env.CLIENT_ID }}
           CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
           GOOGLE_MAPS: ${{env.GOOGLE_MAPS}}
@@ -84,11 +84,12 @@ jobs:
                        --build-arg VITE_AWS_REGION=us-east-1 \
                        --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                        --build-arg VITE_ENV=beta \
-                      --build-arg VITE_API_URL=${{env.API_URL}} \
-                      --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
-                      --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
-                      --build-arg VITE_GOOGLE_MAPS=${{env.GOOGLE_MAPS}} \
-                       -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                       --build-arg VITE_API_URL=${{env.API_URL}} \
+                       --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
+                       --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
+                       --build-arg VITE_GOOGLE_MAPS=${{env.GOOGLE_MAPS}} \
+                       -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+                       .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
     runs-on: ubuntu-latest
@@ -133,13 +134,13 @@ jobs:
         run: |
           secret=$(aws secretsmanager get-secret-value --secret-id CLIENT_SECRET_OAUTH --query SecretString --output text)
           echo "CLIENT_SECRET=$secret" >> $GITHUB_ENV
-
-      - name: Retrieve GOOGLE_MAP_URL from Secrets Manager
-        id: get_google_map_url
+      
+      - name: Retrieve GOOGLE_MAPS from Secrets Manager
+        id: get_google_maps
         run: |
           google_maps=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAPS --query SecretString --output text)
           echo "$google_maps"
-          echo "GOOGLE_MAPS=$google_maps" >> $GITHUB_ENV
+          echo "GOOGLE_MAPSL=$google_maps" >> $GITHUB_ENV
 
       - name: Create Lightsail Container Service if not exists
         run: |
