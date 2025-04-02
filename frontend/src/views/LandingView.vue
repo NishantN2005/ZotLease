@@ -82,11 +82,11 @@
       <div class="z-50 absolute top-1/4 right-8 text-right">
         <h1 class="text-4xl md:text-6xl font-extrabold mb-4">
           <vue-typewriter-effect
-            class="text-4xl font-extrabold text-neutral-900 font-Sriracha"
+            class="text-4xl font-extrabold text-neutral-100 font-Sriracha"
             :strings="['Need a place this summer?', 'Want to save money?']"
           />
         </h1>
-        <p class="text-6xl mt-4 text-neutral-900 font-Sriracha font-64">We make it easy.</p>
+        <p class="text-6xl mt-4 text-neutral-100 font-Sriracha font-64">We make it easy.</p>
       </div>
     </header>
 
@@ -241,7 +241,7 @@ export default {
       // Add the Mapbox tile layer
       L.tileLayer(MAPBOX_TILE_URL, {
         maxZoom: 19,
-        id: 'mapbox/streets-v11',
+        id: 'mapbox/navigation-night-v1',
         tileSize: 512,
         zoomOffset: -1,
         attribution:

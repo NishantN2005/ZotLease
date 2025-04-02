@@ -1,13 +1,16 @@
 <template>
   <div
     id="PhotoGallery"
-    class="fixed inset-0 z-10 bg-white px-4 pt-4 pb-4 shadow-md border border-gray-200 overflow-y-auto w-screen h-[100dvh] md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:h-auto md:rounded-lg"
+    class="fixed inset-0 z-10 bg-white px-4 pt-4 pb-4 shadow-md border border-gray-200 overflow-y-auto w-screen h-[100dvh] md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:h-auto md:rounded-lg mt-16"
   >
-    <div class="flex items-center">
+    <div class="relative">
+      <!-- Close button with higher z-index and proper positioning -->
       <i
-        class="fa-solid text-xl fa-xmark fixed top-4 right-4 md:top-7 md:right-8 z-20 cursor-pointer"
+        class="fa-solid text-xl fa-xmark absolute top-1 right-2 md:right-4 z-50 cursor-pointer text-gray-700 hover:text-gray-900"
         @click="togglePhotoGallery"
       ></i>
+    </div>
+    <div class="flex items-center">
       <h1 class="font-bold text-2xl text-gray-900 text-center flex-1">
         {{
           selectedSubleaseStore.selectedSublet.fname.charAt(0).toUpperCase() +

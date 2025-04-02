@@ -49,13 +49,13 @@
     <transition name="slide-up">
       <div
         v-if="signupBanner"
-        class="fixed bottom-0 left-0 w-full bg-uciblue/90 text-white text-center py-4 z-50 shadow-lg"
+        class="fixed bottom-0 left-0 w-full bg-gray-100/90 text-[#042553] text-center py-4 z-50 shadow-lg"
       >
         <div class="container mx-auto px-4 flex items-center justify-between">
           <p class="text-lg font-semibold">Please sign up to continue.</p>
           <a
             href="/signup"
-            class="bg-white text-uciblue px-6 py-2 text-lg font-semibold rounded-lg shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
+            class="bg-[#042553] text-gray-100 px-6 py-2 text-lg font-semibold rounded-lg shadow-md hover:bg-[#0a397b] hover:shadow-lg transition-all"
           >
             Sign Up
           </a>
@@ -63,7 +63,7 @@
       </div>
     </transition>
 
-    <div class="flex relative w-full h-[100dvh]">
+    <div class="flex flex-col relative w-full h-[100dvh]">
       <Sidebar
         ref="sidebarRef"
         :Logout="Logout"
@@ -82,6 +82,9 @@
         :toggleSidebar="toggleSidebar"
         :promptSignup="promptSignup"
         :userStore="userStore"
+        :listView="listView"
+        :updateFilterText="updateFilterText"
+        :isSmallScreen="isSmallScreen"
       />
       <!-- Filter Modal-->
       <FilterModal
@@ -106,22 +109,24 @@
 
       <!-- The Leaflet map -->
       <LeafletMap
-        v-show="mapView && (!chatStore.chatRoomID || !isSmallScreen)"
+        v-if="mapView && !messagesOpen && (!chatStore.chatRoomID || !isSmallScreen)"
         class="z-0 w-full h-full"
         :routerPass="router"
         :userID="userStore.userID"
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :filterForm="filterForm"
         :setEventPos="setEventPos"
+        :turnOffLoading="turnOffLoading"
       />
 
       <LeaseList
-        v-show="listView && (!chatStore.chatRoomID || !isSmallScreen)"
+        v-if="listView && (!chatStore.chatRoomID || !isSmallScreen)"
         :allLocations="allLocationsStore"
         :filterStore="filterStore"
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :routerPass="router"
         :turnOffLoading="turnOffLoading"
+        :leaseListFilterText="leaseListFilterText"
       />
 
       <!-- Selected Sublease modal-->
@@ -135,6 +140,18 @@
       />
 
       <PhotoGalleryModal v-if="showPhotoGallery" :togglePhotoGallery="togglePhotoGallery" />
+
+      <!-- DashView Button -->
+      <div
+        class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-45 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
+      >
+        <button @click="toggleDashView(false)" v-if="mapView" class="text-[#042553]">
+          ListView <i class="fas fa-list ml-2 text-sm"></i>
+        </button>
+        <button @click="toggleDashView" v-else class="text-[#042553]">
+          MapView <i class="fas fa-map-location-dot ml-2 text-sm"></i>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -162,6 +179,7 @@ import LoadingScreen from '@/components/LoadingScreen.vue'
 import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { useWindowSize } from '@vueuse/core'
 import { API_URL } from '../../constants'
+import { useMapStore } from '@/stores/mapStore'
 
 export default {
   name: 'DashboardView',
@@ -190,7 +208,10 @@ export default {
         userStore.setEmail(decoded.email)
         userStore.setUserID(decoded.userid)
         chatStore.onlineChats = []
+        console.log('fname', decoded.fname, decoded.lname, decoded.email, decoded.userid)
         sequencialFetch()
+      } else {
+        console.log('noooooooo')
       }
 
       // Detect page refresh or tab close
@@ -212,6 +233,7 @@ export default {
     const allLocationsStore = useAllLocationsStore()
     const showLoadingScreen = ref(false)
     const isSidebarOpen = ref(false)
+    const mapStore = useMapStore()
 
     const showSelectedSubleaseModal = ref(false)
     const showPhotoGallery = ref(false)
@@ -235,7 +257,7 @@ export default {
       postal_code: '',
       state: '',
       country: '',
-      listerID: userStore.userID,
+      listerID: '',
       price: '',
       gender: '',
       roomCount: '',
@@ -244,6 +266,7 @@ export default {
       endTerm: '',
       description: '',
     })
+    const leaseListFilterText = ref('')
 
     const filesRef = ref([])
 
@@ -330,6 +353,7 @@ export default {
       await fetchChatRooms()
     }
     const toggleDashView = (mapOn = true) => {
+      console.log(mapOn)
       if (mapOn) {
         // turn off list view, turn on mapview
         listView.value = false
@@ -415,7 +439,7 @@ export default {
         showLoadingScreen.value = true
         console.log('creating listing', formData.value)
         formError.value.display = false
-
+        formData.value.listerID = userStore.userID // ensure listerID is set to the current user's ID
         let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
 
         if (response.status == 200) {
@@ -448,7 +472,7 @@ export default {
             postal_code: '',
             state: '',
             country: '',
-            listerID: userStore.userID,
+            listerID: '',
             price: '',
             gender: '',
             roomCount: '',
@@ -645,6 +669,10 @@ export default {
       }
     }
 
+    const updateFilterText = (text) => {
+      leaseListFilterText.value = text
+    }
+
     return {
       callTestRoute,
       navigateToLogin,
@@ -700,6 +728,9 @@ export default {
       decodeToken,
       promptSignup,
       signupBanner,
+      leaseListFilterText,
+      updateFilterText,
+      mapStore,
     }
   },
 }

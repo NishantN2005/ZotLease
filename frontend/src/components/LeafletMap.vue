@@ -1,20 +1,21 @@
 <template>
-  <div id="map" class="relative h-full w-full"></div>
+  <div id="map" class="relative h-full w-full mt-16"></div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import 'leaflet-control-geocoder/dist/Control.Geocoder.css'
-import 'leaflet-control-geocoder'
 import { makeAuthenticatedRequest } from '../services/authService.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
 import { useFilterStore } from '@/stores/filterStore'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore'
+import { useMapStore } from '@/stores/mapStore.js'
 import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 import 'leaflet-arrowheads'
 import { useUserStore } from '@/stores/userStore.js'
+
+let hasLocatedUser = false
 
 export default {
   name: 'LeafletMap',
@@ -40,6 +41,10 @@ export default {
       type: Function,
       required: true,
     },
+    turnOffLoading:{
+      type: Function,
+      required: true
+    }
   },
 
   setup(props) {
@@ -53,13 +58,18 @@ export default {
     const filterStore = useFilterStore()
     const allLocationsStore = useAllLocationsStore()
     const userStore = useUserStore()
+    const mapStore = useMapStore()
 
     // 1. Fetch location data from your backend
     const fetchLocations = async () => {
+      const bounds = map.getBounds()
+      const sw = bounds.getSouthWest()
+      const ne = bounds.getNorthEast()
+      console.log('sw here', sw)
       try {
         const response = await makeAuthenticatedRequest(
           'sublease/retrieve',
-          {}, // any payload if needed
+          {swLat:sw.lat, swLng:sw.lng, neLat: ne.lat, neLng:ne.lng}, // any payload if needed
           props.routerPass,
         )
         // Return the parsed JSON array of subleases
@@ -117,6 +127,8 @@ export default {
             const uniqueid = marker.id
             const userid = userStore.userID
 
+            console.log(subid, uniqueid, userid)
+
             // Make call to retrieve listing information
             let info = await makeAuthenticatedRequest(
               'sublease/selectedInfo',
@@ -129,7 +141,6 @@ export default {
             /**
              * If it is a new sublease the user clicked on then load data
              */
-             console.log('SUBLEASE NOT WORKING HERE',subid, uniqueid, userid)
             if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
               console.log(subleaseData[0].subleaseid)
               selectedSubleaseStore.resetSelectedSublease()
@@ -156,12 +167,15 @@ export default {
       }
 
       // Initialize the Leaflet map
-      map = L.map(mapContainer, { zoomControl: false }).setView([33.644, -117.826], 15)
+      map = L.map(mapContainer, { zoomControl: false }).setView(
+        [mapStore.mapCenter.lat, mapStore.mapCenter.lng],
+        mapStore.mapCenter.zoom,
+      )
 
       // Add the Mapbox tile layer
       L.tileLayer(MAPBOX_TILE_URL, {
         maxZoom: 19,
-        id: 'mapbox/streets-v11',
+        id: 'mapbox/navigation-night-v1',
         tileSize: 512,
         zoomOffset: -1,
         attribution:
@@ -169,54 +183,37 @@ export default {
           '<a href="https://www.mapbox.com/">Mapbox</a>',
       }).addTo(map)
 
-      var geocoder = L.Control.geocoder({
-        defaultMarkGeocode: false,
-        position: 'topleft',
-        placeholder: 'Enter city/street...',
-        geocoder: new L.Control.Geocoder.nominatim({
-          geocodingQueryParams: { countrycodes: 'us' }, // Prioritizes US results
-        }),
-      })
-        .on('markgeocode', function (e) {
-          // No bounding box or polygon added here
-          // You can simply zoom the map to the geocode location
-          map.fitBounds(e.geocode.bbox) // Fits the map bounds to the geocode result
-        })
-        .addTo(map)
-
-      function updateGeocoderPosition() {
-        if (window.innerWidth <= 768) {
-          geocoder.setPosition('bottomleft') // Move to bottom-left on smaller screens
-        } else {
-          geocoder.setPosition('topleft') // Move to top-left on larger screens
-        }
-      }
-
-      // Update position on initial load
-      updateGeocoderPosition()
-
-      // Update position on window resize
-      window.addEventListener('resize', updateGeocoderPosition)
-
       // Create a LayerGroup to hold markers
       markersLayer = L.layerGroup().addTo(map)
 
       // Fetch all locations once
       allLocationsStore.setAllLocations(await fetchLocations())
 
-      // Add markers for the initial (unfiltered) load
+      // Add markers for the initial load
       addMarkers(allLocationsStore.allLocations)
-
-      // Get user location data and zoom into it
-      map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true })
-
-      map.on('locationfound', (e) => {
-        map.setView(e.latlng, 16) // Zoom into the user's location
+      props.turnOffLoading()
+      
+      map.on('moveend', async () => {
+      let updatedLocations = await fetchLocations()
+      allLocationsStore.setAllLocations(updatedLocations)
+      markersLayer.clearLayers()
+      addMarkers(updatedLocations)
       })
 
-      map.on('locationerror', () => {
-        console.error('Geolocation failed.')
-      })
+      // Only locate if we haven't already done so.
+      if (!hasLocatedUser) {
+        map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true })
+        map.on('locationfound', (e) => {
+          const { latitude, longitude } = e
+          map.setView(longitude, latitude, 16) // Zoom into the user's location
+        })
+
+        map.on('locationerror', () => {
+          console.error('Geolocation failed.')
+        })
+
+        hasLocatedUser = true
+      }
 
       // 5. Watch filter store changes.
       //    Whenever `acceptedSubleases` changes, re-draw markers.
@@ -227,6 +224,41 @@ export default {
           addMarkers(allLocationsStore.allLocations)
         },
       )
+
+      // Watch for location updates
+      console.log('Initializing watch on mapCenter')
+      watch(
+        () => mapStore.mapCenter,
+        ({ lat, lng, zoom }) => {
+          console.log('but whyyyy')
+          flyToLocation(lat, lng, zoom)
+        },
+        { deep: true },
+      )
+
+      const flyToLocation = (lat, lng, zoom) => {
+        if (!map) return
+
+        const currentZoom = map.getZoom()
+
+        const flyToOptions = {
+          duration: 1.5,
+          essential: true,
+          zoom: currentZoom,
+          easeTo: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+          animate: true,
+          onEachFrame: (progress) => {
+            if (progress < 0.3 && zoom > currentZoom) {
+              map.setZoom(currentZoom - 0.5 * progress)
+            }
+          },
+          curve: 1.2,
+          minZoomSpeed: 0.5,
+          screenSpeed: 1.2,
+        }
+
+        return map.flyTo([lat, lng], zoom, flyToOptions)
+      }
 
       watch(
         () => allLocationsStore.allLocations,
@@ -619,22 +651,22 @@ export default {
       })
 
       /*Legend specific*/
-      var legend = L.control({ position: 'topright' })
+      // var legend = L.control({ position: 'topright' })
 
-      legend.onAdd = function (map) {
-        var div = L.DomUtil.create('div', 'bg-white m-16 px-4 py-2 rounded-lg shadow-lg legend')
-        div.innerHTML += '<h4>Bus Lines</h4>'
-        div.innerHTML += '<i style="background: #FF0000"></i><span>N Line</span><br>'
-        div.innerHTML += '<i style="background: #448D40"></i><span>M Line</span><br>'
-        div.innerHTML += '<i style="background: #800080"></i><span>E Line</span><br>'
-        div.innerHTML += '<i style="background: #FFFF00"></i><span>A Line</span><br>'
-        div.innerHTML += '<i style="background: #0000FF"></i><span>H Line</span><br>'
-        return div
-      }
+      // legend.onAdd = function (map) {
+      //   var div = L.DomUtil.create('div', 'bg-white m-16 px-4 py-2 rounded-lg shadow-lg legend')
+      //   div.innerHTML += '<h4>Bus Lines</h4>'
+      //   div.innerHTML += '<i style="background: #FF0000"></i><span>N Line</span><br>'
+      //   div.innerHTML += '<i style="background: #448D40"></i><span>M Line</span><br>'
+      //   div.innerHTML += '<i style="background: #800080"></i><span>E Line</span><br>'
+      //   div.innerHTML += '<i style="background: #FFFF00"></i><span>A Line</span><br>'
+      //   div.innerHTML += '<i style="background: #0000FF"></i><span>H Line</span><br>'
+      //   return div
+      // }
 
-      legend.addTo(map)
+      // legend.addTo(map)
 
-      legend.addTo(map)
+      // legend.addTo(map)
     })
 
     // 6. Clean up on unmount

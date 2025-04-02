@@ -128,9 +128,16 @@ const createSubleaseController = async (req, res) => {
 };
 
 const getSubleasesController = async (req, res) => {
+  const {swLat, swLng, neLat, neLng} = req.body;
   const query =
     "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount FROM sublease";
-  const response = await pool.query(query);
+  const new_query_string = "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount\
+  FROM sublease\
+  WHERE latitude BETWEEN $1 AND $2\
+  AND longitude BETWEEN $3 AND $4;"
+
+  const new_query = {text: new_query_string, values: [swLat, neLat, swLng, neLng]}
+    const response = await pool.query(new_query);
   return res.status(200).json(response.rows);
 };
 
@@ -342,6 +349,29 @@ const getLandingLocationsController = async (req, res) => {
   res.status(200).json(response.rows);
 };
 
+const getSubleasesListController = async (req, res) =>{
+  // Extract limit and offset from query parameters; default limit to 30 and offset to 0
+  const limit = parseInt(req.query.limit, 10) || 15;
+  const offset = parseInt(req.query.offset, 10) || 0;
+
+  // Construct the SQL query. Ordering by id descending (newest first) is typical,
+  // but you can change the ORDER BY clause as needed.
+  const query = `
+    SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount
+    FROM sublease
+    ORDER BY id DESC
+    LIMIT $1 OFFSET $2;
+  `;
+  
+  try {
+    const result = await pool.query(query, [limit, offset]);
+    return res.status(200).json(result.rows);
+  } catch (error) {
+    console.error("Error retrieving paginated subleases:", error);
+    return res.status(500).json({ error: "Database error" });
+  }
+};
+
 module.exports = {
   createSubleaseController,
   getSubleasesController,
@@ -351,4 +381,5 @@ module.exports = {
   getSubleaseFromController,
   getLandingLocationsController,
   editSubleaseController,
+  getSubleasesListController
 };

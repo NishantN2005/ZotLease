@@ -1,44 +1,24 @@
 <template>
-  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative">
-    <div class="relative w-5/6 flex flex-wrap items-center space-y-4 md:space-y-0 md:space-x-4">
-      <!-- Input box with search icon inside -->
-      <div class="flex-grow relative">
-        <mapbox-address-autofill
-          :accessToken="MAPBOX_ACCESS_TOKEN"
-          :options="{ countries: ['us'] }"
-          confirm-on-blur
-          confirm-on-browser-autofill
-          @retrieve="onRetrieve"
-        >
-          <!-- Input box with search icon inside -->
-          <div class="flex-grow relative">
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Address, city, ZIP"
-              class="w-full pl-10 pr-4 py-2 mt-6 md:mt-0 border border-gray-300 rounded-lg hover:border-stone-500 focus:outline-none focus:border-stone-500"
-              @input="filterAddress($event.target.value)"
-            />
-            <i
-              class="fas fa-search absolute left-3 top-2/3 md:top-1/2 transform -translate-y-1/2 text-gray-400"
-            ></i>
-          </div>
-        </mapbox-address-autofill>
-      </div>
-    </div>
-
-    <div class="w-5/6 h-full mt-4 overflow-y-auto scrollbar-hide">
-      <div v-if="listings.length > 0" class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4">
+  <!-- Outer container is scrollable and referenced via ref -->
+  <div
+    ref="listContainer"
+    class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
+  >
+    <div class="w-5/6 mt-4">
+      <div
+        v-if="listings.length > 0"
+        class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4"
+      >
         <div
           v-for="listing in listings"
-          :key="listing.subleaseid"
+          :key="listing.listerid"
           class="listing-card bg-transparent rounded-xl cursor-pointer overflow-hidden"
           @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
         >
           <!-- Image Section -->
           <div class="relative w-full h-64 overflow-hidden">
             <img
-              :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
+              :src="photos[listing.id] ? photos[listing.id] : housePlaceholder"
               alt="Property Image"
               class="w-full h-full object-cover rounded-xl transition-transform duration-300 hover:scale-105"
             />
@@ -49,14 +29,11 @@
               <h3 class="text-sm font-bold text-gray-800">${{ listing.price }}</h3>
             </div>
           </div>
-
           <!-- Details Section -->
           <div class="mt-3 ml-1">
-            <!-- Location -->
             <p class="text-md font-medium text-gray-800 truncate">
               {{ [listing.street_name, listing.city].join(', ') }}
             </p>
-            <!-- Additional Details -->
             <div class="mt-1 flex items-center space-x-2 text-gray-600">
               <i class="fas fa-bed"></i>
               <span>{{ listing.roomcount }} beds</span>
@@ -66,22 +43,28 @@
           </div>
         </div>
       </div>
-      <div v-else class="flex justify-center items-center h-48 text-gray-600 font-semibold text-lg">
+      <div
+        v-else
+        class="flex justify-center items-center h-48 text-gray-600 font-semibold text-lg"
+      >
         No results found.
+      </div>
+      <div v-if="loadingMore" class="text-center py-4 text-gray-600">
+        Loading more...
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getFirstPhoto } from '@/s3client.js'
-import { ref, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { makeAuthenticatedRequest } from '../services/authService.js'
+import { getFirstPhoto } from '@/s3client.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
-import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 import { useUserStore } from '@/stores/userStore.js'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore.js'
+import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 
 export default {
   name: 'leaseList',
@@ -102,42 +85,140 @@ export default {
       type: Function,
       required: true,
     },
+    leaseListFilterText: {
+      type: String,
+      required: true,
+    },
   },
   setup(props) {
     const allLocations = useAllLocationsStore()
-    const photos = ref(allLocations.firstPhotos)
-    let listings = ref([...allLocations.allLocations])
-    const filterActive = ref(false)
     const selectedSubleaseStore = useSelectedSubleaseStore()
     const userStore = useUserStore()
-    // const filters = ref({
-    //   gender: '',
-    //   beds: '',
-    //   baths: '',
-    //   priceRange: '',
-    // })
 
-    watch(
-      () => allLocations.firstPhotos,
-      (newPhotos) => {
-        photos.value = newPhotos
-      },
-      { immediate: true },
-    )
+    // Local reactive variables
+    const listings = ref([]) // local listing array
+    const photos = ref({ ...allLocations.firstPhotos })
+    const loadingMore = ref(false)
+    const page = ref(0)
+    const limit = 15
+    const listContainer = ref(null)
+    // An estimated height (in pixels) per listing card; adjust based on your layout
+    const itemHeightEstimate = 300
+    const filterActive = ref(false)
 
+    // Paginated API call: fetch listings using limit and offset
+    async function fetchListings(pageNumber) {
+      const offset = pageNumber * limit
+      try {
+        const response = await makeAuthenticatedRequest(
+          `sublease/list?limit=${limit}&offset=${offset}`,
+          {},
+          props.routerPass
+        )
+        return await response.json()
+      } catch (error) {
+        console.error("Error fetching listings:", error)
+        return []
+      }
+    }
+
+    // Clear store and load initial 30 listings
+    async function loadInitialListings() {
+      allLocations.clearAllLocations() // Clear previous data from the store
+      console.log(allLocations.allLocations)
+      page.value = 0
+      const data = await fetchListings(page.value)
+      allLocations.setAllLocations(data)
+      listings.value = data
+      fetchPhotos() // Load photos for these listings
+      props.turnOffLoading() // Hide loading screen
+    }
+
+    // Append the next page of listings as user scrolls down
+    async function loadMoreListings() {
+      console.log('loading more listings')
+      if (loadingMore.value) return
+      loadingMore.value = true
+      page.value++
+      const data = await fetchListings(page.value)
+      if (data.length > 0) {
+        data.forEach((element, index) => {
+           allLocations.addNewLocation(element);
+        });x
+        //allLocations.addListings(data)
+        listings.value = listings.value.concat(data)
+        fetchPhotosForListings(data)
+      }
+      loadingMore.value = false
+    }
+
+
+    // Handle scroll events: load more when near bottom
+    function onScroll() {
+      const container = listContainer.value
+      if (!container) return
+
+      // Load more listings when user scrolls near bottom (e.g., within 100px)
+      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100) {
+        loadMoreListings()
+      }
+    }
+
+    // Fetch photos for all current listings
+    async function fetchPhotos() {
+      const photosObj = {}
+      try {
+        const photoFetchPromises = listings.value.map(async (listing) => {
+          try {
+            const key = `${listing.listerid}/${listing.subleaseid}`
+            const response = await getFirstPhoto(key)
+            if (response) {
+              photosObj[listing.id] = response
+            }
+          } catch (error) {
+            console.error("Error fetching photo for listing:", listing, error)
+          }
+        })
+        await Promise.all(photoFetchPromises)
+        allLocations.firstPhotos = photosObj
+        photos.value = photosObj
+      } catch (error) {
+        console.error("Error fetching photos:", error)
+      }
+    }
+
+    // Fetch photos for a new batch of listings
+    async function fetchPhotosForListings(newListings) {
+      const updatedPhotos = { ...photos.value }
+      try {
+        const photoFetchPromises = newListings.map(async (listing) => {
+          try {
+            const key = `${listing.listerid}/${listing.subleaseid}`
+            const response = await getFirstPhoto(key)
+            if (response) {
+              updatedPhotos[listing.id] = response
+            }
+          } catch (error) {
+            console.error("Error fetching photo for listing:", listing, error)
+          }
+        })
+        await Promise.all(photoFetchPromises)
+        allLocations.firstPhotos = updatedPhotos
+        photos.value = updatedPhotos
+      } catch (error) {
+        console.error("Error fetching photos for new listings:", error)
+      }
+    }
+
+    // Activate the modal by fetching selected sublease information
     async function activateSubleaseModal(subid, uniqueid) {
       const userID = userStore.userID
-      // Make call to retrieve listing information
       let info = await makeAuthenticatedRequest(
-        'sublease/selectedInfo',
+        "sublease/selectedInfo",
         { subleaseID: subid, uniqueid: uniqueid, userid: userID },
-        props.routerPass,
+        props.routerPass
       )
-
-      // parse JSON
       const subleaseData = await info.json()
-
-      // set Pinia store state
       if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
         selectedSubleaseStore.resetSelectedSublease()
         selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
@@ -146,122 +227,70 @@ export default {
           selectedSubleaseStore.addSubletter(subletterData)
         })
       }
-
-      // open your sublease modal
       props.turnOnSubleaseModal()
     }
 
-    async function fetchPhotos() {
-      // Use a reactive object for storing photos
-      const photos = ref({})
-
-      try {
-        // Create an array of promises for all listings
-        const photoFetchPromises = allLocations.allLocations.map(async (listing) => {
-          try {
-            const key = `${listing.listerid}/${listing.subleaseid}`
-            console.log('Fetching photo for key:', key)
-
-            const response = await getFirstPhoto(key)
-
-            if (response) {
-              console.log('Adding first photo to photos:', response)
-              photos.value[listing.subleaseid] = response
-            } else {
-              console.log('No photo found for key:', key)
-            }
-          } catch (error) {
-            console.error('Error fetching photo for listing:', listing, error)
-          }
-        })
-
-        // Wait for all photo-fetching promises to complete
-        await Promise.all(photoFetchPromises)
-
-        // Assign the photos to the parent object
-        allLocations.firstPhotos = photos
-        props.turnOffLoading()
-      } catch (error) {
-        console.error('Error fetching photos:', error)
-      }
-    }
-
+    // Filter listings based on leaseListFilterText prop
     function filterAddress(text) {
-      const query = String(text || '').toLowerCase()
-
+      const query = String(text || "").toLowerCase()
       if (!query) {
-        // Reset listings when input is cleared
-        listings.value = allLocations.allLocations
+        listings.value = [...allLocations.allLocations]
         props.filterStore.resetFilter()
         filterActive.value = false
         return
       }
-
       listings.value = allLocations.allLocations.filter((listing) =>
-        [listing.street_name, listing.city].join(', ').toLowerCase().includes(query),
+        [listing.street_name, listing.city].join(", ").toLowerCase().includes(query)
       )
-
       filterActive.value = true
     }
 
-    function clearInput() {
-      const input = document.getElementById('searchInput')
-      input.value = ''
-      listings.value = allLocations.allLocations
-      filterActive.value = false
-      props.filterStore.resetFilter()
-    }
+    // Watch for filter text changes
+    watch(
+      () => props.leaseListFilterText,
+      (newText) => {
+        filterAddress(newText)
+      },
+      { immediate: true, deep: true }
+    )
 
-    // Fetch photos on component mount
-
+    // Watch for updates to the store and refresh local listings
     watch(
       () => allLocations.allLocations,
       (newListings) => {
-        listings.value = newListings
+        listings.value = [...newListings]
         fetchPhotos()
       },
-      { deep: true },
+      { deep: true }
     )
 
-    // bugged for filter after filter
+    onMounted(() => {
+      console.log('mounted here')
+      loadInitialListings()
+      if (listContainer.value) {
+        listContainer.value.addEventListener("scroll", onScroll)
+      }
+    })
 
-    watch(
-      () => props.filterStore.acceptedSubleases,
-      (newValue) => {
-        if (newValue.length) {
-          filterActive.value = true
-          listings.value = listings.value.filter((listing) =>
-            props.filterStore.acceptedSubleases.includes(listing.subleaseid),
-          )
-        } else {
-          if (props.filterStore.isFiltered) {
-            listings.value = newValue // Clear listings if filter is active
-          } else {
-            listings.value = [...allLocations.allLocations] // Reset to all locations if filter is not active
-            filterActive.value = false
-          }
-        }
-      },
-      { deep: true },
-    )
+    onUnmounted(() => {
+      if (listContainer.value) {
+        listContainer.value.removeEventListener("scroll", onScroll)
+      }
+    })
 
     return {
-      fetchPhotos,
-      housePlaceholder,
-      filterAddress,
+      listContainer,
       listings,
-      clearInput,
-      filterActive,
-      activateSubleaseModal,
-      MAPBOX_ACCESS_TOKEN,
       photos,
-      // filters,
+      housePlaceholder,
+      activateSubleaseModal,
+      loadingMore,
     }
   },
   methods: {
     onRetrieve(result) {
       const res_value = result.detail.features[0].properties.matching_name
-      const input = document.getElementById('searchInput')
+      const input = document.getElementById("searchInput")
       input.value = res_value
     },
   },

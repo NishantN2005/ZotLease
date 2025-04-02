@@ -1,15 +1,16 @@
 <template>
-  <div v-if="messagesOpen" class="sidebar">
-    <div class="content relative z-20">
+  <div v-if="messagesOpen" class="sidebar h-[100dvh] w-full">
+    <div class="content">
       <!-- Chat List -->
       <div class="chat-list">
-        <h3 class="text-white border-b border-b-stone-500 py-3">Chats</h3>
         <ul class="overflow-auto">
           <li
             v-for="chat in chatStore.chatRooms"
             :key="chat.chatRoomID"
-            :class="{ active: chat.chatRoomID === activeChatId && chatStore.activeChatID }"
-            class="relative flex items-center space-x-2 my-4 bg-stone-800 hover:bg-stone-500"
+            :class="{
+              active: chat.chatRoomID === chatStore.activeChatId && chatStore.activeChatID,
+            }"
+            class="relative flex items-center space-x-2 my-4 cursor-pointer"
             @click="
               (selectChat(chat.chatRoomID, chat.partnerName, chat.partnerID),
               updateUnreadCount(chat.chatRoomID),
@@ -30,6 +31,15 @@
         </ul>
       </div>
 
+      <div
+        class="fixed inset-0 flex items-center justify-center z-30"
+        v-if="chatStore.chatRooms.length === 0"
+      >
+        <div class="flex flex-col items-center">
+          <img src="/favicon.png" alt="Zotlease Logo" class="w-52 h-52" />
+          <h2 class="text-gray-800 font-semibold text-lg mt-4">No Active Chats!</h2>
+        </div>
+      </div>
       <div v-if="messageProfileActive" class="w-[400px] flex flex-col items-center py-4">
         <button
           @click="toggleMessageProfile"
@@ -40,31 +50,33 @@
         </button>
 
         <!-- Responsive Title -->
-        <h2 class="text-white font-extrabold text-2xl sm:text-3xl mt-4 text-center">
-          {{ partnerName }}'s Properties
+        <h2 class="text-[#042553] font-extrabold text-2xl sm:text-3xl mt-4 text-center">
+          {{ chatStore.partnerName }}'s Properties
         </h2>
 
         <div class="w-full mt-4 px-4 flex justify-center">
-          <div v-if="listings.length > 0" class="w-full rounded-lg">
+          <div v-if="listings.length > 0" class="w-full rounded-lg flex justify-center">
             <div
               v-for="listing in listings"
-              :key="listing.subleaseid"
-              class="listing-card bg-white shadow-lg hover:shadow-2xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer w-full mt-4"
+              :key="listing.id"
+              class="listing-card bg-white shadow-md hover:shadow-xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer w-3/4 mt-4"
               @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
             >
               <img
-                :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
+                :src="photos[listing.id] ? photos[listing.id] : housePlaceholder"
                 alt="Failed to Render Photo"
                 class="w-full h-48 rounded-t-lg object-cover"
               />
-              <div class="p-3">
+              <div>
                 <h3
-                  class="font-bold text-black"
+                  class="font-bold text-black mx-2 mt-2"
                   style="font-family: 'Comic Sans MS', 'Arial', sans-serif"
                 >
                   ${{ listing.price }}
                 </h3>
-                <p class="text-gray-600">{{ [listing.street_name, listing.city].join(', ') }}</p>
+                <p class="text-gray-600 mx-2 mb-2">
+                  {{ [listing.street_name, listing.city].join(', ') }}
+                </p>
               </div>
             </div>
           </div>
@@ -81,15 +93,15 @@
       <!-- Chat Messages -->
       <div
         class="chat-box"
-        v-if="chatStore.chatRoomID && !messageProfileActive"
+        v-if="chatStore.chatRoomID"
         :class="{ invisible: !chatStore.chatRoomID }"
       >
-        <div class="flex items-center space-x-3 py-4 px-6 bg-stone-800 rounded-t-lg mb-5">
+        <div class="flex items-center space-x-3 border border-[#042553] rounded-t-lg">
           <i
-            class="cursor-pointer fas fa-user w-10 h-10 bg-stone-600 rounded-full text-white flex items-center justify-center"
+            class="cursor-pointer fas fa-user my-2 mx-2 w-10 h-10 bg-[#042553] rounded-full text-white flex items-center justify-center"
             @click="toggleMessageProfile"
           ></i>
-          <h4 class="text-stone-300 font-bold text-xl">{{ partnerName }}</h4>
+          <h4 class="text-[#042553] font-bold text-xl">{{ chatStore.partnerName }}</h4>
         </div>
 
         <ul class="messages space-y-6" ref="messagesContainer">
@@ -107,6 +119,17 @@
         <div class="input-container" v-if="chatStore.chatRoomID">
           <SocketConnection :router="router" />
         </div>
+      </div>
+      <div class="h-full w-full flex flex-col items-center mt-32 md:mt-52" v-else>
+        <img
+          src="/favicon.png"
+          alt="Zotlease Logo"
+          class="w-52 h-52"
+          v-if="!messageProfileActive"
+        />
+        <h2 class="text-gray-800 font-semibold text-lg mt-4" v-if="!messageProfileActive">
+          Select A Chat!
+        </h2>
       </div>
     </div>
   </div>
@@ -251,8 +274,8 @@ export default {
 
   methods: {
     selectChat(chatId, partnerName, partnerID) {
-      this.activeChatId = chatId
-      this.partnerName = partnerName
+      this.chatStore.activeChatId = chatId
+      this.chatStore.partnerName = partnerName
       this.chatStore.setChatRoomID(chatId)
       this.chatStore.setActiveChatID(partnerID)
     },
@@ -277,21 +300,21 @@ export default {
 
 <style scoped>
 * {
+  padding: 0;
   box-sizing: border-box;
 }
 
 .sidebar {
-  background: rgb(23 23 23);
-  border-left: 1px solid rgb(120 113 108 / var(--tw-bg-opacity, 1));
+  position: fixed;
+  background: whitesmoke;
   transition: width 0.3s ease;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   z-index: 30;
   padding: 0;
-  margin: 0;
+  margin-top: 64px;
   color: black;
-  bottom: 0;
 }
 
 .sidebar.collapsed {
@@ -314,57 +337,75 @@ export default {
 
 .content {
   display: flex;
-  padding: 10px;
-  height: 100%;
-  gap: 10px;
-  width: 100%;
+  gap: 1px;
+  background: #f3f4f6;
+  height: calc(100dvh - 64px);
 }
 
 .chat-list {
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  padding-right: 10px;
-  background-color: rgb(23 23 23);
+  width: 25%;
+  min-width: 140px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  overflow-y: auto;
 }
 
 .chat-list ul {
   list-style: none;
-  padding: 0;
+  padding: 0.5rem;
 }
 
 .chat-list ul::-webkit-scrollbar {
-  display: none; /* Hides the scrollbar */
+  width: 6px;
+}
+
+.chat-list ul::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-list ul::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 3px;
 }
 
 .chat-list li {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 8px;
-  color: white;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.chat-list li:hover {
+  background: #f1f5f9;
+  transform: translateX(2px);
 }
 
 .chat-list li.active {
-  background: rgb(120 113 108);
+  background: #e2e8f0;
+  border-left: 3px solid #042553;
+}
+
+/* Add !important if Tailwind still overrides */
+.active {
+  background: #e2e8f0;
+  border-left: 3px solid #042553;
 }
 
 .chat-name {
-  flex: 1;
+  font-weight: 500;
+  color: #1e293b;
 }
 
-.delete-button {
-  background: transparent;
-  border: none;
-  color: red;
-  cursor: pointer;
-  font-size: 1.2em;
-}
-
-.delete-button:hover {
-  color: darkred;
+.unread-badge {
+  background: #042553;
+  color: white;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 600;
 }
 
 .chat-box {
@@ -403,6 +444,7 @@ export default {
 }
 
 .message {
+  margin-top: 12px;
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
@@ -434,7 +476,7 @@ export default {
 }
 
 .text {
-  background: rgb(120 113 108);
+  background: #042553;
   color: #fff;
   padding: 8px 12px;
   border-radius: 12px;
@@ -444,9 +486,9 @@ export default {
 }
 
 .system-message .text {
-  background: rgb(23 23 23);
-  color: white;
-  border: 1px solid rgb(120 113 108);
+  background: white;
+  color: #042553;
+  border: 1px solid rgb(205, 203, 202);
 }
 
 .input-container {
@@ -469,20 +511,7 @@ textarea {
 
 textarea:focus {
   outline: none;
-  border-color: #007bff;
-}
-
-.send-button {
-  background: #007bff;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.send-button:hover {
-  background: #0056b3;
+  border-color: #042553;
 }
 
 .input-container.hidden {
