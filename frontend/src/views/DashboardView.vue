@@ -109,17 +109,18 @@
 
       <!-- The Leaflet map -->
       <LeafletMap
-        v-show="mapView && !messagesOpen && (!chatStore.chatRoomID || !isSmallScreen)"
+        v-if="mapView && !messagesOpen && (!chatStore.chatRoomID || !isSmallScreen)"
         class="z-0 w-full h-full"
         :routerPass="router"
         :userID="userStore.userID"
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :filterForm="filterForm"
         :setEventPos="setEventPos"
+        :turnOffLoading="turnOffLoading"
       />
 
       <LeaseList
-        v-show="listView && (!chatStore.chatRoomID || !isSmallScreen)"
+        v-if="listView && (!chatStore.chatRoomID || !isSmallScreen)"
         :allLocations="allLocationsStore"
         :filterStore="filterStore"
         :turnOnSubleaseModal="turnOnSubleaseModal"

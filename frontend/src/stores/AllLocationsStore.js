@@ -12,6 +12,10 @@ export const useAllLocationsStore = defineStore('allLocationsStore', {
     addNewLocation(location) {
       this.allLocations.push(location)
     },
+    clearAllLocations(){
+      this.allLocations = [],
+      this.firstPhotos = {}
+    },
   },
   getters: {},
 })
