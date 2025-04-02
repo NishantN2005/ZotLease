@@ -177,6 +177,36 @@
                 class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
                 @click="zoomToLocation(32.8801, -117.234)"
               />
+              <img
+                src="/ucblogo.png"
+                alt="ucb logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(37.8719, -122.2585)"
+              />
+              <img
+                src="/ucdlogo.png"
+                alt="ucd logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(38.5382, -121.7617)"
+              />
+              <img
+                src="/ucsflogo.png"
+                alt="ucsf logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(37.7631, -122.4586)"
+              />
+              <img
+                src="/ucsblogo.png"
+                alt="ucsb logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(34.414, -119.8489)"
+              />
+              <img
+                src="/ucmlogo.png"
+                alt="uc merced logo"
+                class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
+                @click="zoomToLocation(37.3639, -120.4313)"
+              />
               <!-- Add more logos if needed -->
             </div>
           </div>
