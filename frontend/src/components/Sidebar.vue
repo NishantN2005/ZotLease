@@ -4,8 +4,8 @@
     <header
       class="fixed top-0 left-0 right-0 flex items-center justify-between bg-gray-100 text-[#042553] h-16 z-40 px-4"
     >
-      <div class="hidden sm:flex items-center">
-        <!-- Hide completely on mobile -->
+      <div v-show="!(mapView && isSmallScreen)" class="sm:flex items-center">
+        <!-- Hide when mapView is true on small screens, show on larger screens -->
         <div
           class="flex ml-4 text-2xl font-bold items-center gap-2 font-Sriracha cursor-pointer"
           @click="redirectToLanding"
@@ -47,7 +47,7 @@
         ></i>
       </div>
 
-      <div v-show="listView" class="w-full sm:w-1/2 relative">
+      <!-- <div v-show="listView" class="w-full sm:w-1/2 relative">
         <input
           type="text"
           v-model="searchQuery"
@@ -59,10 +59,10 @@
         <i
           class="fas fa-search absolute right-4 top-1/2 transform -translate-y-1/2 bg-[#042553] text-white p-3 rounded-full cursor-pointer hover:bg-blue-600 transition-all"
         ></i>
-      </div>
+      </div> -->
 
       <!-- Right Section: Logout or additional actions -->
-      <div class="relative flex items-center">
+      <div class="relative flex items-center md:justify-between">
         <!-- Create Subleas Modal Button -->
         <button
           @click="turnOnModal"
@@ -145,7 +145,7 @@
     </header>
 
     <transition name="slide-down">
-      <div v-show="showSecondBar" class="fixed top-16 left-0 right-0 z-30 bg-gray-100">
+      <div v-show="showSecondBar && !listView" class="fixed top-16 left-0 right-0 z-30 bg-gray-100">
         <!-- Separator Line -->
         <div class="border-t border-gray-300"></div>
 
@@ -277,6 +277,10 @@ export default {
     },
     updateFilterText: {
       type: Function,
+      required: true,
+    },
+    isSmallScreen: {
+      type: Boolean,
       required: true,
     },
   },

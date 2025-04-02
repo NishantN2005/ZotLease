@@ -140,7 +140,7 @@
             toggleSidebar()
           }
         "
-        class="bg-neutral-900 text-stone-200 text-xl font-bold rounded-md py-1 px-4 transition-colors duration-200 w-full hover:bg-neutral-700"
+        class="bg-[#042553] text-stone-100 text-xl font-bold rounded-md py-1 px-4 transition-colors duration-200 w-full hover:bg-[#09397c]"
         v-if="selectedSubleaseStore.selectedSublet.listerid !== userStore.userID"
       >
         Chat

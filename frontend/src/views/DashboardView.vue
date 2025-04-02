@@ -84,6 +84,7 @@
         :userStore="userStore"
         :listView="listView"
         :updateFilterText="updateFilterText"
+        :isSmallScreen="isSmallScreen"
       />
       <!-- Filter Modal-->
       <FilterModal

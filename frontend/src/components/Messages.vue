@@ -50,7 +50,7 @@
         </button>
 
         <!-- Responsive Title -->
-        <h2 class="text-[#0096ff] font-extrabold text-2xl sm:text-3xl mt-4 text-center">
+        <h2 class="text-[#042553] font-extrabold text-2xl sm:text-3xl mt-4 text-center">
           {{ chatStore.partnerName }}'s Properties
         </h2>
 
@@ -58,12 +58,12 @@
           <div v-if="listings.length > 0" class="w-full rounded-lg flex justify-center">
             <div
               v-for="listing in listings"
-              :key="listing.subleaseid"
+              :key="listing.id"
               class="listing-card bg-white shadow-md hover:shadow-xl rounded-lg transition-all duration-300 ease-in-out cursor-pointer w-3/4 mt-4"
               @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
             >
               <img
-                :src="photos[listing.subleaseid] ? photos[listing.subleaseid] : housePlaceholder"
+                :src="photos[listing.id] ? photos[listing.id] : housePlaceholder"
                 alt="Failed to Render Photo"
                 class="w-full h-48 rounded-t-lg object-cover"
               />
@@ -96,12 +96,12 @@
         v-if="chatStore.chatRoomID"
         :class="{ invisible: !chatStore.chatRoomID }"
       >
-        <div class="flex items-center space-x-3 border border-[#c9ced5] rounded-t-lg">
+        <div class="flex items-center space-x-3 border border-[#042553] rounded-t-lg">
           <i
-            class="cursor-pointer fas fa-user my-2 mx-2 w-10 h-10 bg-[#0096ff] rounded-full text-white flex items-center justify-center"
+            class="cursor-pointer fas fa-user my-2 mx-2 w-10 h-10 bg-[#042553] rounded-full text-white flex items-center justify-center"
             @click="toggleMessageProfile"
           ></i>
-          <h4 class="text-[#0096ff] font-bold text-xl">{{ chatStore.partnerName }}</h4>
+          <h4 class="text-[#042553] font-bold text-xl">{{ chatStore.partnerName }}</h4>
         </div>
 
         <ul class="messages space-y-6" ref="messagesContainer">
@@ -385,13 +385,13 @@ export default {
 
 .chat-list li.active {
   background: #e2e8f0;
-  border-left: 3px solid #0096ff;
+  border-left: 3px solid #042553;
 }
 
 /* Add !important if Tailwind still overrides */
 .active {
   background: #e2e8f0;
-  border-left: 3px solid #0096ff;
+  border-left: 3px solid #042553;
 }
 
 .chat-name {
@@ -400,7 +400,7 @@ export default {
 }
 
 .unread-badge {
-  background: #0096ff;
+  background: #042553;
   color: white;
   font-size: 0.75rem;
   padding: 0.25rem 0.5rem;
@@ -476,7 +476,7 @@ export default {
 }
 
 .text {
-  background: #0096ff;
+  background: #042553;
   color: #fff;
   padding: 8px 12px;
   border-radius: 12px;
@@ -487,7 +487,7 @@ export default {
 
 .system-message .text {
   background: white;
-  color: #0096ff;
+  color: #042553;
   border: 1px solid rgb(205, 203, 202);
 }
 
@@ -511,7 +511,7 @@ textarea {
 
 textarea:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #042553;
 }
 
 .input-container.hidden {
