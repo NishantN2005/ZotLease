@@ -139,7 +139,7 @@ jobs:
         run: |
           google_map_url=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAP_URL --query SecretString --output text)
           echo "$google_map_url"
-          echo "GOOGLE_MAP_URL = $google_map_url" >> $GITHUB_ENV
+          echo "GOOGLE_MAP_URL=$google_map_url" >> $GITHUB_ENV
 
       - name: Create Lightsail Container Service if not exists
         run: |
