@@ -177,6 +177,7 @@ import LoadingScreen from '@/components/LoadingScreen.vue'
 import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { useWindowSize } from '@vueuse/core'
 import { API_URL } from '../../constants'
+import { useMapStore } from '@/stores/mapStore'
 
 export default {
   name: 'DashboardView',
@@ -230,6 +231,7 @@ export default {
     const allLocationsStore = useAllLocationsStore()
     const showLoadingScreen = ref(false)
     const isSidebarOpen = ref(false)
+    const mapStore = useMapStore()
 
     const showSelectedSubleaseModal = ref(false)
     const showPhotoGallery = ref(false)
@@ -726,6 +728,7 @@ export default {
       signupBanner,
       leaseListFilterText,
       updateFilterText,
+      mapStore,
     }
   },
 }
