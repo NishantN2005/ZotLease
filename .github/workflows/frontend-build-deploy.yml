@@ -57,6 +57,13 @@ jobs:
           echo "$client_secret"
           echo "CLIENT_SECRET=$client_secret" >> $GITHUB_ENV
 
+      - name: Retrieve GOOGLE_MAP_URL from Secrets Manager
+        id: get_google_map_url
+        run: |
+          google_map_url=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAP_URL --query SecretString --output text)
+          echo "$google_map_url"
+          echo "GOOGLE_MAP_URL = $google_map_url" >> $GITHUB_ENV
+
       - name: Build, Tag, and Push the Frontend Image to Amazon ECR
         id: build-frontend-image
         env:
@@ -69,6 +76,7 @@ jobs:
           API_URL: "https://api.zotlease.org/"
           CLIENT_ID: ${{ env.CLIENT_ID }}
           CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
+          GOOGLE_MAP_URL: ${{env.GOOGLE_MAP_URL}}
         run: |
           cd frontend
           docker buildx build --build-arg VITE_AWS_ACCESS_KEY_ID=${{env.AWS_ACCESS_KEY_ID}} \
@@ -79,6 +87,7 @@ jobs:
                       --build-arg VITE_API_URL=${{env.API_URL}} \
                       --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
                       --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
+                      --build-arg VITE_GOOGLE_MAP_URL=${{env.GOOGLE_MAP_URL}}
                        -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
