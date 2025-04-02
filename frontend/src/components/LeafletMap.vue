@@ -15,6 +15,8 @@ import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 import 'leaflet-arrowheads'
 import { useUserStore } from '@/stores/userStore.js'
 
+let hasLocatedUser = false
+
 export default {
   name: 'LeafletMap',
   props: {
@@ -39,6 +41,10 @@ export default {
       type: Function,
       required: true,
     },
+    turnOffLoading:{
+      type: Function,
+      required: true
+    }
   },
 
   setup(props) {
@@ -63,7 +69,7 @@ export default {
       try {
         const response = await makeAuthenticatedRequest(
           'sublease/retrieve',
-          { swLat: sw.lat, swLng: sw.lng, neLat: ne.lat, neLng: ne.lng }, // any payload if needed
+          {swLat:sw.lat, swLng:sw.lng, neLat: ne.lat, neLng:ne.lng}, // any payload if needed
           props.routerPass,
         )
         // Return the parsed JSON array of subleases
@@ -185,16 +191,17 @@ export default {
 
       // Add markers for the initial load
       addMarkers(allLocationsStore.allLocations)
-
+      props.turnOffLoading()
+      
       map.on('moveend', async () => {
-        let updatedLocations = await fetchLocations()
-        allLocationsStore.setAllLocations(updatedLocations)
-        markersLayer.clearLayers()
-        addMarkers(updatedLocations)
+      let updatedLocations = await fetchLocations()
+      allLocationsStore.setAllLocations(updatedLocations)
+      markersLayer.clearLayers()
+      addMarkers(updatedLocations)
       })
 
       // Only locate if we haven't already done so.
-      if (!mapStore.hasLocatedUser) {
+      if (!hasLocatedUser) {
         map.locate({ setView: true, maxZoom: 16, enableHighAccuracy: true })
         map.on('locationfound', (e) => {
           const { latitude, longitude } = e
@@ -205,7 +212,7 @@ export default {
           console.error('Geolocation failed.')
         })
 
-        mapStore.setHasLocatedUser(false)
+        hasLocatedUser = true
       }
 
       // 5. Watch filter store changes.
