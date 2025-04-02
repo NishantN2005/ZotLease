@@ -60,7 +60,7 @@ jobs:
       - name: Retrieve GOOGLE_MAP_URL from Secrets Manager
         id: get_google_map_url
         run: |
-          google_map_url=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAP_URL --query SecretString --output text)
+          google_map_url=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAPS --query SecretString --output text)
           echo "$google_map_url"
           echo "GOOGLE_MAP_URL=$google_map_url" >> $GITHUB_ENV
 
