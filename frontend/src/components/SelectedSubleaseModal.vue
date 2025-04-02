@@ -2,7 +2,8 @@
   <div
     v-if="showSelectedSubleaseModal"
     id="filterModal"
-    class="fixed inset-0 z-10 bg-white px-4 pt-4 pb-4 shadow-md border border-gray-200 w-screen max-h-[calc(100vh-8rem)] overflow-y-auto md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:max-h-[90vh] md:overflow-y-auto md:rounded-lg mt-32 md:mt-16"
+    class="fixed inset-0 z-10 bg-white px-4 pt-4 pb-4 shadow-md border border-gray-200 w-screen max-h-[calc(100vh-8rem)] overflow-y-auto md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:max-h-[90vh] md:overflow-y-auto md:rounded-lg md:mt-16"
+    :class="{ 'mt-16 max-h-[91vh]': listView, 'mt-32': !listView }"
   >
     <div class="flex items-center justify-between">
       <!-- Title -->
@@ -164,6 +165,7 @@ export default {
     router: { type: Object, required: true },
     togglePhotoGallery: { type: Function, required: true },
     toggleSidebar: { type: Function, required: true },
+    listView: { type: Boolean, required: true },
   },
   setup(props) {
     const userStore = useUserStore()
@@ -206,12 +208,33 @@ export default {
       { immediate: true },
     )
 
+    watch(
+      () => selectedSubleaseStore.selectedSublet,
+      (newSublet) => {
+        if (newSublet) {
+          // Find the index of the selected sublet in listings
+          const index = selectedSubleaseStore.subletters.findIndex(
+            (listing) => listing.listerid === newSublet.listerid,
+          )
+          selectedTab.value = index
+        }
+      },
+      { immediate: true },
+    )
+
     // Watch for subletters and set the default selected sublet
     watch(
       () => selectedSubleaseStore.subletters,
       (newSubletters) => {
         if (newSubletters.length > 0) {
-          selectedSubleaseStore.selectedSublet = newSubletters[0]
+          // Try to find the existing selected sublet in the new list
+          const existingIndex = newSubletters.findIndex(
+            (sublet) => sublet.listerid === selectedSubleaseStore.selectedSublet?.listerid,
+          )
+
+          // If found, keep it; otherwise, default to the first one
+          selectedSubleaseStore.selectedSublet =
+            existingIndex !== -1 ? newSubletters[existingIndex] : newSubletters[0]
         }
       },
       { immediate: true },

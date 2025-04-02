@@ -92,6 +92,7 @@ export default {
       type: Function,
       required: true,
     },
+    listView: { type: Boolean, required: true },
   },
   setup() {
     const selectedSubleaseStore = useSelectedSubleaseStore()
