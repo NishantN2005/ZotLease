@@ -167,7 +167,7 @@ export default {
       // Add the Mapbox tile layer
       L.tileLayer(MAPBOX_TILE_URL, {
         maxZoom: 19,
-        id: 'mapbox/streets-v11',
+        id: 'mapbox/navigation-night-v1',
         tileSize: 512,
         zoomOffset: -1,
         attribution:

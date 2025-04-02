@@ -49,13 +49,13 @@
     <transition name="slide-up">
       <div
         v-if="signupBanner"
-        class="fixed bottom-0 left-0 w-full bg-uciblue/90 text-white text-center py-4 z-50 shadow-lg"
+        class="fixed bottom-0 left-0 w-full bg-gray-100/90 text-[#042553] text-center py-4 z-50 shadow-lg"
       >
         <div class="container mx-auto px-4 flex items-center justify-between">
           <p class="text-lg font-semibold">Please sign up to continue.</p>
           <a
             href="/signup"
-            class="bg-white text-uciblue px-6 py-2 text-lg font-semibold rounded-lg shadow-md hover:bg-gray-100 hover:shadow-lg transition-all"
+            class="bg-[#042553] text-gray-100 px-6 py-2 text-lg font-semibold rounded-lg shadow-md hover:bg-[#0a397b] hover:shadow-lg transition-all"
           >
             Sign Up
           </a>
@@ -82,6 +82,8 @@
         :toggleSidebar="toggleSidebar"
         :promptSignup="promptSignup"
         :userStore="userStore"
+        :listView="listView"
+        :updateFilterText="updateFilterText"
       />
       <!-- Filter Modal-->
       <FilterModal
@@ -122,6 +124,7 @@
         :turnOnSubleaseModal="turnOnSubleaseModal"
         :routerPass="router"
         :turnOffLoading="turnOffLoading"
+        :leaseListFilterText="leaseListFilterText"
       />
 
       <!-- Selected Sublease modal-->
@@ -140,10 +143,10 @@
       <div
         class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-45 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
       >
-        <button @click="toggleDashView(false)" v-if="mapView" class="text-[#0096FF]">
+        <button @click="toggleDashView(false)" v-if="mapView" class="text-[#042553]">
           ListView <i class="fas fa-list ml-2 text-sm"></i>
         </button>
-        <button @click="toggleDashView" v-else class="text-[#0096FF]">
+        <button @click="toggleDashView" v-else class="text-[#042553]">
           MapView <i class="fas fa-map-location-dot ml-2 text-sm"></i>
         </button>
       </div>
@@ -250,7 +253,7 @@ export default {
       postal_code: '',
       state: '',
       country: '',
-      listerID: userStore.userID,
+      listerID: '',
       price: '',
       gender: '',
       roomCount: '',
@@ -259,6 +262,7 @@ export default {
       endTerm: '',
       description: '',
     })
+    const leaseListFilterText = ref('')
 
     const filesRef = ref([])
 
@@ -431,7 +435,7 @@ export default {
         showLoadingScreen.value = true
         console.log('creating listing', formData.value)
         formError.value.display = false
-
+        formData.value.listerID = userStore.userID // ensure listerID is set to the current user's ID
         let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
 
         if (response.status == 200) {
@@ -661,6 +665,10 @@ export default {
       }
     }
 
+    const updateFilterText = (text) => {
+      leaseListFilterText.value = text
+    }
+
     return {
       callTestRoute,
       navigateToLogin,
@@ -716,6 +724,8 @@ export default {
       decodeToken,
       promptSignup,
       signupBanner,
+      leaseListFilterText,
+      updateFilterText,
     }
   },
 }

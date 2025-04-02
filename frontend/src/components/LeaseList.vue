@@ -1,5 +1,5 @@
 <template>
-  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-12">
+  <div class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-28">
     <div class="w-5/6 h-full mt-4 overflow-y-auto scrollbar-hide">
       <div v-if="listings.length > 0" class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4">
         <div
@@ -75,6 +75,10 @@ export default {
       type: Function,
       required: true,
     },
+    leaseListFilterText: {
+      type: String,
+      required: true,
+    },
   },
   setup(props) {
     const allLocations = useAllLocationsStore()
@@ -96,6 +100,14 @@ export default {
         photos.value = newPhotos
       },
       { immediate: true },
+    )
+
+    watch(
+      () => props.leaseListFilterText,
+      (newText) => {
+        filterAddress(newText)
+      },
+      { deep: true, immediate: true },
     )
 
     async function activateSubleaseModal(subid, uniqueid) {
