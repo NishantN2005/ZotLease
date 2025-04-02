@@ -57,12 +57,12 @@ jobs:
           echo "$client_secret"
           echo "CLIENT_SECRET=$client_secret" >> $GITHUB_ENV
 
-      - name: Retrieve GOOGLE_MAP_URL from Secrets Manager
-        id: get_google_map_url
+      - name: Retrieve GOOGLE_MAPS from Secrets Manager
+        id: get_google_maps
         run: |
-          google_map_url=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAP_URL --query SecretString --output text)
-          echo "$google_map_url"
-          echo "GOOGLE_MAP_URL = $google_map_url" >> $GITHUB_ENV
+          google_maps=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAPS --query SecretString --output text)
+          echo "$google_maps"
+          echo "GOOGLE_MAPS=$google_maps" >> $GITHUB_ENV
 
       - name: Build, Tag, and Push the Frontend Image to Amazon ECR
         id: build-frontend-image
@@ -76,7 +76,7 @@ jobs:
           API_URL: "https://api.zotlease.org/"
           CLIENT_ID: ${{ env.CLIENT_ID }}
           CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
-          GOOGLE_MAP_URL: ${{env.GOOGLE_MAP_URL}}
+          GOOGLE_MAPS: ${{env.GOOGLE_MAPS}}
         run: |
           cd frontend
           docker buildx build --build-arg VITE_AWS_ACCESS_KEY_ID=${{env.AWS_ACCESS_KEY_ID}} \
@@ -84,11 +84,12 @@ jobs:
                        --build-arg VITE_AWS_REGION=us-east-1 \
                        --build-arg VITE_MAPBOX_TOKEN=${{env.MAPBOX_KEY}} \
                        --build-arg VITE_ENV=beta \
-                      --build-arg VITE_API_URL=${{env.API_URL}} \
-                      --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
-                      --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
-                      --build-arg VITE_GOOGLE_MAP_URL=${{env.GOOGLE_MAP_URL}}
-                       -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                       --build-arg VITE_API_URL=${{env.API_URL}} \
+                       --build-arg VITE_CLIENT_ID=${{env.CLIENT_ID}} \
+                       --build-arg VITE_CLIENT_SECRET=${{env.CLIENT_SECRET}} \
+                       --build-arg VITE_GOOGLE_MAPS=${{env.GOOGLE_MAPS}} \
+                       -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+                       .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
   deploy:
     runs-on: ubuntu-latest
@@ -133,6 +134,13 @@ jobs:
         run: |
           secret=$(aws secretsmanager get-secret-value --secret-id CLIENT_SECRET_OAUTH --query SecretString --output text)
           echo "CLIENT_SECRET=$secret" >> $GITHUB_ENV
+      
+      - name: Retrieve GOOGLE_MAPS from Secrets Manager
+        id: get_google_maps
+        run: |
+          google_maps=$(aws secretsmanager get-secret-value --secret-id GOOGLE_MAPS --query SecretString --output text)
+          echo "$google_maps"
+          echo "GOOGLE_MAPSL=$google_maps" >> $GITHUB_ENV
 
       - name: Create Lightsail Container Service if not exists
         run: |
@@ -155,9 +163,10 @@ jobs:
           VITE_API_URL: "https://api.zotlease.org/"
           VITE_CLIENT_ID: ${{ env.CLIENT_ID }}
           VITE_CLIENT_SECRET: ${{ env.CLIENT_SECRET }}
+          VITE_GOOGLE_MAPS: ${{env.GOOGLE_MAPS}}
 
         run: |
           aws lightsail create-container-service-deployment \
           --service-name zotlease-frontend \
-          --containers "frontend={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5173=HTTP},environment={VITE_CLIENT_ID=\"$VITE_CLIENT_ID\", VITE_CLIENT_SECRET=\"$VITE_CLIENT_SECRET\", VITE_API_URL=\"$VITE_API_URL\",VITE_AWS_REGION=\"$VITE_AWS_REGION\",VITE_AWS_ACCESS_KEY_ID=\"$VITE_AWS_ACCESS_KEY_ID\",VITE_AWS_SECRET_ACCESS_KEY=\"$VITE_AWS_SECRET_ACCESS_KEY\",VITE_ENV=\"$VITE_ENV\",VITE_MAPBOX_TOKEN=\"$VITE_MAPBOX_TOKEN\"}}" \
+          --containers "frontend={image=$REGISTRY/$REPOSITORY:$IMAGE_TAG,ports={5173=HTTP},environment={VITE_GOOGLE_MAPS=\"$VITE_GOOGLE_MAPS\", VITE_CLIENT_ID=\"$VITE_CLIENT_ID\", VITE_CLIENT_SECRET=\"$VITE_CLIENT_SECRET\", VITE_API_URL=\"$VITE_API_URL\",VITE_AWS_REGION=\"$VITE_AWS_REGION\",VITE_AWS_ACCESS_KEY_ID=\"$VITE_AWS_ACCESS_KEY_ID\",VITE_AWS_SECRET_ACCESS_KEY=\"$VITE_AWS_SECRET_ACCESS_KEY\",VITE_ENV=\"$VITE_ENV\",VITE_MAPBOX_TOKEN=\"$VITE_MAPBOX_TOKEN\"}}" \
           --public-endpoint "containerName=frontend,containerPort=5173" \
