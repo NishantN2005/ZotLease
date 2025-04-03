@@ -101,53 +101,12 @@
             controls
             class="w-full max-w-5xl h-auto rounded-lg shadow-xl border border-gray-300 bg-black"
           >
-            <source src="/videos/Demo.mp4" type="video/mp4" />
+            <source src="/videos/Demo2.mp4" type="video/mp4" />
           </video>
         </div>
       </div>
     </section>
 
-    <!-- Subleasing Rules Section -->
-    <section class="py-20 bg-neutral-100 font-Sriracha">
-      <div class="max-w-7xl mx-auto px-6 md:px-52">
-        <h2 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-14 text-center">
-          Subleasing Rules from ACC @ UCI
-        </h2>
-        <div class="text-neutral-900 space-y-4">
-          <p>
-            ✔️ You must obtain written approval from ACC management before subleasing
-            (eviction/legal action possible if skipped)
-          </p>
-          <ul class="list-disc list-inside space-y-2">
-            <li>
-              Subtenants must be full-time UC Irvine students (undergrad/grad) - freshmen are
-              excluded
-            </li>
-            <li>Provide proof of enrollment (UCI student ID or class schedule) for subtenants</li>
-            <li>Subleases are typically same-gender only (exceptions require ACC approval)</li>
-            <li>Maximum sublease duration is one academic term (summer/winter/spring/fall)</li>
-            <li>You cannot charge subtenants more than your original rent amount</li>
-            <li>Submit sublease applications at least 2 weeks before move-in date</li>
-            <li>Required documents: ACC sublease form + Check-in/Check-out authorization form</li>
-            <li>Notify all roommates before finalizing any sublease agreement</li>
-            <li>Original leaseholder remains responsible for rent and damages</li>
-            <li>Key exchanges must be handled by leaseholder after ACC approval</li>
-            <li>
-              Subtenants must purchase full-quarter parking permits unless included in original
-              lease
-            </li>
-            <li>
-              All subtenants must follow UC Irvine's smoke-free policies and sustainability rules
-            </li>
-            <li>Summer sublets are available through the Anteater Housing Network portal</li>
-          </ul>
-          <p>
-            For more information on subleasing rules and guidelines, please visit the ACC website or
-            contact your property manager.
-          </p>
-        </div>
-      </div>
-    </section>
 
     <!-- Footer -->
     <footer class="bg-neutral-100 py-8 text-center text-neutral-900 font-Sriracha">
