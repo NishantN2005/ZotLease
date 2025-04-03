@@ -5,15 +5,12 @@
     class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
   >
     <div class="w-5/6 mt-4">
-      <div
-        v-if="listings.length > 0"
-        class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4"
-      >
+      <div v-if="listings.length > 0" class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4">
         <div
           v-for="listing in listings"
           :key="listing.listerid"
           class="listing-card bg-transparent rounded-xl cursor-pointer overflow-hidden"
-          @click="() => activateSubleaseModal(listing.subleaseid, listing.id)"
+          @click="() => activateSubleaseModal(listing.subleaseid, listing.id, listing.listerid)"
         >
           <!-- Image Section -->
           <div class="relative w-full h-64 overflow-hidden">
@@ -43,15 +40,10 @@
           </div>
         </div>
       </div>
-      <div
-        v-else
-        class="flex justify-center items-center h-48 text-gray-600 font-semibold text-lg"
-      >
+      <div v-else class="flex justify-center items-center h-48 text-gray-600 font-semibold text-lg">
         No results found.
       </div>
-      <div v-if="loadingMore" class="text-center py-4 text-gray-600">
-        Loading more...
-      </div>
+      <div v-if="loadingMore" class="text-center py-4 text-gray-600">Loading more...</div>
     </div>
   </div>
 </template>
@@ -113,11 +105,11 @@ export default {
         const response = await makeAuthenticatedRequest(
           `sublease/list?limit=${limit}&offset=${offset}`,
           {},
-          props.routerPass
+          props.routerPass,
         )
         return await response.json()
       } catch (error) {
-        console.error("Error fetching listings:", error)
+        console.error('Error fetching listings:', error)
         return []
       }
     }
@@ -143,15 +135,15 @@ export default {
       const data = await fetchListings(page.value)
       if (data.length > 0) {
         data.forEach((element, index) => {
-           allLocations.addNewLocation(element);
-        });x
+          allLocations.addNewLocation(element)
+        })
+        x
         //allLocations.addListings(data)
         listings.value = listings.value.concat(data)
         fetchPhotosForListings(data)
       }
       loadingMore.value = false
     }
-
 
     // Handle scroll events: load more when near bottom
     function onScroll() {
@@ -176,14 +168,14 @@ export default {
               photosObj[listing.id] = response
             }
           } catch (error) {
-            console.error("Error fetching photo for listing:", listing, error)
+            console.error('Error fetching photo for listing:', listing, error)
           }
         })
         await Promise.all(photoFetchPromises)
         allLocations.firstPhotos = photosObj
         photos.value = photosObj
       } catch (error) {
-        console.error("Error fetching photos:", error)
+        console.error('Error fetching photos:', error)
       }
     }
 
@@ -199,28 +191,35 @@ export default {
               updatedPhotos[listing.id] = response
             }
           } catch (error) {
-            console.error("Error fetching photo for listing:", listing, error)
+            console.error('Error fetching photo for listing:', listing, error)
           }
         })
         await Promise.all(photoFetchPromises)
         allLocations.firstPhotos = updatedPhotos
         photos.value = updatedPhotos
       } catch (error) {
-        console.error("Error fetching photos for new listings:", error)
+        console.error('Error fetching photos for new listings:', error)
       }
     }
 
     // Activate the modal by fetching selected sublease information
-    async function activateSubleaseModal(subid, uniqueid) {
+    async function activateSubleaseModal(subid, uniqueid, listerid) {
       const userID = userStore.userID
       let info = await makeAuthenticatedRequest(
-        "sublease/selectedInfo",
+        'sublease/selectedInfo',
         { subleaseID: subid, uniqueid: uniqueid, userid: userID },
-        props.routerPass
+        props.routerPass,
       )
       const subleaseData = await info.json()
       if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
         selectedSubleaseStore.resetSelectedSublease()
+
+        const selectedListing = listings.value.find((listing) => listing.listerid === listerid)
+
+        selectedSubleaseStore.setSelectedSublease(selectedListing)
+
+        console.log('selevt', selectedSubleaseStore.selectedSublet)
+
         selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
         subleaseData.forEach((subletter) => {
           const { subleaseid, id, ...subletterData } = subletter
@@ -232,7 +231,7 @@ export default {
 
     // Filter listings based on leaseListFilterText prop
     function filterAddress(text) {
-      const query = String(text || "").toLowerCase()
+      const query = String(text || '').toLowerCase()
       if (!query) {
         listings.value = [...allLocations.allLocations]
         props.filterStore.resetFilter()
@@ -240,7 +239,7 @@ export default {
         return
       }
       listings.value = allLocations.allLocations.filter((listing) =>
-        [listing.street_name, listing.city].join(", ").toLowerCase().includes(query)
+        [listing.street_name, listing.city].join(', ').toLowerCase().includes(query),
       )
       filterActive.value = true
     }
@@ -251,7 +250,7 @@ export default {
       (newText) => {
         filterAddress(newText)
       },
-      { immediate: true, deep: true }
+      { immediate: true, deep: true },
     )
 
     // Watch for updates to the store and refresh local listings
@@ -261,20 +260,20 @@ export default {
         listings.value = [...newListings]
         fetchPhotos()
       },
-      { deep: true }
+      { deep: true },
     )
 
     onMounted(() => {
       console.log('mounted here')
       loadInitialListings()
       if (listContainer.value) {
-        listContainer.value.addEventListener("scroll", onScroll)
+        listContainer.value.addEventListener('scroll', onScroll)
       }
     })
 
     onUnmounted(() => {
       if (listContainer.value) {
-        listContainer.value.removeEventListener("scroll", onScroll)
+        listContainer.value.removeEventListener('scroll', onScroll)
       }
     })
 
@@ -290,7 +289,7 @@ export default {
   methods: {
     onRetrieve(result) {
       const res_value = result.detail.features[0].properties.matching_name
-      const input = document.getElementById("searchInput")
+      const input = document.getElementById('searchInput')
       input.value = res_value
     },
   },

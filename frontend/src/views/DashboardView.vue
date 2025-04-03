@@ -137,9 +137,14 @@
         :router="router"
         :togglePhotoGallery="togglePhotoGallery"
         :toggleSidebar="toggleSidebar"
+        :listView="listView"
       />
 
-      <PhotoGalleryModal v-if="showPhotoGallery" :togglePhotoGallery="togglePhotoGallery" />
+      <PhotoGalleryModal
+        v-if="showPhotoGallery"
+        :togglePhotoGallery="togglePhotoGallery"
+        :listView="listView"
+      />
 
       <!-- DashView Button -->
       <div

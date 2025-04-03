@@ -41,10 +41,10 @@ export default {
       type: Function,
       required: true,
     },
-    turnOffLoading:{
+    turnOffLoading: {
       type: Function,
-      required: true
-    }
+      required: true,
+    },
   },
 
   setup(props) {
@@ -69,7 +69,7 @@ export default {
       try {
         const response = await makeAuthenticatedRequest(
           'sublease/retrieve',
-          {swLat:sw.lat, swLng:sw.lng, neLat: ne.lat, neLng:ne.lng}, // any payload if needed
+          { swLat: sw.lat, swLng: sw.lng, neLat: ne.lat, neLng: ne.lng }, // any payload if needed
           props.routerPass,
         )
         // Return the parsed JSON array of subleases
@@ -142,7 +142,6 @@ export default {
              * If it is a new sublease the user clicked on then load data
              */
             if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
-              console.log(subleaseData[0].subleaseid)
               selectedSubleaseStore.resetSelectedSublease()
               selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
               subleaseData.forEach((subletter) => {
@@ -192,12 +191,12 @@ export default {
       // Add markers for the initial load
       addMarkers(allLocationsStore.allLocations)
       props.turnOffLoading()
-      
+
       map.on('moveend', async () => {
-      let updatedLocations = await fetchLocations()
-      allLocationsStore.setAllLocations(updatedLocations)
-      markersLayer.clearLayers()
-      addMarkers(updatedLocations)
+        let updatedLocations = await fetchLocations()
+        allLocationsStore.setAllLocations(updatedLocations)
+        markersLayer.clearLayers()
+        addMarkers(updatedLocations)
       })
 
       // Only locate if we haven't already done so.
