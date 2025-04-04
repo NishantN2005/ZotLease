@@ -2,10 +2,18 @@
   <!-- Outer container is scrollable and referenced via ref -->
   <div
     ref="listContainer"
-    class="h-[100dvh] w-screen bg-white flex flex-col items-center py-6 relative pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
+    class="h-[100dvh] w-fit bg-white flex flex-col items-center py-6 relative pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
   >
     <div class="w-5/6 mt-4">
-      <div v-if="listings.length > 0" class="w-full grid md:grid-cols-4 sm:grid-cols-2 gap-6 p-4">
+      <div
+        v-if="listings.length > 0"
+        :class="[
+          'w-full grid gap-6 p-4',
+          showSelectedSubleaseModal
+            ? 'lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1'
+            : 'lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2',
+        ]"
+      >
         <div
           v-for="listing in listings"
           :key="listing.listerid"
@@ -40,10 +48,12 @@
           </div>
         </div>
       </div>
-      <div v-else class="flex justify-center items-center h-48 text-gray-600 font-semibold text-lg">
+      <div
+        v-else
+        class="flex flex-col justify-center items-center h-48 text-gray-600 font-semibold text-lg"
+      >
         No results found.
       </div>
-      <div v-if="loadingMore" class="text-center py-4 text-gray-600">Loading more...</div>
     </div>
   </div>
 </template>
@@ -57,6 +67,7 @@ import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
 import { useUserStore } from '@/stores/userStore.js'
 import { useAllLocationsStore } from '@/stores/AllLocationsStore.js'
 import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
+import { show } from 'vanilla-cookieconsent'
 
 export default {
   name: 'leaseList',
@@ -81,6 +92,14 @@ export default {
       type: String,
       required: true,
     },
+    showSelectedSubleaseModal: {
+      type: Boolean,
+      required: true,
+    },
+    turnOnListViewResize: {
+      type: Function,
+      required: true,
+    },
   },
   setup(props) {
     const allLocations = useAllLocationsStore()
@@ -88,7 +107,7 @@ export default {
     const userStore = useUserStore()
 
     // Local reactive variables
-    const listings = ref([]) // local listing array
+    const listings = ref([...allLocations.allLocations]) // local listing array
     const photos = ref({ ...allLocations.firstPhotos })
     const loadingMore = ref(false)
     const page = ref(0)
@@ -98,63 +117,75 @@ export default {
     const itemHeightEstimate = 300
     const filterActive = ref(false)
 
-    // Paginated API call: fetch listings using limit and offset
-    async function fetchListings(pageNumber) {
-      const offset = pageNumber * limit
-      try {
-        const response = await makeAuthenticatedRequest(
-          `sublease/list?limit=${limit}&offset=${offset}`,
-          {},
-          props.routerPass,
-        )
-        return await response.json()
-      } catch (error) {
-        console.error('Error fetching listings:', error)
-        return []
-      }
+    // Set up the resize event listener when the component is mounted
+    onMounted(() => {
+      window.addEventListener('resize', handleResize)
+    })
+
+    // Clean up the event listener when the component is unmounted
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize)
+    })
+
+    const handleResize = () => {
+      props.turnOnListViewResize() // Call the function passed via props
     }
 
-    // Clear store and load initial 30 listings
-    async function loadInitialListings() {
-      allLocations.clearAllLocations() // Clear previous data from the store
-      console.log(allLocations.allLocations)
-      page.value = 0
-      const data = await fetchListings(page.value)
-      allLocations.setAllLocations(data)
-      listings.value = data
-      fetchPhotos() // Load photos for these listings
-      props.turnOffLoading() // Hide loading screen
-    }
+    // Paginated API call: fetch listings using limit and offset
+    // async function fetchListings(pageNumber) {
+    //   const offset = pageNumber * limit
+    //   try {
+    //     const response = await makeAuthenticatedRequest(
+    //       `sublease/list?limit=${limit}&offset=${offset}`,
+    //       {},
+    //       props.routerPass,
+    //     )
+    //     return await response.json()
+    //   } catch (error) {
+    //     console.error('Error fetching listings:', error)
+    //     return []
+    //   }
+    // }
+
+    // Clear store and load initial 15 listings
+    // async function loadInitialListings() {
+    //   allLocations.clearAllLocations() // Clear previous data from the store
+    //   page.value = 0
+    //   const data = await fetchListings(page.value)
+    //   allLocations.setAllLocations(data)
+    //   listings.value = data
+    //   fetchPhotos() // Load photos for these listings
+    //   props.turnOffLoading() // Hide loading screen
+    // }
 
     // Append the next page of listings as user scrolls down
-    async function loadMoreListings() {
-      console.log('loading more listings')
-      if (loadingMore.value) return
-      loadingMore.value = true
-      page.value++
-      const data = await fetchListings(page.value)
-      if (data.length > 0) {
-        data.forEach((element, index) => {
-          allLocations.addNewLocation(element)
-        })
-        x
-        //allLocations.addListings(data)
-        listings.value = listings.value.concat(data)
-        fetchPhotosForListings(data)
-      }
-      loadingMore.value = false
-    }
+    // async function loadMoreListings() {
+    //   console.log('loading more listings')
+    //   if (loadingMore.value) return
+    //   loadingMore.value = true
+    //   page.value++
+    //   const data = await fetchListings(page.value)
+    //   if (data.length > 0) {
+    //     data.forEach((element, index) => {
+    //       allLocations.addNewLocation(element)
+    //     })
+    //     //allLocations.addListings(data)
+    //     listings.value = listings.value.concat(data)
+    //     fetchPhotosForListings(data)
+    //   }
+    //   loadingMore.value = false
+    // }
 
     // Handle scroll events: load more when near bottom
-    function onScroll() {
-      const container = listContainer.value
-      if (!container) return
+    // function onScroll() {
+    //   const container = listContainer.value
+    //   if (!container) return
 
-      // Load more listings when user scrolls near bottom (e.g., within 100px)
-      if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100) {
-        loadMoreListings()
-      }
-    }
+    //   // Load more listings when user scrolls near bottom (e.g., within 100px)
+    //   if (container.scrollTop + container.clientHeight >= container.scrollHeight - 100) {
+    //     loadMoreListings()
+    //   }
+    // }
 
     // Fetch photos for all current listings
     async function fetchPhotos() {
@@ -180,27 +211,27 @@ export default {
     }
 
     // Fetch photos for a new batch of listings
-    async function fetchPhotosForListings(newListings) {
-      const updatedPhotos = { ...photos.value }
-      try {
-        const photoFetchPromises = newListings.map(async (listing) => {
-          try {
-            const key = `${listing.listerid}/${listing.subleaseid}`
-            const response = await getFirstPhoto(key)
-            if (response) {
-              updatedPhotos[listing.id] = response
-            }
-          } catch (error) {
-            console.error('Error fetching photo for listing:', listing, error)
-          }
-        })
-        await Promise.all(photoFetchPromises)
-        allLocations.firstPhotos = updatedPhotos
-        photos.value = updatedPhotos
-      } catch (error) {
-        console.error('Error fetching photos for new listings:', error)
-      }
-    }
+    // async function fetchPhotosForListings(newListings) {
+    //   const updatedPhotos = { ...photos.value }
+    //   try {
+    //     const photoFetchPromises = newListings.map(async (listing) => {
+    //       try {
+    //         const key = `${listing.listerid}/${listing.subleaseid}`
+    //         const response = await getFirstPhoto(key)
+    //         if (response) {
+    //           updatedPhotos[listing.id] = response
+    //         }
+    //       } catch (error) {
+    //         console.error('Error fetching photo for listing:', listing, error)
+    //       }
+    //     })
+    //     await Promise.all(photoFetchPromises)
+    //     allLocations.firstPhotos = updatedPhotos
+    //     photos.value = updatedPhotos
+    //   } catch (error) {
+    //     console.error('Error fetching photos for new listings:', error)
+    //   }
+    // }
 
     // Activate the modal by fetching selected sublease information
     async function activateSubleaseModal(subid, uniqueid, listerid) {
@@ -226,32 +257,10 @@ export default {
           selectedSubleaseStore.addSubletter(subletterData)
         })
       }
+      console.log(listings.value.length)
+      console.log(listings.value)
       props.turnOnSubleaseModal()
     }
-
-    // Filter listings based on leaseListFilterText prop
-    function filterAddress(text) {
-      const query = String(text || '').toLowerCase()
-      if (!query) {
-        listings.value = [...allLocations.allLocations]
-        props.filterStore.resetFilter()
-        filterActive.value = false
-        return
-      }
-      listings.value = allLocations.allLocations.filter((listing) =>
-        [listing.street_name, listing.city].join(', ').toLowerCase().includes(query),
-      )
-      filterActive.value = true
-    }
-
-    // Watch for filter text changes
-    watch(
-      () => props.leaseListFilterText,
-      (newText) => {
-        filterAddress(newText)
-      },
-      { immediate: true, deep: true },
-    )
 
     // Watch for updates to the store and refresh local listings
     watch(
@@ -263,35 +272,20 @@ export default {
       { deep: true },
     )
 
-    onMounted(() => {
-      console.log('mounted here')
-      loadInitialListings()
-      if (listContainer.value) {
-        listContainer.value.addEventListener('scroll', onScroll)
-      }
-    })
-
-    onUnmounted(() => {
-      if (listContainer.value) {
-        listContainer.value.removeEventListener('scroll', onScroll)
-      }
-    })
-
     return {
       listContainer,
       listings,
       photos,
       housePlaceholder,
       activateSubleaseModal,
-      loadingMore,
     }
   },
-  methods: {
-    onRetrieve(result) {
-      const res_value = result.detail.features[0].properties.matching_name
-      const input = document.getElementById('searchInput')
-      input.value = res_value
-    },
-  },
+  // methods: {
+  //   onRetrieve(result) {
+  //     const res_value = result.detail.features[0].properties.matching_name
+  //     const input = document.getElementById('searchInput')
+  //     input.value = res_value
+  //   },
+  // },
 }
 </script>

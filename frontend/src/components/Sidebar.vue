@@ -25,7 +25,7 @@
         <i class="fas fa-filter text-xl"></i>
       </button>
     </div> -->
-      <div v-show="!listView" class="w-full sm:w-1/2 relative">
+      <div class="w-full sm:w-1/2 relative">
         <input
           id="gmaps-autocomplete"
           type="text"
@@ -190,11 +190,12 @@
                 @click="zoomToLocation(38.5382, -121.7617)"
               />
               <img
-                src="/ucsflogo.png"
-                alt="ucsf logo"
+                src="/ucsclogo.png"
+                alt="ucsc logo"
                 class="w-10 h-8 sm:w-12 sm:h-10 object-contain cursor-pointer transition-transform duration-200 hover:scale-110"
-                @click="zoomToLocation(37.7631, -122.4586)"
+                @click="zoomToLocation(37.0002, -122.0629)"
               />
+
               <img
                 src="/ucsblogo.png"
                 alt="ucsb logo"

@@ -63,72 +63,7 @@
       </div>
     </transition>
 
-    <div class="flex flex-col relative w-full h-[100dvh]">
-      <Sidebar
-        ref="sidebarRef"
-        :Logout="Logout"
-        :turnOnModal="turnOnModal"
-        :toggleFilterModal="toggleFilterModal"
-        :router="router"
-        :mapView="mapView"
-        :toggleView="toggleDashView"
-        :toggleCheckMessage="toggleCheckMessage"
-        :filterOpen="filterOpen"
-        :toggleMessages="toggleMessages"
-        :showFilterModal="showFilterModal"
-        :messagesOpen="messagesOpen"
-        :messageRef="messageRef"
-        :isSidebarOpen="isSidebarOpen"
-        :toggleSidebar="toggleSidebar"
-        :promptSignup="promptSignup"
-        :userStore="userStore"
-        :listView="listView"
-        :updateFilterText="updateFilterText"
-        :isSmallScreen="isSmallScreen"
-      />
-      <!-- Filter Modal-->
-      <FilterModal
-        :filterform="filterForm"
-        :showFilterModal="showFilterModal"
-        :routerPass="router"
-        :toggleFilterModal="toggleFilterModal"
-        :resetFilters="resetFilters"
-      />
-      <!-- Messages Modal -->
-      <Messages
-        ref="messageRef"
-        :messagesOpen="messagesOpen"
-        :chatStore="chatStore"
-        :router="router"
-        :userStore="userStore"
-        :turnOnSubleaseModal="turnOnSubleaseModal"
-        :toggleMessageProfile="toggleMessageProfile"
-        :messageProfileActive="messageProfileActive"
-        :turnOffMessageProfile="turnOffMessageProfile"
-      />
-
-      <!-- The Leaflet map -->
-      <LeafletMap
-        v-if="mapView && !messagesOpen && (!chatStore.chatRoomID || !isSmallScreen)"
-        class="z-0 w-full h-full"
-        :routerPass="router"
-        :userID="userStore.userID"
-        :turnOnSubleaseModal="turnOnSubleaseModal"
-        :filterForm="filterForm"
-        :setEventPos="setEventPos"
-        :turnOffLoading="turnOffLoading"
-      />
-
-      <LeaseList
-        v-if="listView && (!chatStore.chatRoomID || !isSmallScreen)"
-        :allLocations="allLocationsStore"
-        :filterStore="filterStore"
-        :turnOnSubleaseModal="turnOnSubleaseModal"
-        :routerPass="router"
-        :turnOffLoading="turnOffLoading"
-        :leaseListFilterText="leaseListFilterText"
-      />
-
+    <div class="flex flex-row relative w-full h-[100dvh]">
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
         :showSelectedSubleaseModal="showSelectedSubleaseModal"
@@ -139,23 +74,93 @@
         :toggleSidebar="toggleSidebar"
         :listView="listView"
       />
+      <div class="flex flex-col relative w-full h-[100dvh]">
+        <Sidebar
+          ref="sidebarRef"
+          :Logout="Logout"
+          :turnOnModal="turnOnModal"
+          :toggleFilterModal="toggleFilterModal"
+          :router="router"
+          :mapView="mapView"
+          :toggleView="toggleDashView"
+          :toggleCheckMessage="toggleCheckMessage"
+          :filterOpen="filterOpen"
+          :toggleMessages="toggleMessages"
+          :showFilterModal="showFilterModal"
+          :messagesOpen="messagesOpen"
+          :messageRef="messageRef"
+          :isSidebarOpen="isSidebarOpen"
+          :toggleSidebar="toggleSidebar"
+          :promptSignup="promptSignup"
+          :userStore="userStore"
+          :listView="listView"
+          :updateFilterText="updateFilterText"
+          :isSmallScreen="isSmallScreen"
+        />
+        <!-- Filter Modal-->
+        <FilterModal
+          :filterform="filterForm"
+          :showFilterModal="showFilterModal"
+          :routerPass="router"
+          :toggleFilterModal="toggleFilterModal"
+          :resetFilters="resetFilters"
+        />
+        <!-- Messages Modal -->
+        <Messages
+          ref="messageRef"
+          :messagesOpen="messagesOpen"
+          :chatStore="chatStore"
+          :router="router"
+          :userStore="userStore"
+          :turnOnSubleaseModal="turnOnSubleaseModal"
+          :toggleMessageProfile="toggleMessageProfile"
+          :messageProfileActive="messageProfileActive"
+          :turnOffMessageProfile="turnOffMessageProfile"
+        />
 
-      <PhotoGalleryModal
-        v-if="showPhotoGallery"
-        :togglePhotoGallery="togglePhotoGallery"
-        :listView="listView"
-      />
+        <!-- The Leaflet map -->
+        <LeafletMap
+          v-show="mapView && !messagesOpen && (!chatStore.chatRoomID || !isSmallScreen)"
+          class="z-0 w-full h-full"
+          :routerPass="router"
+          :userID="userStore.userID"
+          :turnOnSubleaseModal="turnOnSubleaseModal"
+          :filterForm="filterForm"
+          :setEventPos="setEventPos"
+          :turnOffLoading="turnOffLoading"
+          :listViewResize="listViewResize"
+          :turnOffListViewResize="turnOffListViewResize"
+        />
 
-      <!-- DashView Button -->
-      <div
-        class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-45 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
-      >
-        <button @click="toggleDashView(false)" v-if="mapView" class="text-[#042553]">
-          ListView <i class="fas fa-list ml-2 text-sm"></i>
-        </button>
-        <button @click="toggleDashView" v-else class="text-[#042553]">
-          MapView <i class="fas fa-map-location-dot ml-2 text-sm"></i>
-        </button>
+        <LeaseList
+          v-show="listView && (!chatStore.chatRoomID || !isSmallScreen)"
+          :allLocations="allLocationsStore"
+          :filterStore="filterStore"
+          :turnOnSubleaseModal="turnOnSubleaseModal"
+          :routerPass="router"
+          :turnOffLoading="turnOffLoading"
+          :leaseListFilterText="leaseListFilterText"
+          :showSelectedSubleaseModal="showSelectedSubleaseModal"
+          :turnOnListViewResize="turnOnListViewResize"
+        />
+
+        <PhotoGalleryModal
+          v-if="showPhotoGallery"
+          :togglePhotoGallery="togglePhotoGallery"
+          :listView="listView"
+        />
+
+        <!-- DashView Button -->
+        <div
+          class="absolute text-md bottom-0 left-1/2 -translate-x-1/2 px-4 py-2 mb-6 bg-white rounded-full z-45 transition-transform duration-200 hover:scale-[1.15] shadow-lg"
+        >
+          <button @click="toggleDashView(false)" v-if="mapView" class="text-[#042553]">
+            ListView <i class="fas fa-list ml-2 text-sm"></i>
+          </button>
+          <button @click="toggleDashView" v-else class="text-[#042553]">
+            MapView <i class="fas fa-map-location-dot ml-2 text-sm"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -239,6 +244,7 @@ export default {
     const showLoadingScreen = ref(false)
     const isSidebarOpen = ref(false)
     const mapStore = useMapStore()
+    const listViewResize = ref(false)
 
     const showSelectedSubleaseModal = ref(false)
     const showPhotoGallery = ref(false)
@@ -338,6 +344,14 @@ export default {
       } else {
         promptSignup()
       }
+    }
+
+    const turnOnListViewResize = () => {
+      listViewResize.value = true
+    }
+
+    const turnOffListViewResize = () => {
+      listViewResize.value = false
     }
 
     const promptSignup = () => {
@@ -736,6 +750,9 @@ export default {
       leaseListFilterText,
       updateFilterText,
       mapStore,
+      listViewResize,
+      turnOnListViewResize,
+      turnOffListViewResize,
     }
   },
 }

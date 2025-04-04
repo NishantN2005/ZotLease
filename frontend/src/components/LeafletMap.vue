@@ -14,6 +14,7 @@ import { useMapStore } from '@/stores/mapStore.js'
 import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 import 'leaflet-arrowheads'
 import { useUserStore } from '@/stores/userStore.js'
+import { debounce } from 'lodash-es'
 
 let hasLocatedUser = false
 
@@ -45,12 +46,21 @@ export default {
       type: Function,
       required: true,
     },
+    listViewResize: {
+      type: Boolean,
+      required: true,
+    },
+    turnOffListViewResize: {
+      type: Function,
+      required: true,
+    },
   },
 
   setup(props) {
     // Leaflet map and layer references
     let map = null
     let markersLayer = null
+    let observer = null
 
     const MAPBOX_TILE_URL = `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_ACCESS_TOKEN}`
 
@@ -59,6 +69,24 @@ export default {
     const allLocationsStore = useAllLocationsStore()
     const userStore = useUserStore()
     const mapStore = useMapStore()
+
+    const handleResize = debounce(() => {
+      const mapContainer = document.getElementById('map')
+      if (map && mapContainer && mapContainer.offsetParent !== null) {
+        map.invalidateSize()
+        map._onResize() // Force a redraw
+      }
+    }, 300)
+
+    watch(
+      () => props.listViewResize,
+      (newValue) => {
+        if (newValue) {
+          handleResize()
+          props.turnOffListViewResize()
+        }
+      },
+    )
 
     // 1. Fetch location data from your backend
     const fetchLocations = async () => {
@@ -160,16 +188,26 @@ export default {
     // 4. Set up map on mount
     onMounted(async () => {
       const mapContainer = document.getElementById('map')
+
+      if (mapContainer) {
+        observer = new MutationObserver((mutations) => {
+          handleResize()
+        })
+
+        observer.observe(mapContainer, {
+          attributes: true,
+          attributeFilter: ['style', 'class'],
+        })
+      }
       if (!mapContainer) {
         console.error('Map container not found!')
         return
       }
 
       // Initialize the Leaflet map
-      map = L.map(mapContainer, { zoomControl: false }).setView(
-        [mapStore.mapCenter.lat, mapStore.mapCenter.lng],
-        mapStore.mapCenter.zoom,
-      )
+      map = L.map(mapContainer, {
+        zoomControl: false,
+      }).setView([mapStore.mapCenter.lat, mapStore.mapCenter.lng], mapStore.mapCenter.zoom)
 
       // Add the Mapbox tile layer
       L.tileLayer(MAPBOX_TILE_URL, {
@@ -670,6 +708,7 @@ export default {
 
     // 6. Clean up on unmount
     onUnmounted(() => {
+      if (observer) observer.disconnect()
       if (map) {
         map.remove()
         map = null
