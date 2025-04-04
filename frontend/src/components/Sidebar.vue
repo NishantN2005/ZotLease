@@ -4,7 +4,7 @@
     <header
       class="fixed top-0 left-0 right-0 flex items-center justify-between bg-gray-100 text-[#042553] h-16 z-40 px-4"
     >
-      <div v-show="!(mapView && isSmallScreen)" class="sm:flex items-center">
+      <div v-show="!isSmallScreen" class="sm:flex items-center">
         <!-- Hide when mapView is true on small screens, show on larger screens -->
         <div
           class="flex ml-4 text-2xl font-bold items-center gap-2 font-Sriracha cursor-pointer"
