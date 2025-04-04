@@ -50,9 +50,10 @@
       </div>
       <div
         v-else
-        class="flex flex-col justify-center items-center h-48 text-gray-600 font-semibold text-lg"
+        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center text-gray-600 font-semibold text-lg text-center"
       >
-        No results found.
+        <img src="/favicon.png" alt="zotlease logo" class="w-72 h-72" />
+        <p class="mt-4">No results found.</p>
       </div>
     </div>
   </div>
