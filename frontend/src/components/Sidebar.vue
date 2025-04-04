@@ -25,7 +25,7 @@
         <i class="fas fa-filter text-xl"></i>
       </button>
     </div> -->
-      <div v-show="!listView" class="w-full sm:w-1/2 relative">
+      <div class="w-full sm:w-1/2 relative">
         <input
           id="gmaps-autocomplete"
           type="text"
