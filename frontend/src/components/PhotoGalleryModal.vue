@@ -1,6 +1,7 @@
 <template>
   <div
     id="PhotoGallery"
+    v-show="false"
     class="fixed inset-0 z-10 bg-white px-4 pt-4 pb-4 shadow-md border border-gray-200 w-screen max-h-[calc(100vh-8rem)] overflow-y-auto md:w-1/2 lg:w-1/3 md:top-2 md:bottom-2 md:right-2 md:left-auto md:max-h-[90vh] md:overflow-y-auto md:rounded-lg mt-32 md:mt-16"
   >
     <div class="relative">
