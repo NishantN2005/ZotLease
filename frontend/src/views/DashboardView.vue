@@ -66,6 +66,7 @@
     <div class="flex flex-row relative w-full h-[100dvh]">
       <!-- Selected Sublease modal-->
       <SelectedSubleaseModal
+        v-show="!messagesOpen"
         :showSelectedSubleaseModal="showSelectedSubleaseModal"
         :turnOffSubleaseModal="turnOffSubleaseModal"
         :createChatRoom="createChatRoom"
