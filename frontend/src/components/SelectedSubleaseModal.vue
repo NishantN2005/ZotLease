@@ -10,8 +10,8 @@
     <div
       v-if="showSelectedSubleaseModal"
       id="filterModal"
-      class="fixed md:static inset-0 z-10 bg-white px-4 pt-4 pb-4 shadow-md border border-gray-200 w-screen max-h-[calc(100vh-8rem)] overflow-y-auto md:w-1/2 md:top-2 md:bottom-2 md:right-2 md:left-auto md:max-h-[90vh] md:overflow-y-auto md:mt-16 md:rounded-none"
-      :class="{ 'mt-16 max-h-[91vh]': listView, 'mt-32': !listView }"
+      class="fixed md:static inset-0 z-10 bg-white px-4 pt-4 pb-4 shadow-md border border-gray-200 w-screen overflow-y-auto md:w-1/2 md:top-2 md:bottom-2 md:right-2 md:left-auto md:max-h-[90vh] md:overflow-y-auto md:mt-16 md:rounded-none"
+      :class="{ 'mt-16 max-h-[91dvh]': listView, 'mt-32': !listView }"
     >
       <div class="flex items-center justify-between">
         <!-- Title -->
