@@ -46,14 +46,6 @@ export default {
       type: Function,
       required: true,
     },
-    listViewResize: {
-      type: Boolean,
-      required: true,
-    },
-    turnOffListViewResize: {
-      type: Function,
-      required: true,
-    },
   },
 
   setup(props) {
@@ -69,24 +61,6 @@ export default {
     const allLocationsStore = useAllLocationsStore()
     const userStore = useUserStore()
     const mapStore = useMapStore()
-
-    const handleResize = debounce(() => {
-      const mapContainer = document.getElementById('map')
-      if (map && mapContainer && mapContainer.offsetParent !== null) {
-        map.invalidateSize()
-        map._onResize() // Force a redraw
-      }
-    }, 300)
-
-    watch(
-      () => props.listViewResize,
-      (newValue) => {
-        if (newValue) {
-          handleResize()
-          props.turnOffListViewResize()
-        }
-      },
-    )
 
     // 1. Fetch location data from your backend
     const fetchLocations = async () => {
@@ -190,21 +164,6 @@ export default {
     // 4. Set up map on mount
     onMounted(async () => {
       const mapContainer = document.getElementById('map')
-
-      if (mapContainer) {
-        observer = new MutationObserver((mutations) => {
-          handleResize()
-        })
-
-        observer.observe(mapContainer, {
-          attributes: true,
-          attributeFilter: ['style', 'class'],
-        })
-      }
-      if (!mapContainer) {
-        console.error('Map container not found!')
-        return
-      }
 
       // Initialize the Leaflet map
       map = L.map(mapContainer, {
@@ -727,11 +686,19 @@ export default {
 <style>
 /* Style for the Leaflet attribution */
 .leaflet-control-attribution {
-  font-size: 0.45rem; /* Smaller text size (equivalent to text-xs in Tailwind) */
-  opacity: 0.7; /* Slightly transparent */
-  padding: 0.25rem 0.5rem; /* Padding for spacing */
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
-  border-radius: 0.375rem; /* Slightly rounded corners */
+  font-size: 0.45rem;
+  opacity: 0.7;
+  padding: 0.25rem 0.5rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 0.375rem;
+}
+
+/* Smaller size for small screens */
+@media (max-width: 640px) {
+  .leaflet-control-attribution {
+    font-size: 0.25rem;
+    padding: 0.1rem 0.3rem;
+  }
 }
 
 /*Legend specific*/

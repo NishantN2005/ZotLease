@@ -97,10 +97,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    turnOnListViewResize: {
-      type: Function,
-      required: true,
-    },
   },
   setup(props) {
     const allLocations = useAllLocationsStore()
@@ -117,20 +113,6 @@ export default {
     // An estimated height (in pixels) per listing card; adjust based on your layout
     const itemHeightEstimate = 300
     const filterActive = ref(false)
-
-    // Set up the resize event listener when the component is mounted
-    onMounted(() => {
-      window.addEventListener('resize', handleResize)
-    })
-
-    // Clean up the event listener when the component is unmounted
-    onUnmounted(() => {
-      window.removeEventListener('resize', handleResize)
-    })
-
-    const handleResize = () => {
-      props.turnOnListViewResize() // Call the function passed via props
-    }
 
     // Paginated API call: fetch listings using limit and offset
     // async function fetchListings(pageNumber) {
