@@ -2,7 +2,7 @@
   <!-- Outer container is scrollable and referenced via ref -->
   <div
     ref="listContainer"
-    class="h-[100dvh] w-fit bg-white flex flex-col items-center py-6 relative pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
+    class="fixed h-[100dvh] w-fit bg-white flex flex-col items-center py-6 pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
   >
     <div class="w-5/6 mt-4">
       <div
@@ -16,7 +16,7 @@
       >
         <div
           v-for="listing in listings"
-          :key="listing.listerid"
+          :key="listing.id"
           class="listing-card bg-transparent rounded-xl cursor-pointer overflow-hidden"
           @click="() => activateSubleaseModal(listing.subleaseid, listing.id, listing.listerid)"
         >
@@ -250,8 +250,6 @@ export default {
 
         selectedSubleaseStore.setSelectedSublease(selectedListing)
 
-        console.log('selevt', selectedSubleaseStore.selectedSublet)
-
         selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
         subleaseData.forEach((subletter) => {
           const { subleaseid, id, ...subletterData } = subletter
@@ -259,7 +257,6 @@ export default {
         })
       }
       console.log(listings.value.length)
-      console.log(listings.value)
       props.turnOnSubleaseModal()
     }
 

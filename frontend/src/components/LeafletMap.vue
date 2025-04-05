@@ -26,7 +26,7 @@ export default {
       required: true,
     },
     userID: {
-      type: String,
+      type: [String, null],
       required: true,
     },
     turnOnSubleaseModal: {
@@ -109,14 +109,17 @@ export default {
     }
 
     // 2. Create a custom marker icon
-    const createHexMarker = (price) => {
+    const createHexMarker = (price, isUserLeaser) => {
+      const markerColor = isUserLeaser ? '#FFF' : '#0096FF' // white for user's leases, blue for others
+      const textColor = isUserLeaser ? '#0096FF' : '#FFF' // blue text for user's leases, white for others
       return L.divIcon({
         className: 'custom-price-icon',
         html: `
-          <div class="price-bar inline-flex items-center bg-[#0096FF] rounded-full shadow-md px-2 py-1 transition-transform duration-200 hover:scale-[1.15]">
-            <div class="text-md font-semibold text-white">$${price}</div>
-          </div>
-        `,
+      <div class="price-bar inline-flex items-center rounded-full shadow-md px-2 py-1 transition-transform duration-200 hover:scale-[1.15]"
+           style="background-color: ${markerColor};">
+        <div class="text-md font-semibold" style="color: ${textColor};">$${price}</div>
+      </div>
+    `,
         iconSize: [40, 40],
         iconAnchor: [20, 20],
       })
@@ -138,8 +141,7 @@ export default {
         ) {
           addedLeases.add(location.subleaseid)
           const isUserLeaser = String(location.listerid).trim() === String(props.userID).trim()
-          const markerColor = isUserLeaser ? '#FFD700' : '#007BFF'
-          const markerIcon = createHexMarker(location.price)
+          const markerIcon = createHexMarker(location.price, isUserLeaser)
 
           // Add marker to the markersLayer (not directly to the map)
           const marker = L.marker([location.latitude, location.longitude], {

@@ -30,7 +30,7 @@
           id="gmaps-autocomplete"
           type="text"
           v-model="searchQuery"
-          :placeholder="showSecondBar ? 'Search..' : 'Find Leases Near You...'"
+          :placeholder="dynamicPlaceholder"
           class="w-full py-3 pr-12 pl-5 rounded-full border border-gray-300 shadow-md text-black focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder-gray-400 sm:placeholder-opacity-100"
         />
 
@@ -227,10 +227,11 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useChatStore } from '@/stores/chatStore'
 import { useUserStore } from '@/stores/userStore'
 import { useMapStore } from '@/stores/mapStore.js'
+import { useAllLocationsStore } from '@/stores/AllLocationsStore.js'
 import { MAPBOX_ACCESS_TOKEN } from '../../constants.js'
 import Messages from './Messages.vue'
 
@@ -287,7 +288,7 @@ export default {
       required: true,
     },
     toggleSidebar: {
-      type: Object,
+      type: Function,
       required: true,
     },
     promptSignup: {
@@ -365,6 +366,7 @@ export default {
     const chatStore = useChatStore()
     const userStore = useUserStore()
     const mapStore = useMapStore()
+    const allLocations = useAllLocationsStore()
     const showProfileModal = ref(false)
     const showSecondBar = ref(false)
     const searchQuery = ref('')
@@ -373,6 +375,18 @@ export default {
       if (window.innerWidth < 640) {
         showSecondBar.value = true
       }
+    }
+
+    const dynamicPlaceholder = computed(() =>
+      showSecondBar.value
+        ? 'Search...'
+        : `Find ${formatNumber(allLocations.allLocations.length)}+ Leases Near You...`,
+    )
+
+    function formatNumber(n) {
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M'
+      if (n >= 1_000) return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K'
+      return n.toString()
     }
 
     onMounted(() => {
@@ -486,6 +500,7 @@ export default {
       zoomToLocation,
       searchQuery,
       clearSearch,
+      dynamicPlaceholder,
     }
   },
 }
