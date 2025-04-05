@@ -2,7 +2,7 @@
   <!-- Outer container is scrollable and referenced via ref -->
   <div
     ref="listContainer"
-    class="fixed h-[100dvh] w-fit bg-white flex flex-col items-center py-6 pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
+    class="fixed h-[100dvh] w-fit bg-white flex flex-col items-center py-6 pt-28 md:pt-12 overflow-y-auto scrollbar-hide z-100"
   >
     <div class="w-5/6 mt-4">
       <div
@@ -50,7 +50,7 @@
       </div>
       <div
         v-else
-        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center text-gray-600 font-semibold text-lg text-center"
+        class="fixed inset-0 z-[101] bg-white flex flex-col items-center justify-center text-gray-600 font-semibold text-lg text-center"
       >
         <img src="/favicon.png" alt="zotlease logo" class="w-72 h-72" />
         <p class="mt-4">No results found.</p>
