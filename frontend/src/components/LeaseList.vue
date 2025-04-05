@@ -2,7 +2,7 @@
   <!-- Outer container is scrollable and referenced via ref -->
   <div
     ref="listContainer"
-    class="h-[100dvh] w-fit bg-white flex flex-col items-center py-6 relative pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
+    class="fixed h-[100dvh] w-fit bg-white flex flex-col items-center py-6 pt-28 md:pt-12 overflow-y-auto scrollbar-hide"
   >
     <div class="w-5/6 mt-4">
       <div
