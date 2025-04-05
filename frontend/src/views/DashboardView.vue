@@ -129,8 +129,6 @@
           :filterForm="filterForm"
           :setEventPos="setEventPos"
           :turnOffLoading="turnOffLoading"
-          :listViewResize="listViewResize"
-          :turnOffListViewResize="turnOffListViewResize"
         />
 
         <LeaseList
@@ -142,7 +140,6 @@
           :turnOffLoading="turnOffLoading"
           :leaseListFilterText="leaseListFilterText"
           :showSelectedSubleaseModal="showSelectedSubleaseModal"
-          :turnOnListViewResize="turnOnListViewResize"
         />
 
         <PhotoGalleryModal
@@ -245,7 +242,6 @@ export default {
     const showLoadingScreen = ref(false)
     const isSidebarOpen = ref(false)
     const mapStore = useMapStore()
-    const listViewResize = ref(false)
 
     const showSelectedSubleaseModal = ref(false)
     const showPhotoGallery = ref(false)
@@ -345,14 +341,6 @@ export default {
       } else {
         promptSignup()
       }
-    }
-
-    const turnOnListViewResize = () => {
-      listViewResize.value = true
-    }
-
-    const turnOffListViewResize = () => {
-      listViewResize.value = false
     }
 
     const promptSignup = () => {
@@ -751,9 +739,6 @@ export default {
       leaseListFilterText,
       updateFilterText,
       mapStore,
-      listViewResize,
-      turnOnListViewResize,
-      turnOffListViewResize,
     }
   },
 }
