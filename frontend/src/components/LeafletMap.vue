@@ -62,6 +62,28 @@ export default {
     const userStore = useUserStore()
     const mapStore = useMapStore()
 
+    onMounted(() => {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && map) {
+          map.invalidateSize()
+        }
+      })
+
+      setTimeout(() => {
+        if (map) map.invalidateSize()
+      }, 500)
+    })
+
+    const handleResize = () => {
+      if (map) map.invalidateSize()
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize)
+    })
+
     // 1. Fetch location data from your backend
     const fetchLocations = async () => {
       const bounds = map.getBounds()
