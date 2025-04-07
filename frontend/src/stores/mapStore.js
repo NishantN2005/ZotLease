@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useMapStore = defineStore('map', {
   state: () => ({
-    mapCenter: { lat: 33.644, lng: -117.826, zoom: 15 },
+    mapCenter: { lat: 35.644, lng: -118.826, zoom: 6 },
     hasLocatedUser: false,
   }),
   actions: {
