@@ -29,7 +29,7 @@
       class="pswp-gallery mt-4 flex flex-col gap-4 overflow-y-auto"
     >
       <template v-for="(group, groupIndex) in photoGroups" :key="'group-' + groupIndex">
-        <div v-if="group.type === 'full'" class="w-full relative">
+        <div v-if="group.type === 'full'" class="relative flex justify-center">
           <a
             :href="group.photos[0]"
             :data-pswp-width="getImageDimensions(group.photos[0]).width"
@@ -43,7 +43,7 @@
             <img
               :src="group.photos[0]"
               :alt="'Photo ' + (group.indexes[0] + 1)"
-              class="rounded shadow w-full h-64 object-cover"
+              class="rounded shadow max-w-full h-auto"
               @load="onImageLoad(group.indexes[0])"
               v-show="loadedImages[group.indexes[0]]"
             />
@@ -53,7 +53,7 @@
           <div
             v-for="(photo, photoIndex) in group.photos"
             :key="'photo-' + groupIndex + '-' + photoIndex"
-            class="relative w-1/2 h-48"
+            class="relative w-full"
           >
             <a
               :href="photo"
@@ -68,7 +68,7 @@
               <img
                 :src="photo"
                 :alt="'Photo ' + (group.indexes[photoIndex] + 1)"
-                class="rounded shadow w-full h-48 object-cover"
+                class="rounded shadow max-w-full h-auto"
                 @load="onImageLoad(group.indexes[photoIndex])"
                 v-show="loadedImages[group.indexes[photoIndex]]"
               />
@@ -99,9 +99,28 @@ export default {
     const selectedSubleaseStore = useSelectedSubleaseStore()
     const loadedImages = ref([])
     let lightbox = null
+    const imageDimensionCache = {}
 
     const getImageDimensions = (src) => {
-      return { width: 1200, height: 800 }
+      console.log('here', src)
+      if (imageDimensionCache[src]) return imageDimensionCache[src]
+
+      const img = new Image()
+      img.src = src
+
+      const dimensions = {
+        width: 1200,
+        height: 800,
+      }
+
+      img.onload = () => {
+        imageDimensionCache[src] = {
+          width: img.naturalWidth,
+          height: img.naturalHeight,
+        }
+      }
+
+      return dimensions
     }
 
     onMounted(() => {

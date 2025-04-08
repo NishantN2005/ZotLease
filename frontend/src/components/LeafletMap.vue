@@ -105,82 +105,77 @@ export default {
     }
 
     // 2. Create a custom marker icon
-    const createHexMarker = (price, isUserLeaser) => {
-      const markerColor = isUserLeaser ? '#FFF' : '#0096FF' // white for user's leases, blue for others
-      const textColor = isUserLeaser ? '#0096FF' : '#FFF' // blue text for user's leases, white for others
+    const createHexMarker = (label, isUserLeaser) => {
+      const markerColor = isUserLeaser ? '#FFF' : '#0096FF'
+      const textColor = isUserLeaser ? '#0096FF' : '#FFF'
       return L.divIcon({
         className: 'custom-price-icon',
         html: `
-      <div class="price-bar inline-flex items-center rounded-full shadow-md px-2 py-1 transition-transform duration-200 hover:scale-[1.15]"
+      <div class="price-bar inline-flex items-center justify-center rounded-full shadow-md px-2 py-1 min-w-[40px] transition-transform duration-200 hover:scale-[1.15]"
            style="background-color: ${markerColor};">
-        <div class="text-md font-semibold" style="color: ${textColor};">$${price}</div>
+        <div class="text-md font-semibold whitespace-nowrap" style="color: ${textColor};">${label}</div>
       </div>
     `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20],
+        iconSize: [50, 50],
+        iconAnchor: [25, 25],
       })
     }
 
     // 3. Add markers for given locations, respecting the filter store
     const addMarkers = (locations) => {
-      const addedLeases = new Set()
-      locations.forEach((location) => {
-        // Check valid lat/lng and if sublease passes the filter
-        const passesFilter =
-          !filterStore.isFiltered || filterStore.acceptedSubleases.includes(location.subleaseid)
+      const grouped = {}
 
-        if (
-          location.latitude &&
-          location.longitude &&
-          passesFilter &&
-          !addedLeases.has(location.subleaseid)
-        ) {
-          addedLeases.add(location.subleaseid)
-          const isUserLeaser = String(location.listerid).trim() === String(props.userID).trim()
-          const markerIcon = createHexMarker(location.price, isUserLeaser)
-
-          // Add marker to the markersLayer (not directly to the map)
-          const marker = L.marker([location.latitude, location.longitude], {
-            icon: markerIcon,
-          }).addTo(markersLayer)
-
-          // Store subleaseID so we can fetch details on click
-          marker.subleaseID = location.subleaseid
-          marker.id = location.id
-
-          marker.on('click', async () => {
-            const subid = marker.subleaseID
-            const uniqueid = marker.id
-            const userid = userStore.userID
-
-            console.log(subid, uniqueid, userid)
-
-            // Make call to retrieve listing information
-            let info = await makeAuthenticatedRequest(
-              'sublease/selectedInfo',
-              { subleaseID: subid, uniqueid: uniqueid, userid: userid },
-              props.routerPass,
-            )
-            // parse JSON
-            const subleaseData = await info.json()
-            // set Pinia store state
-            /**
-             * If it is a new sublease the user clicked on then load data
-             */
-            if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
-              selectedSubleaseStore.resetSelectedSublease()
-              selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
-              subleaseData.forEach((subletter) => {
-                const { subleaseid, id, ...subletterData } = subletter
-                selectedSubleaseStore.addSubletter(subletterData)
-              })
-            }
-
-            // open your sublease modal
-            props.turnOnSubleaseModal()
-          })
-        }
+      // Group locations by subleaseid
+      locations.forEach((loc) => {
+        if (!loc.latitude || !loc.longitude) return
+        if (!grouped[loc.subleaseid]) grouped[loc.subleaseid] = []
+        grouped[loc.subleaseid].push(loc)
       })
+
+      for (const subleaseid in grouped) {
+        const group = grouped[subleaseid]
+        const mainLoc = group[0] // Just use the first one for lat/lng
+
+        const passesFilter =
+          !filterStore.isFiltered || filterStore.acceptedSubleases.includes(subleaseid)
+
+        if (!passesFilter) continue
+
+        const isUserLeaser = String(mainLoc.listerid).trim() === String(props.userID).trim()
+        const priceOrCount = group.length > 1 ? `${group.length} Listings` : `$${mainLoc.price}`
+        const markerIcon = createHexMarker(priceOrCount, isUserLeaser)
+
+        const marker = L.marker([mainLoc.latitude, mainLoc.longitude], {
+          icon: markerIcon,
+        }).addTo(markersLayer)
+
+        marker.subleaseID = subleaseid
+        marker.id = mainLoc.id
+
+        marker.on('click', async () => {
+          const subid = marker.subleaseID
+          const uniqueid = marker.id
+          const userid = userStore.userID
+
+          let info = await makeAuthenticatedRequest(
+            'sublease/selectedInfo',
+            { subleaseID: subid, uniqueid, userid },
+            props.routerPass,
+          )
+
+          const subleaseData = await info.json()
+
+          if (selectedSubleaseStore.subleaseID !== subleaseData[0].subleaseid) {
+            selectedSubleaseStore.resetSelectedSublease()
+            selectedSubleaseStore.setSelectedSubleaseID(subleaseData[0].subleaseid)
+            subleaseData.forEach(({ subleaseid, id, ...rest }) => {
+              selectedSubleaseStore.addSubletter(rest)
+            })
+          }
+
+          props.turnOnSubleaseModal()
+        })
+      }
     }
 
     // 4. Set up map on mount
