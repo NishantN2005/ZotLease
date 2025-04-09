@@ -107,6 +107,48 @@
       </div>
     </section>
 
+    <!-- About Us -->
+    <section class="py-20 bg-neutral-100 font-Sriracha">
+      <div class="max-w-7xl mx-auto px-6 md:px-52">
+        <h1 class="text-3xl md:text-4xl font-bold text-neutral-900 mb-14 text-center">About Us</h1>
+        <div class="text-neutral-900 space-y-4">
+          <p class="font-semibold text-lg">
+            Zotlease is the #1 free subleasing platform for students and interns across California
+            and nationwide.
+          </p>
+          <ul class="list-disc list-inside space-y-2">
+            <li>
+              <strong>Student-founded sublease solution</strong> - Created by UC Irvine students to
+              prevent housing scams and make off-campus living safer
+            </li>
+            <li>
+              <strong>UC-wide housing network</strong> - Specializing in verified sublets for UCI,
+              UCLA, UCSD, UC Berkeley, UC Davis, UCSB, and all American campuses
+            </li>
+            <li>
+              <strong>Fast, verified listings</strong> - Post or find UC-approved subleases for
+              summer, semester, or academic year housing in minutes
+            </li>
+            <li>
+              <strong>Trusted by students</strong> - Every listing is verified to ensure authentic
+              student connections and safe transactions
+            </li>
+            <li>
+              <strong>Perfect for internships</strong> - The easiest way to find short-term housing
+              for summer internships near any UC campus
+            </li>
+            <li>
+              <strong>Always free</strong> - Supported by local businesses so students never pay
+              fees to sublease or find housing
+            </li>
+          </ul>
+          <p class="mt-6 font-medium">
+            Join thousands of UC students who trust Zotlease for safe, affordable subleasing
+            solutions at every University of California campus.
+          </p>
+        </div>
+      </div>
+    </section>
 
     <!-- Footer -->
     <footer class="bg-neutral-100 py-8 text-center text-neutral-900 font-Sriracha">
