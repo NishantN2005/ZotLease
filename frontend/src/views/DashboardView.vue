@@ -184,7 +184,6 @@ import Sidebar from '@/components/Sidebar.vue'
 import Messages from '../components/Messages.vue'
 import PhotoGalleryModal from '@/components/PhotoGalleryModal.vue'
 import LoadingScreen from '@/components/LoadingScreen.vue'
-import housePlaceholder from '@/assets/house-placeholder.jpg'
 import { useWindowSize } from '@vueuse/core'
 import { API_URL } from '../../constants'
 import { useMapStore } from '@/stores/mapStore'
@@ -732,7 +731,6 @@ export default {
       toggleSidebar,
       setEventPos,
       cardPosition,
-      housePlaceholder,
       decodeToken,
       promptSignup,
       signupBanner,

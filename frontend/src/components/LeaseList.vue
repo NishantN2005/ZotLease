@@ -23,7 +23,7 @@
           <!-- Image Section -->
           <div class="relative w-full h-64 overflow-hidden">
             <img
-              :src="photos[listing.id] ? photos[listing.id] : housePlaceholder"
+              :src="photos[listing.id] ? photos[listing.id] : possiblePlaceholder"
               alt="Property Image"
               class="w-full h-full object-cover rounded-xl transition-transform duration-300 hover:scale-105"
             />
@@ -61,7 +61,7 @@
 
 <script>
 import { ref, onMounted, onUnmounted, watch } from 'vue'
-import housePlaceholder from '@/assets/house-placeholder.jpg'
+import possiblePlaceholder from '../assets/newHouse.png'
 import { makeAuthenticatedRequest } from '../services/authService.js'
 import { getFirstPhoto } from '@/s3client.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore.js'
@@ -256,7 +256,7 @@ export default {
       listContainer,
       listings,
       photos,
-      housePlaceholder,
+      possiblePlaceholder,
       activateSubleaseModal,
     }
   },
