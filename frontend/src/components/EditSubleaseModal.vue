@@ -100,6 +100,37 @@
             </div>
           </div>
 
+          <div class="flex flex-col space-y-2 w-[93%]">
+            <div class="flex items-center space-x-2">
+              <div class="flex items-center space-x-1 text-gray-500 text-sm">
+                <div
+                  class="w-4 h-4 rounded-full bg-gray-300 text-xs flex items-center justify-center text-white"
+                >
+                  i
+                </div>
+                <span class="text-xs text-gray-500">Optional</span>
+              </div>
+            </div>
+
+            <!-- Input with prefix -->
+            <div class="flex items-center space-x-4">
+              <div
+                class="flex w-full items-center border border-uciblue rounded-lg overflow-hidden"
+              >
+                <span class="bg-gray-100 px-3 py-2 text-gray-600 text-sm select-none">
+                  https://instagram.com/
+                </span>
+                <input
+                  v-model="formData.insta"
+                  id="insta"
+                  name="insta"
+                  placeholder="your_username"
+                  class="flex-1 p-2 text-gray-700 focus:outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
           <div class="space-y-2">
             <div>
               <label>Price: </label>
@@ -177,23 +208,23 @@
         <div class="space-y-4 mt-6">
           <h4 class="font-semibold text-lg text-black">Current Photos</h4>
           <li
-              v-for="(file, index) in photos"
-              :key="index"
-              class="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200"
+            v-for="(file, index) in photos"
+            :key="index"
+            class="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200"
+          >
+            <!-- File Name -->
+            <span class="text-sm text-gray-700">
+              {{ file.split('/').pop() }}
+            </span>
+
+            <!-- Remove Button (uncomment if needed) -->
+            <button
+              @click="queuePhotoForDeletion(file)"
+              class="text-red-500 hover:text-red-700 text-sm font-semibold"
             >
-              <!-- File Name -->
-              <span class="text-sm text-gray-700">
-                {{ file.split('/').pop() }}
-              </span>
-              
-              <!-- Remove Button (uncomment if needed) -->
-              <button
-                  @click="queuePhotoForDeletion(file)"
-                  class="text-red-500 hover:text-red-700 text-sm font-semibold"
-              >
-                  Remove
-              </button>
-            </li>
+              Remove
+            </button>
+          </li>
 
           <!-- Upload New Photos -->
           <div class="mt-4">
@@ -205,7 +236,7 @@
               accept="image/*"
               class="hidden"
             />
-            <button 
+            <button
               type="button"
               @click="$refs.fileInput.click()"
               class="bg-uciblue text-white px-4 py-2 rounded-lg"
@@ -281,15 +312,15 @@ export default {
       immediate: true,
       async handler(newSublease) {
         if (newSublease && newSublease.listerid) {
-          console.log('Fetching photos for:', newSublease.listerid);
-          const path = `${newSublease.listerid}/${newSublease.subleaseid}`;
-          const existingPhotos = await listObjects(path);
-          this.photos = existingPhotos;
+          console.log('Fetching photos for:', newSublease.listerid)
+          const path = `${newSublease.listerid}/${newSublease.subleaseid}`
+          const existingPhotos = await listObjects(path)
+          this.photos = existingPhotos
         }
         if (newSublease) {
-          this.formData = {...newSublease}
+          this.formData = { ...newSublease }
         }
-      }
+      },
     },
     show(newVal) {
       if (newVal) {
@@ -304,14 +335,17 @@ export default {
       try {
         // First update sublease info
         await makeAuthenticatedRequest('sublease/edit', this.formData, this.router)
-        
+
         // Then handle photo changes
         if (this.photosToDelete.length) {
-          await Promise.all(this.photosToDelete.map(key => deletePhoto(key)))
+          await Promise.all(this.photosToDelete.map((key) => deletePhoto(key)))
         }
-        
+
         if (this.photosToUpload.length) {
-          await uploadPhotos(`${this.sublease.listerid}/${this.sublease.subleaseid}`, this.photosToUpload)
+          await uploadPhotos(
+            `${this.sublease.listerid}/${this.sublease.subleaseid}`,
+            this.photosToUpload,
+          )
         }
 
         this.$emit('update:show', false)
@@ -341,12 +375,12 @@ export default {
     handleNewPhotos(event) {
       const newPhotos = Array.from(event.target.files)
       this.photosToUpload = [...this.photosToUpload, ...newPhotos]
-      this.photos = [...this.photos, ...newPhotos.map(photo => photo.name)]
+      this.photos = [...this.photos, ...newPhotos.map((photo) => photo.name)]
     },
     queuePhotoForDeletion(key) {
       this.photosToDelete.push(key)
-      this.photoKeys = this.photoKeys.filter(k => k !== key)
-      this.photos = this.photos.filter(photo => photo !== key)
+      this.photoKeys = this.photoKeys.filter((k) => k !== key)
+      this.photos = this.photos.filter((photo) => photo !== key)
     },
   },
   async mounted() {

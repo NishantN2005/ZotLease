@@ -20,6 +20,7 @@ const createSubleaseController = async (req, res) => {
       startTerm,
       endTerm,
       description,
+      insta,
     } = req.body;
     if (
       street_name == "" ||
@@ -86,8 +87,9 @@ const createSubleaseController = async (req, res) => {
         description,
         subleaseID,
         latitude,
-        longitude
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
+        longitude,
+        insta
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
       values: [
         listerID,
         price,
@@ -106,9 +108,9 @@ const createSubleaseController = async (req, res) => {
         subleaseID,
         lat,
         lon,
+        insta,
       ],
     };
-    console.log("about to make query");
     const response = await pool.query(insertQuery);
     return res.status(200).json({
       subleaseid: subleaseID,
@@ -128,16 +130,20 @@ const createSubleaseController = async (req, res) => {
 };
 
 const getSubleasesController = async (req, res) => {
-  const {swLat, swLng, neLat, neLng} = req.body;
+  const { swLat, swLng, neLat, neLng } = req.body;
   const query =
     "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount FROM sublease";
-  const new_query_string = "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount\
+  const new_query_string =
+    "SELECT id, subleaseID, listerID, latitude, longitude, price, street_name, city, postal_code, gender, roomCount, bathRoomCount, viewcount\
   FROM sublease\
   WHERE latitude BETWEEN $1 AND $2\
-  AND longitude BETWEEN $3 AND $4;"
+  AND longitude BETWEEN $3 AND $4;";
 
-  const new_query = {text: new_query_string, values: [swLat, neLat, swLng, neLng]}
-    const response = await pool.query(new_query);
+  const new_query = {
+    text: new_query_string,
+    values: [swLat, neLat, swLng, neLng],
+  };
+  const response = await pool.query(new_query);
   return res.status(200).json(response.rows);
 };
 
@@ -149,7 +155,8 @@ const getSubleaseInfoController = async (req, res) => {
     text: `SELECT 
     s.*,           
     u.fname,  
-    u.lname    
+    u.lname,
+    u.email 
     FROM sublease s
     JOIN users u 
         ON s.listerID = u.userID
@@ -158,7 +165,7 @@ const getSubleaseInfoController = async (req, res) => {
   };
   try {
     const response = await pool.query(query);
-    console.log('HERE:',response.rows);
+    console.log("HERE:", response.rows);
     // we need to increment view count by 1 now that it has been view
     const updateviewcount = {
       text: `UPDATE sublease SET viewcount = viewcount + 1 WHERE id = $1 AND listerid <> $2;`,
@@ -255,6 +262,7 @@ const editSubleaseController = async (req, res) => {
     latitude,
     longitude,
     listerid,
+    insta,
   } = req.body;
   console.log(
     price,
@@ -290,8 +298,9 @@ const editSubleaseController = async (req, res) => {
         endTerm = $12,
         description = $13,
         latitude = $14,
-        longitude = $15
-        WHERE subleaseid = $16 
+        longitude = $15,
+        insta = $16
+        WHERE subleaseid = $17 
         RETURNING *`,
       values: [
         price,
@@ -309,6 +318,7 @@ const editSubleaseController = async (req, res) => {
         description,
         latitude,
         longitude,
+        insta,
         subleaseid,
       ],
     };
@@ -349,7 +359,7 @@ const getLandingLocationsController = async (req, res) => {
   res.status(200).json(response.rows);
 };
 
-const getSubleasesListController = async (req, res) =>{
+const getSubleasesListController = async (req, res) => {
   // Extract limit and offset from query parameters; default limit to 30 and offset to 0
   const limit = parseInt(req.query.limit, 10) || 15;
   const offset = parseInt(req.query.offset, 10) || 0;
@@ -362,7 +372,7 @@ const getSubleasesListController = async (req, res) =>{
     ORDER BY id DESC
     LIMIT $1 OFFSET $2;
   `;
-  
+
   try {
     const result = await pool.query(query, [limit, offset]);
     return res.status(200).json(result.rows);
@@ -381,5 +391,5 @@ module.exports = {
   getSubleaseFromController,
   getLandingLocationsController,
   editSubleaseController,
-  getSubleasesListController
+  getSubleasesListController,
 };

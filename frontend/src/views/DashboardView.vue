@@ -272,6 +272,7 @@ export default {
       startTerm: '',
       endTerm: '',
       description: '',
+      insta: '',
     })
     const leaseListFilterText = ref('')
 

@@ -137,6 +137,26 @@
           {{ selectedSubleaseStore.selectedSublet.country }}
         </div>
 
+        <div class="flex my-2 space-x-4">
+          <a
+            v-if="selectedSubleaseStore.selectedSublet.insta"
+            :href="`https://instagram.com/${selectedSubleaseStore.selectedSublet.insta}`"
+            target="_blank"
+            class="group"
+          >
+            <font-awesome-icon
+              :icon="['fab', 'instagram']"
+              class="text-3xl text-neutral-900 group-hover:text-pink-500 transition duration-300"
+            />
+          </a>
+          <a :href="`mailto:${selectedSubleaseStore.selectedSublet.email}`" class="group">
+            <font-awesome-icon
+              :icon="['fas', 'envelope']"
+              class="text-3xl text-neutral-900 group-hover:text-blue-500 transition duration-300"
+            />
+          </a>
+        </div>
+
         <div>
           <span class="font-semibold text-black">Special Notes:</span>
           <p class="whitespace-pre-line mt-2 border border-gray-500 rounded-sm p-2">
@@ -166,9 +186,13 @@ import { watch, ref } from 'vue'
 import { getPhotos } from '../s3client.js'
 import { useUserStore } from '@/stores/userStore.js'
 import { useSelectedSubleaseStore } from '@/stores/SelectedSubleaseStore'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 export default {
   name: 'SelectedSubleaseModal',
+  components: {
+    FontAwesomeIcon,
+  },
   props: {
     showSelectedSubleaseModal: { type: Boolean, required: true },
     turnOffSubleaseModal: { type: Function, required: true },
