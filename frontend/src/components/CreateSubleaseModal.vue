@@ -100,6 +100,35 @@
       </div>
     </div>
 
+    <div class="flex flex-col space-y-2 w-[93%]">
+      <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-1 text-gray-500 text-sm">
+          <div
+            class="w-4 h-4 rounded-full bg-gray-300 text-xs flex items-center justify-center text-white"
+          >
+            i
+          </div>
+          <span class="text-xs text-gray-500">Optional</span>
+        </div>
+      </div>
+
+      <!-- Input with prefix -->
+      <div class="flex items-center space-x-4">
+        <div class="flex w-full items-center border border-uciblue rounded-lg overflow-hidden">
+          <span class="bg-gray-100 px-3 py-2 text-gray-600 text-sm select-none">
+            https://instagram.com/
+          </span>
+          <input
+            v-model="formData.insta"
+            id="insta"
+            name="insta"
+            placeholder="your_username"
+            class="flex-1 p-2 text-gray-700 focus:outline-none"
+          />
+        </div>
+      </div>
+    </div>
+
     <div class="space-y-2">
       <div>
         <label>Price: </label>

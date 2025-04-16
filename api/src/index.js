@@ -23,7 +23,9 @@ require("dotenv").config("api/.env");
 const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
 const { googleAuthController } = require("../controllers/authController.js");
-const { sendUnreadMessagesNotification } = require('../controllers/notificationController');
+const {
+  sendUnreadMessagesNotification,
+} = require("../controllers/notificationController");
 
 const app = express();
 app.use(compression());
@@ -144,7 +146,6 @@ cron.schedule(
         listerid,
         activityText,
       ]);
-      console.log(`Created activity for listerid ${listerid}`);
     }
   },
   {
@@ -154,12 +155,14 @@ cron.schedule(
 );
 
 // Daily check at 9 AM for unread messages
-cron.schedule('0 12 * * *', async () => {
-  try {
-    console.log('Running daily unread messages check...');
-    
-    // Query unread messages and user info
-    const query = `
+cron.schedule(
+  "0 12 * * *",
+  async () => {
+    try {
+      console.log("Running daily unread messages check...");
+
+      // Query unread messages and user info
+      const query = `
       SELECT 
         u.userid,
         u.fname,
@@ -177,23 +180,29 @@ cron.schedule('0 12 * * *', async () => {
          OR (u.userid = c.userID2 AND c.unreadCount2 > 0)
       GROUP BY u.userid, u.fname, u.email
     `;
-    
-    const { rows } = await pool.query(query);
-    
-    // Send notifications to each user with unread messages
-    for (const user of rows) {
-     await sendUnreadMessagesNotification(user.userid, user.email, user.fname, user.total_unread_count);
-     //console.log(user)
+
+      const { rows } = await pool.query(query);
+
+      // Send notifications to each user with unread messages
+      for (const user of rows) {
+        await sendUnreadMessagesNotification(
+          user.userid,
+          user.email,
+          user.fname,
+          user.total_unread_count
+        );
+      }
+
+      console.log(`Sent notifications to ${rows.length} users`);
+    } catch (error) {
+      console.error("Error in daily unread messages check:", error);
     }
-    
-    console.log(`Sent notifications to ${rows.length} users`);
-  } catch (error) {
-    console.error('Error in daily unread messages check:', error);
+  },
+  {
+    scheduled: true,
+    timezone: "PST",
   }
-}, {
-  scheduled: true,
-  timezone:'PST'
-});
+);
 
 const userSockets = new Map();
 
@@ -205,15 +214,6 @@ io.on("connection", (socket) => {
   socket.on(
     "directMessage",
     ({ chatRoomID, content, id, sender, status, timestamp, recipientID }) => {
-      console.log(
-        chatRoomID,
-        content,
-        id,
-        sender,
-        status,
-        timestamp,
-        recipientID
-      );
       const recipientSocketId = userSockets.get(recipientID);
 
       if (recipientSocketId) {

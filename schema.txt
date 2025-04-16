@@ -35,7 +35,9 @@ description TEXT,
 subleaseID TEXT NOT NULL,
 latitude DOUBLE PRECISION CHECK (latitude BETWEEN -90 AND 90),
 longitude DOUBLE PRECISION CHECK (longitude BETWEEN -180 AND 180),
-viewcount INTEGER DEFAULT 0
+viewcount INTEGER DEFAULT 0,
+insta TEXT DEFAULT NULL,
+email TEXT DEFAULT NULL
 );
 
 CREATE TABLE chatRooms (
