@@ -165,7 +165,6 @@ const getSubleaseInfoController = async (req, res) => {
   };
   try {
     const response = await pool.query(query);
-    console.log("HERE:", response.rows);
     // we need to increment view count by 1 now that it has been view
     const updateviewcount = {
       text: `UPDATE sublease SET viewcount = viewcount + 1 WHERE id = $1 AND listerid <> $2;`,
@@ -264,23 +263,6 @@ const editSubleaseController = async (req, res) => {
     listerid,
     insta,
   } = req.body;
-  console.log(
-    price,
-    gender,
-    street_name,
-    room,
-    city,
-    postal_code,
-    state,
-    country,
-    startterm,
-    endterm,
-    description,
-    subleaseid,
-    latitude,
-    longitude,
-    listerid
-  );
   try {
     const editQuery = {
       text: `UPDATE sublease SET 
@@ -323,7 +305,6 @@ const editSubleaseController = async (req, res) => {
       ],
     };
     const response = await pool.query(editQuery);
-    console.log(response.rows);
     res.status(200).json(response.rows[0]);
   } catch (err) {
     console.error(err);
