@@ -36,7 +36,7 @@ const createSubleaseController = async (req, res) => {
       startTerm == "" ||
       endTerm == ""
     ) {
-      return res.status(400).json({ message: "Params are incomeplete" });
+      return res.status(400).json({ message: "Params are incomplete" });
     }
     /**
      * Check if address exists, if it does, get the subleaseID
