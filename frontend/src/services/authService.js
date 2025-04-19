@@ -48,7 +48,7 @@ export const makeAuthenticatedRequest = async (endpoint, data, router, methodTyp
   if (response.ok) {
     return response
   } else {
-    if (response.status == 401) {
+    if (response.status === 401) {
       // If the request was unauthorized
       const newAccessToken = await refreshAccessToken(router)
       if (newAccessToken) {
