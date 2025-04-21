@@ -5,6 +5,7 @@ require("dotenv").config("api/.env");
 
 const createSubleaseController = async (req, res) => {
   try {
+    let incorrectFields = [];
     const {
       street_name,
       room,
@@ -22,21 +23,29 @@ const createSubleaseController = async (req, res) => {
       description,
       insta,
     } = req.body;
-    if (
-      street_name == "" ||
-      city == "" ||
-      postal_code == "" ||
-      state == "" ||
-      country == "" ||
-      listerID == null ||
-      price == "" ||
-      gender == "" ||
-      roomCount == "" ||
-      bathroomCount == "" ||
-      startTerm == "" ||
-      endTerm == ""
-    ) {
-      return res.status(400).json({ message: "Params are incomplete" });
+    const fields = {
+      street_name,
+      city,
+      postal_code,
+      state,
+      country,
+      listerID,
+      price,
+      gender,
+      roomCount,
+      bathroomCount,
+      startTerm,
+      endTerm
+    };
+
+    for (const [key, value] of Object.entries(fields)) {
+      if (value === "" || value === null || value === undefined) {
+        incorrectFields.push(key);
+      }
+    }
+
+    if (incorrectFields.length > 0) {
+      return res.status(400).json({ message: "Params are incomplete", incorrectFields });
     }
     /**
      * Check if address exists, if it does, get the subleaseID
