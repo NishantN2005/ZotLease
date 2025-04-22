@@ -35,7 +35,7 @@ const createSubleaseController = async (req, res) => {
       roomCount,
       bathroomCount,
       startTerm,
-      endTerm
+      endTerm,
     };
 
     for (const [key, value] of Object.entries(fields)) {
@@ -45,7 +45,9 @@ const createSubleaseController = async (req, res) => {
     }
 
     if (incorrectFields.length > 0) {
-      return res.status(400).json({ message: "Params are incomplete", incorrectFields });
+      return res
+        .status(400)
+        .json({ message: "Params are incomplete", incorrectFields });
     }
     /**
      * Check if address exists, if it does, get the subleaseID
@@ -270,6 +272,7 @@ const editSubleaseController = async (req, res) => {
     latitude,
     longitude,
     listerid,
+    id,
     insta,
   } = req.body;
   try {
@@ -291,7 +294,7 @@ const editSubleaseController = async (req, res) => {
         latitude = $14,
         longitude = $15,
         insta = $16
-        WHERE subleaseid = $17 
+        WHERE id = $17 
         RETURNING *`,
       values: [
         price,
@@ -310,7 +313,7 @@ const editSubleaseController = async (req, res) => {
         latitude,
         longitude,
         insta,
-        subleaseid,
+        id,
       ],
     };
     const response = await pool.query(editQuery);
