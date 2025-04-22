@@ -25,6 +25,7 @@
             :formData="formData"
             :handleFileChange="handleFileChange"
             :filesRef="filesRef"
+            :incorrectFields="incorrectFields"
           />
         </div>
 
@@ -290,6 +291,8 @@ export default {
     const messageProfileActive = ref(false)
     const cardPosition = ref({ top: '0px', left: '0px' })
 
+    const incorrectFields = ref([])
+
     /// CHANGE TP CORRECT PORT
     const decodeToken = async () => {
       try {
@@ -449,7 +452,6 @@ export default {
         formError.value.display = false
         formData.value.listerID = userStore.userID // ensure listerID is set to the current user's ID
         let response = await makeAuthenticatedRequest(`sublease/create`, formData.value, router)
-
         if (response.status == 200) {
           //reset state of dashboard
           const markerInfo = await response.json()
@@ -494,7 +496,9 @@ export default {
           console.log('Form was incorrectly submitted')
           formError.value.display = true
           let resp = await response.json()
-          console.log(resp.message)
+          console.log(resp)
+          incorrectFields.value = resp.incorrectFields;
+          console.log(incorrectFields)
           if (resp.message == 'Params are incomeplete') {
             //message being set correctly
             formError.value.message = 'Make sure you entered all required information'
@@ -738,6 +742,7 @@ export default {
       leaseListFilterText,
       updateFilterText,
       mapStore,
+      incorrectFields
     }
   },
 }

@@ -120,14 +120,13 @@
           <SocketConnection :router="router" />
         </div>
       </div>
-      <div class="h-full w-full flex flex-col items-center mt-32 md:mt-52" v-else>
+      <div class="h-full w-full flex flex-col items-center mt-32 md:mt-52" v-else-if="!messageProfileActive && chatStore.chatRooms.length !== 0">
         <img
           src="/favicon.png"
           alt="Zotlease Logo"
           class="w-52 h-52"
-          v-if="!messageProfileActive"
         />
-        <h2 class="text-gray-800 font-semibold text-lg mt-4" v-if="!messageProfileActive">
+        <h2 class="text-gray-800 font-semibold text-lg mt-4">
           Select A Chat!
         </h2>
       </div>

@@ -33,7 +33,7 @@
       </div>
 
       <!-- Tabs -->
-      <div class="flex space-x-4 mb-4">
+      <div class="flex space-x-4 mb-4 overflow-auto scrollbar-hide">
         <button
           v-for="(subletter, index) in selectedSubleaseStore.subletters"
           :key="subletter.listerid"

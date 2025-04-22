@@ -18,7 +18,10 @@
           id="address-input"
           placeholder="Street Address"
           autocomplete="address-line1"
-          class="mr-5 mt-1 border border-uciblue rounded-lg p-1 w-[70%]"
+          :class="[
+            'mr-5 mt-1 border rounded-lg p-1 w-[70%]',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('street_name') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
         <input
           v-model="formData.room"
@@ -27,7 +30,10 @@
           id="room"
           placeholder="Room/Unit"
           autocomplete="address-line2"
-          class="mr-5 border border-uciblue rounded-lg p-1 w-[20%]"
+          :class="[
+            'mr-5 border rounded-lg p-1 w-[20%]',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('room') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
 
         <br />
@@ -39,7 +45,10 @@
           id="city"
           placeholder="City"
           autocomplete="address-level2"
-          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
+          :class="[
+            'mr-5 mt-2 border rounded-lg p-1 w-[45%]',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('city') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
 
         <input
@@ -49,7 +58,10 @@
           id="postal"
           placeholder="Postal / Zip Code"
           autocomplete="postal-code"
-          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
+          :class="[
+            'mr-5 mt-2 border rounded-lg p-1 w-[45%]',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('postal_code') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
       </div>
 
@@ -62,7 +74,10 @@
           id="state"
           placeholder="State"
           autocomplete="address-level1"
-          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
+          :class="[
+            'mr-5 mt-2 border rounded-lg p-1 w-[45%]',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('state') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
         <!-- New Country Field -->
         <input
@@ -72,7 +87,10 @@
           id="country"
           placeholder="Country"
           autocomplete="country-name"
-          class="mr-5 mt-2 border border-uciblue rounded-lg p-1 w-[45%]"
+          :class="[
+            'mr-5 mt-2 border rounded-lg p-1 w-[45%]',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('country') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
       </div>
     </mapbox-address-autofill>
@@ -81,19 +99,28 @@
       <label>Gender:</label>
       <div class="flex flex-col space-y-2 mt-1 w-[93%]">
         <!-- Male -->
-        <label class="inline-flex items-center border border-uciblue rounded-lg p-1">
+        <label :class="[
+          'inline-flex items-center border rounded-lg p-1',
+          incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('gender') ? 'border-red-500' : 'border-uciblue'
+        ]">
           <input type="radio" value="Male" v-model="formData.gender" class="mr-1" />
           Male
         </label>
 
         <!-- Female -->
-        <label class="inline-flex items-center border border-uciblue rounded-lg p-1">
+        <label :class="[
+          'inline-flex items-center border rounded-lg p-1',
+          incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('gender') ? 'border-red-500' : 'border-uciblue'
+        ]">
           <input type="radio" value="Female" v-model="formData.gender" class="mr-1" />
           Female
         </label>
 
         <!-- Other -->
-        <label class="inline-flex items-center border border-uciblue rounded-lg p-1">
+        <label :class="[
+          'inline-flex items-center border rounded-lg p-1',
+          incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('gender') ? 'border-red-500' : 'border-uciblue'
+        ]">
           <input type="radio" value="Other" v-model="formData.gender" class="mr-1" />
           Other
         </label>
@@ -114,7 +141,10 @@
 
       <!-- Input with prefix -->
       <div class="flex items-center space-x-4">
-        <div class="flex w-full items-center border border-uciblue rounded-lg overflow-hidden">
+        <div :class="[
+          'flex w-full items-center border rounded-lg overflow-hidden',
+          incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('insta') ? 'border-red-500' : 'border-uciblue'
+        ]">
           <span class="bg-gray-100 px-3 py-2 text-gray-600 text-sm select-none">
             https://instagram.com/
           </span>
@@ -139,7 +169,10 @@
           name="price"
           id="price"
           placeholder="USD"
-          class="w-[93%] border border-uciblue rounded-lg p-1 mt-1"
+          :class="[
+            'w-[93%] border rounded-lg p-1 mt-1',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('price') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
       </div>
 
@@ -152,7 +185,10 @@
           name="roomCount"
           id="roomCount"
           placeholder="Number of Rooms"
-          class="mr-2 border border-uciblue rounded-lg p-1 w-[45%] mt-1"
+          :class="[
+            'mr-2 border rounded-lg p-1 w-[45%] mt-1',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('roomCount') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
 
         <input
@@ -161,7 +197,10 @@
           name="bathroomCount"
           id="bathroomCount"
           placeholder="Number of Bathrooms"
-          class="border border-uciblue rounded-lg p-1 w-[46%]"
+          :class="[
+            'border rounded-lg p-1 w-[46%]',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('bathroomCount') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
       </div>
     </div>
@@ -176,7 +215,10 @@
           name="startTerm"
           id="startTerm"
           placeholder="06/16/25"
-          class="text-gray-500 w-[72%] p-1 border border-uciblue rounded-lg"
+          :class="[
+            'text-gray-500 w-[72%] p-1 border rounded-lg',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('startTerm') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
       </div>
 
@@ -189,7 +231,10 @@
           name="endTerm"
           id="endTerm"
           placeholder="08/24/25"
-          class="text-gray-500 w-[72%] p-1 border border-uciblue rounded-lg"
+          :class="[
+            'text-gray-500 w-[72%] p-1 border rounded-lg',
+            incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('endTerm') ? 'border-red-500' : 'border-uciblue'
+          ]"
         />
       </div>
     </div>
@@ -203,7 +248,10 @@
         name="description"
         id="description"
         placeholder="There is going to be another 2 subleasers. No pets allowed. No furniture provided."
-        class="p-1 border border-uciblue rounded-lg"
+        :class="[
+          'p-1 border rounded-lg',
+          incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('description') ? 'border-red-500' : 'border-uciblue'
+        ]"
       />
     </div>
 
@@ -213,7 +261,10 @@
         id="leasePdf"
         type="file"
         @change="handleFileChange"
-        class="block w-full text-sm text-gray-900 rounded cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+        :class="[
+          'block w-full text-sm text-gray-900 rounded cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100',
+          incorrectFields && incorrectFields.length > 0 && incorrectFields.includes('files') ? 'border border-red-500 rounded' : ''
+        ]"
       />
     </div>
   </form>
@@ -256,6 +307,10 @@ export default {
     },
     filesRef: {
       type: Object,
+      required: true,
+    },
+    incorrectFields: {
+      type: Array,
       required: true,
     },
   },
